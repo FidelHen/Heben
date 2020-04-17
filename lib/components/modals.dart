@@ -161,7 +161,7 @@ class Modal {
         });
   }
 
-  void nameModal(BuildContext context) {
+  void nameModal(BuildContext context, TextEditingController nameController) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -184,6 +184,7 @@ class Modal {
                         color: Colors.grey[200],
                       ),
                       child: TextField(
+                        controller: nameController,
                         autofocus: true,
                         keyboardAppearance: Brightness.light,
                         style: GoogleFonts.lato(
@@ -196,7 +197,7 @@ class Modal {
                             padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
                             child: Icon(
                               EvaIcons.personOutline,
-                              color: hebenRed,
+                              color: hebenActive,
                               size: 20,
                             ),
                           ),
@@ -205,6 +206,24 @@ class Modal {
                       ),
                     ),
                   ),
+                  Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(11.0),
+                      ),
+                      child: Text(
+                        'Save',
+                        style: GoogleFonts.openSans(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: hebenActive),
+                      ),
+                    ),
+                  )
                 ]),
                 padding: EdgeInsets.all(25.0),
               ),
@@ -213,7 +232,7 @@ class Modal {
         });
   }
 
-  void bioModal(BuildContext context) {
+  void bioModal(BuildContext context, TextEditingController bioController) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -237,14 +256,16 @@ class Modal {
                         color: Colors.grey[200],
                       ),
                       child: TextField(
+                        controller: bioController,
                         autofocus: true,
                         maxLines: 4,
                         maxLength: 150,
+                        textInputAction: TextInputAction.done,
                         keyboardAppearance: Brightness.light,
                         style: GoogleFonts.lato(
                             fontSize: 16, fontWeight: FontWeight.w600),
                         decoration: InputDecoration(
-                          hintText: 'bio',
+                          hintText: 'Tell us something about yourself',
                           hintStyle: GoogleFonts.lato(
                               fontSize: 16, fontWeight: FontWeight.w600),
                           border: InputBorder.none,
@@ -252,8 +273,81 @@ class Modal {
                       ),
                     ),
                   ),
+                  Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(11.0),
+                      ),
+                      child: Text(
+                        'Save',
+                        style: GoogleFonts.openSans(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: hebenActive),
+                      ),
+                    ),
+                  )
                 ]),
                 padding: EdgeInsets.all(25.0),
+              ),
+            ),
+          );
+        });
+  }
+
+  void mediaOptions(
+      BuildContext context, Function galleryFunction, Function cameraFunction) {
+    showModalBottomSheet(
+        context: context,
+        shape: RoundedRectangleBorder(
+          borderRadius: new BorderRadius.circular(18.0),
+        ),
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: Wrap(
+                children: <Widget>[
+                  Container(
+                    height: 20,
+                    child: Center(
+                      child: Container(
+                        width: 40,
+                        height: 6,
+                        decoration: BoxDecoration(
+                            color: Colors.grey[400],
+                            borderRadius: BorderRadius.circular(15)),
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                      leading: Icon(
+                        EvaIcons.imageOutline,
+                        color: Colors.black,
+                      ),
+                      title: Text(
+                        'Gallery',
+                        style: GoogleFonts.lato(fontWeight: FontWeight.w600),
+                      ),
+                      onTap: () {
+                        galleryFunction();
+                      }),
+                  ListTile(
+                      leading: Icon(
+                        EvaIcons.cameraOutline,
+                        color: Colors.black,
+                      ),
+                      title: Text(
+                        'Camera',
+                        style: GoogleFonts.lato(fontWeight: FontWeight.w600),
+                      ),
+                      onTap: () {
+                        cameraFunction();
+                      }),
+                ],
               ),
             ),
           );

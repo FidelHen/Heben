@@ -1,148 +1,349 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:heben/screens/intro/onboarding/ask_info.dart';
+import 'package:heben/utils/auth.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/device_size.dart';
-import 'package:heben/utils/navigation.dart';
+import 'package:heben/utils/enums.dart';
+import 'package:loading_overlay/loading_overlay.dart';
+import 'package:platform_alert_dialog/platform_alert_dialog.dart';
 
 class SignUp extends StatefulWidget {
+  SignUp({@required this.goal});
+  final UserGoal goal;
+
   @override
   _SignUpState createState() => _SignUpState();
 }
 
 class _SignUpState extends State<SignUp> {
+  bool isLoading;
+  TextEditingController emailController;
+  TextEditingController usernameController;
+  TextEditingController passwordController;
+  TextEditingController confirmPasswordController;
+
+  @override
+  void initState() {
+    isLoading = true;
+    emailController = TextEditingController();
+    usernameController = TextEditingController();
+    passwordController = TextEditingController();
+    confirmPasswordController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    usernameController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: GFAppBar(
-        elevation: 0,
-        title: Text(
-          'Let\'s get started',
-          style: GoogleFonts.lato(
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
+    return LoadingOverlay(
+      isLoading: false,
+      opacity: 0.5,
+      color: Colors.black,
+      progressIndicator: Container(
+        height: 50,
+        child: SpinKitThreeBounce(
+          color: Colors.white,
+          size: 40,
         ),
-        leading: IconButton(
-            icon: Icon(
-              EvaIcons.chevronLeft,
-              size: 40,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
-        brightness: Brightness.light,
-        backgroundColor: Colors.white,
       ),
-      body: SafeArea(
-        child: Container(
-          width: DeviceSize().getWidth(context),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(
-                    right: DeviceSize().getWidth(context) / 8,
-                    left: DeviceSize().getWidth(context) / 8),
-                child: Column(
-                  children: <Widget>[
-                    TextField(
-                        enableSuggestions: false,
-                        autocorrect: false,
-                        autofocus: true,
-                        keyboardType: TextInputType.emailAddress,
-                        keyboardAppearance: Brightness.light,
-                        style: GoogleFonts.openSans(
-                            fontSize: 18, fontWeight: FontWeight.w500),
-                        decoration: InputDecoration(
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey[400]),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: hebenActive, width: 2),
-                          ),
-                          hintText: 'Email',
-                        )),
-                    Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: TextField(
-                          autocorrect: false,
-                          keyboardAppearance: Brightness.light,
-                          style: GoogleFonts.openSans(
-                              fontSize: 18, fontWeight: FontWeight.w500),
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey[400]),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: hebenActive, width: 2),
-                            ),
-                            hintText: 'Password',
-                          )),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: TextField(
-                          autocorrect: false,
-                          keyboardAppearance: Brightness.light,
-                          style: GoogleFonts.openSans(
-                              fontSize: 18, fontWeight: FontWeight.w500),
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey[400]),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: hebenActive, width: 2),
-                            ),
-                            hintText: 'Verify password',
-                          )),
-                    ),
-                  ],
-                ),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: GFAppBar(
+          elevation: 0,
+          title: Text(
+            'Let\'s get started',
+            style: GoogleFonts.lato(
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          leading: IconButton(
+              icon: Icon(
+                EvaIcons.chevronLeft,
+                size: 40,
+                color: Colors.black,
               ),
-              Padding(
-                padding: EdgeInsets.only(
-                    right: DeviceSize().getWidth(context) / 15,
-                    left: DeviceSize().getWidth(context) / 15,
-                    bottom: 15),
-                child: RaisedButton(
-                  color: hebenRed,
-                  onPressed: () {
-                    Navigation().segueToRoot(
-                        page: AskInfo(), context: context, fullScreen: false);
-                  },
-                  child: Container(
-                      width: DeviceSize().getWidth(context) / 1.4,
-                      height: 50,
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Sign up',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.lato(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
+          brightness: Brightness.light,
+          backgroundColor: Colors.white,
+        ),
+        body: SafeArea(
+          child: Container(
+            width: DeviceSize().getWidth(context),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        right: DeviceSize().getWidth(context) / 8,
+                        left: DeviceSize().getWidth(context) / 8),
+                    child: ListView(
+                      shrinkWrap: true,
+                      physics: BouncingScrollPhysics(),
+                      children: <Widget>[
+                        TextField(
+                            enableSuggestions: false,
+                            autocorrect: false,
+                            autofocus: true,
+                            controller: emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            keyboardAppearance: Brightness.light,
+                            style: GoogleFonts.openSans(
+                                fontSize: 18, fontWeight: FontWeight.w600),
+                            decoration: InputDecoration(
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey[400]),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: hebenActive, width: 2),
+                              ),
+                              hintText: 'Email',
+                            )),
+                        Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: TextField(
+                              autocorrect: false,
+                              controller: usernameController,
+                              keyboardAppearance: Brightness.light,
+                              style: GoogleFonts.openSans(
+                                  fontSize: 18, fontWeight: FontWeight.w600),
+                              decoration: InputDecoration(
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[400]),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: hebenActive, width: 2),
+                                ),
+                                hintText: 'Username',
+                              )),
                         ),
-                      )),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(11.0),
+                        Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: TextField(
+                              autocorrect: false,
+                              controller: passwordController,
+                              keyboardAppearance: Brightness.light,
+                              style: GoogleFonts.openSans(
+                                  fontSize: 18, fontWeight: FontWeight.w600),
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[400]),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: hebenActive, width: 2),
+                                ),
+                                hintText: 'Password',
+                              )),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: TextField(
+                              autocorrect: false,
+                              controller: confirmPasswordController,
+                              keyboardAppearance: Brightness.light,
+                              style: GoogleFonts.openSans(
+                                  fontSize: 18, fontWeight: FontWeight.w600),
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[400]),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: hebenActive, width: 2),
+                                ),
+                                hintText: 'Confirm password',
+                              )),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: EdgeInsets.only(
+                      right: DeviceSize().getWidth(context) / 15,
+                      left: DeviceSize().getWidth(context) / 15,
+                      bottom: 15),
+                  child: RaisedButton(
+                    color: hebenRed,
+                    onPressed: () {
+                      validator();
+                    },
+                    child: Container(
+                        width: DeviceSize().getWidth(context) / 1.4,
+                        height: 50,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Sign up',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.lato(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white),
+                          ),
+                        )),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(11.0),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  validator() async {
+    bool validated = EmailValidator.validate(emailController.text);
+    FocusScope.of(context).requestFocus(FocusNode());
+    setState(() {
+      isLoading = true;
+    });
+    if (validated) {
+      if (passwordController.text == confirmPasswordController.text.trim() &&
+          passwordController.text.trim().length >= 6) {
+        if (usernameController.text.trim().length >= 3 &&
+            usernameController.text.trim().length <= 30) {
+          bool usernameAvailable = await Auth().checkExistingUsername(
+              username: usernameController.text, context: context);
+
+          if (usernameAvailable) {
+            Auth().signUpWithEmail(
+                email: emailController.text,
+                password: passwordController.text,
+                context: context,
+                username: usernameController.text,
+                goal: widget.goal);
+          } else {
+            showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return PlatformAlertDialog(
+                  title: Text('Error'),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: <Widget>[
+                        Text('Username has already been taken'),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    PlatformDialogAction(
+                      child: Text('Okay'),
+                      actionType: ActionType.Default,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        } else {
+          showDialog<void>(
+            context: context,
+            builder: (BuildContext context) {
+              return PlatformAlertDialog(
+                title: Text('Error'),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: <Widget>[
+                      Text(
+                          'Please make sure your username is 3 - 30 characters '),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  PlatformDialogAction(
+                    child: Text('Okay'),
+                    actionType: ActionType.Default,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else {
+        showDialog<void>(
+          context: context,
+          builder: (BuildContext context) {
+            return PlatformAlertDialog(
+              title: Text('Error'),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    Text(
+                        'Please make sure your password is 6 characters or longer and match'),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                PlatformDialogAction(
+                  child: Text('Okay'),
+                  actionType: ActionType.Default,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      showDialog<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return PlatformAlertDialog(
+            title: Text('Error'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  Text('Please enter a valid email'),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              PlatformDialogAction(
+                child: Text('Okay'),
+                actionType: ActionType.Default,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }

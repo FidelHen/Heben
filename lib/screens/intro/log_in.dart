@@ -57,7 +57,7 @@ class _LogInState extends State<LogIn> {
                         keyboardType: TextInputType.emailAddress,
                         keyboardAppearance: Brightness.light,
                         style: GoogleFonts.openSans(
-                            fontSize: 18, fontWeight: FontWeight.w500),
+                            fontSize: 18, fontWeight: FontWeight.w600),
                         decoration: InputDecoration(
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(color: Colors.grey[400]),
@@ -74,7 +74,7 @@ class _LogInState extends State<LogIn> {
                           autocorrect: false,
                           keyboardAppearance: Brightness.light,
                           style: GoogleFonts.openSans(
-                              fontSize: 18, fontWeight: FontWeight.w500),
+                              fontSize: 18, fontWeight: FontWeight.w600),
                           obscureText: true,
                           decoration: InputDecoration(
                             enabledBorder: UnderlineInputBorder(

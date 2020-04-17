@@ -56,6 +56,7 @@ class _ChangeImagesState extends State<ChangeImages> {
               'https://images.unsplash.com/photo-1505506874110-6a7a69069a08?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80',
           followers: 0,
           following: 0,
+          isLive: false,
           role: UserRole.friend,
           isRegistering: true,
         ),

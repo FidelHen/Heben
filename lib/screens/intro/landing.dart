@@ -138,8 +138,12 @@ class Landing extends StatelessWidget {
       padding: EdgeInsets.all(10),
       child: RaisedButton(
         onPressed: () {
-          Navigation()
-              .segue(page: SignUp(), context: context, fullScreen: false);
+          Navigation().segue(
+              page: SignUp(
+                goal: goal,
+              ),
+              context: context,
+              fullScreen: false);
         },
         color: Colors.white,
         shape: RoundedRectangleBorder(

@@ -9,3 +9,5 @@ enum DurationChallenge { oneDay, oneWeek, oneMonth }
 enum TypeOfList { all, likes, bookmarks }
 
 enum ListKeyContentType { text, image, video, challenge }
+
+enum ImageOption { profile, background }

@@ -386,34 +386,8 @@ class _PhotoMainPageState extends State<PhotoMainPage>
   }
 
   void _onItemClick(AssetEntity data, int index) {
-    // var result = PhotoPreviewResult();
-    // isPushed = true;
-    // Navigator.of(context).push(
-    //   MaterialPageRoute(
-    //     builder: (ctx) {
-    //       return PhotoPickerProvider(
-    //         provider: PhotoPickerProvider.of(context).provider,
-    //         options: options,
-    //         child: PhotoPreviewPage(
-    //           selectedProvider: this,
-    //           list: List.of(list),
-    //           initIndex: index,
-    //           changeProviderOnCheckChange: true,
-    //           result: result,
-    //           isPreview: false,
-    //           assetProvider: assetProvider,
-    //         ),
-    //       );
-    //     },
-    //   ),
-    // ).then((v) {
-    //   if (handlePreviewResult(v)) {
-    //     Navigator.pop(context, v);
-    //     return;
-    //   }
-    //   isPushed = false;
-    //   setState(() {});
-    // });
+    addSelectEntity(data);
+    widget.onClose.call(selectedList);
   }
 
   // void _onTapPreview() async {

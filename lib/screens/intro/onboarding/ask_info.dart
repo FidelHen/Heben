@@ -1,5 +1,11 @@
+import 'dart:io';
+
+import 'package:faker/faker.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/components/modals.dart';
 import 'package:heben/components/registration_title.dart';
@@ -10,11 +16,11 @@ import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/gallery/photo.dart';
 import 'package:heben/utils/gallery/src/delegate/badge_delegate.dart';
-import 'package:heben/utils/gallery/src/delegate/checkbox_builder_delegate.dart';
 import 'package:heben/utils/gallery/src/delegate/sort_delegate.dart';
 import 'package:heben/utils/gallery/src/entity/options.dart';
 import 'package:heben/utils/gallery/src/provider/i18n_provider.dart';
 import 'package:heben/utils/navigation.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class AskInfo extends StatefulWidget {
@@ -24,6 +30,49 @@ class AskInfo extends StatefulWidget {
 
 class _AskInfoState extends State<AskInfo> {
   String currentSelected = "";
+  TextEditingController nameController;
+  TextEditingController bioController;
+
+  String nameText = 'Name';
+  String bioText = 'Bio';
+
+  ImageOption mediaType;
+
+  File profileImage;
+  File backgroundImage;
+
+  @override
+  void initState() {
+    nameController = TextEditingController();
+    bioController = TextEditingController();
+
+    nameController.addListener(() {
+      nameText = nameController.text.trim().length == 0
+          ? 'Name'
+          : nameController.text.trim();
+    });
+
+    bioController.addListener(() {
+      bioText = bioController.text.trim().length == 0
+          ? 'Bio'
+          : bioController.text.trim();
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    bioController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,36 +96,38 @@ class _AskInfoState extends State<AskInfo> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  UserHeading(
-                    name: 'Name',
-                    bio: 'My bio',
-                    profileImage: '',
-                    backgroundImage: '',
+                  PreviewUserHeading(
+                    name: nameText,
+                    bio: bioText,
+                    profileImage: profileImage,
+                    backgroundImage: backgroundImage,
                     followers: 0,
                     following: 0,
                     role: UserRole.friend,
-                    isRegistering: true,
+                    isLive: false,
                   ),
                   Column(children: [
                     todoTab(
                         title: 'Add your name',
                         onPressed: () {
-                          Modal().nameModal(context);
+                          Modal().nameModal(context, nameController);
                         }),
                     todoTab(
                         title: 'Add your bio',
                         onPressed: () {
-                          Modal().bioModal(context);
+                          Modal().bioModal(context, bioController);
                         }),
                     todoTab(
                         title: 'Upload profile picture',
                         onPressed: () {
-                          _pickAsset(PickType.all);
+                          mediaType = ImageOption.profile;
+                          Modal().mediaOptions(context, _pickAsset, getPicture);
                         }),
                     todoTab(
                         title: 'Upload background picture',
                         onPressed: () {
-                          _pickAsset(PickType.all);
+                          mediaType = ImageOption.background;
+                          Modal().mediaOptions(context, _pickAsset, getPicture);
                         }),
                   ]),
                 ],
@@ -90,8 +141,7 @@ class _AskInfoState extends State<AskInfo> {
               child: RaisedButton(
                 color: hebenRed,
                 onPressed: () {
-                  Navigation().segue(
-                      page: AskTags(), context: context, fullScreen: false);
+                  validator();
                 },
                 child: Container(
                     width: DeviceSize().getWidth(context) / 1.4,
@@ -132,72 +182,127 @@ class _AskInfoState extends State<AskInfo> {
     );
   }
 
-  void _pickAsset(PickType type, {List<AssetPathEntity> pathList}) async {
-    /// context is required, other params is optional.
-    /// context is required, other params is optional.
-    /// context is required, other params is optional.
+  void getPicture() async {
+    Navigator.pop(context);
+    File currentImage = await ImagePicker.pickImage(
+        source: ImageSource.camera, maxHeight: 400, maxWidth: 400);
 
+    File croppedFile = await ImageCropper.cropImage(
+        sourcePath: currentImage.path,
+        cropStyle: mediaType == ImageOption.profile
+            ? CropStyle.circle
+            : CropStyle.rectangle,
+        aspectRatioPresets: mediaType == ImageOption.profile
+            ? [
+                CropAspectRatioPreset.square,
+              ]
+            : [CropAspectRatioPreset.ratio5x3],
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Crop',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 0.5,
+        ));
+
+    final dir = await path_provider.getTemporaryDirectory();
+    final targetPath =
+        dir.absolute.path + "/${Faker().randomGenerator.string(50)}.jpg";
+
+    compressAndGetImage(croppedFile, targetPath).then((result) {
+      setState(() {
+        if (mediaType == ImageOption.profile) {
+          profileImage = result;
+        } else if (mediaType == ImageOption.background) {
+          backgroundImage = result;
+        }
+      });
+    });
+  }
+
+  void _pickAsset() async {
+    Navigator.pop(context);
     List<AssetEntity> imgList = await PhotoPicker.pickAsset(
-      // BuildContext required
       context: context,
-
-      /// The following are optional parameters.
-      themeColor: Colors.green,
-      // the title color and bottom color
-
-      textColor: Colors.white,
-      // text color
-      padding: 1.0,
-      // item padding
       dividerColor: Colors.grey,
-      // divider color
       disableColor: Colors.grey.shade300,
-      // the check box disable color
       itemRadio: 0.88,
-      // the content item radio
-      maxSelected: 8,
-      // max picker image count
-      // provider: I18nProvider.english,
       provider: I18nProvider.english,
-      // i18n provider ,default is chinese. , you can custom I18nProvider or use ENProvider()
       rowCount: 3,
-      // item row count
-
       thumbSize: 150,
-      // preview thumb size , default is 64
       sortDelegate: SortDelegate.common,
-      // default is common ,or you make custom delegate to sort your gallery
-      checkBoxBuilderDelegate: DefaultCheckBoxBuilderDelegate(
-        activeColor: Colors.white,
-        unselectedColor: Colors.white,
-        checkColor: Colors.green,
-      ),
-      // default is DefaultCheckBoxBuilderDelegate ,or you make custom delegate to create checkbox
-
       badgeDelegate: const DurationBadgeDelegate(),
-      // badgeDelegate to show badge widget
-
-      pickType: type,
-
-      photoPathList: pathList,
+      pickType: PickType.onlyImage,
     );
 
     if (imgList == null || imgList.isEmpty) {
-      // showToast("No pick item.");
       return;
     } else {
-      List<String> r = [];
       for (var e in imgList) {
         var file = await e.file;
-        r.add(file.absolute.path);
-      }
-      currentSelected = r.join("\n\n");
 
-      List<AssetEntity> preview = [];
-      preview.addAll(imgList);
-      // Navigator.push(context,
-      //     MaterialPageRoute(builder: (_) => PreviewPage(list: preview)));
+        File croppedFile = await ImageCropper.cropImage(
+            sourcePath: file.path,
+            cropStyle: mediaType == ImageOption.profile
+                ? CropStyle.circle
+                : CropStyle.rectangle,
+            aspectRatioPresets: mediaType == ImageOption.profile
+                ? [
+                    CropAspectRatioPreset.square,
+                  ]
+                : [CropAspectRatioPreset.ratio16x9],
+            androidUiSettings: AndroidUiSettings(
+                toolbarTitle: 'Crop',
+                toolbarColor: Colors.deepOrange,
+                toolbarWidgetColor: Colors.white,
+                initAspectRatio: CropAspectRatioPreset.original,
+                lockAspectRatio: false),
+            iosUiSettings: IOSUiSettings(
+              minimumAspectRatio: 0.5,
+            ));
+
+        final dir = await path_provider.getTemporaryDirectory();
+        final targetPath =
+            dir.absolute.path + "/${Faker().randomGenerator.string(50)}.jpg";
+
+        compressAndGetImage(croppedFile, targetPath).then((result) {
+          setState(() {
+            if (mediaType == ImageOption.profile) {
+              profileImage = result;
+            } else if (mediaType == ImageOption.background) {
+              backgroundImage = result;
+            }
+          });
+        });
+      }
     }
-    setState(() {});
+  }
+
+  Future<File> compressAndGetImage(File file, String targetPath) async {
+    var result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      targetPath,
+    );
+    return result;
+  }
+
+  validator() {
+    if (nameText.trim() == 'Name') {
+      nameText = '';
+    }
+    if (bioText.trim() == 'Bio') {
+      bioText = '';
+    }
+
+    Navigation().segue(
+        page: AskTags(
+            name: nameText,
+            bio: bioText,
+            profileImage: profileImage,
+            backgroundImage: backgroundImage),
+        context: context,
+        fullScreen: false);
   }
 }

@@ -83,13 +83,15 @@ class _FriendState extends State<Friend> {
         },
         child: ListView(children: [
           UserHeading(
-              name: Faker().person.name(),
-              bio: Faker().lorem.sentence(),
-              profileImage: 'https://source.unsplash.com/1600x900/?portrait',
-              backgroundImage: 'https://source.unsplash.com/1600x900/?pattern',
-              followers: 0,
-              following: 0,
-              role: UserRole.friend),
+            name: Faker().person.name(),
+            bio: Faker().lorem.sentence(),
+            profileImage: 'https://source.unsplash.com/1600x900/?portrait',
+            backgroundImage: 'https://source.unsplash.com/1600x900/?pattern',
+            followers: 0,
+            following: 0,
+            role: UserRole.friend,
+            isLive: false,
+          ),
           Container(
             color: Colors.white,
             child: Padding(
