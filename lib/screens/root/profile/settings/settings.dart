@@ -10,6 +10,7 @@ import 'package:heben/screens/root/profile/settings/change_images.dart';
 import 'package:heben/screens/root/profile/settings/change_username.dart';
 import 'package:heben/screens/root/profile/settings/contact_us.dart';
 import 'package:heben/screens/root/profile/settings/terms_and_conditions.dart';
+import 'package:heben/utils/auth.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/navigation.dart';
 
@@ -96,10 +97,7 @@ class _SettingsState extends State<Settings> {
                   Center(
                     child: FlatButton(
                       onPressed: () {
-                        Navigation().segueToRoot(
-                            page: Landing(),
-                            context: context,
-                            fullScreen: true);
+                        Auth().logOut(context: context);
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(11.0),

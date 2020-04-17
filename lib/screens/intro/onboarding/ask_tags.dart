@@ -247,7 +247,10 @@ class _AskTagsState extends State<AskTags> {
             'backgroundImage': backgroundImageURL ?? '',
             'profileImage': profileImageURL ?? '',
             'name': widget.name ?? '',
-            'bio': widget.bio ?? ''
+            'bio': widget.bio ?? '',
+            'isRegistered': true,
+            'followers': 0,
+            'following': 0
           },
           merge: true);
 

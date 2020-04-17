@@ -29,7 +29,7 @@ class _SignUpState extends State<SignUp> {
 
   @override
   void initState() {
-    isLoading = true;
+    isLoading = false;
     emailController = TextEditingController();
     usernameController = TextEditingController();
     passwordController = TextEditingController();
@@ -49,7 +49,7 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return LoadingOverlay(
-      isLoading: false,
+      isLoading: isLoading,
       opacity: 0.5,
       color: Colors.black,
       progressIndicator: Container(
@@ -225,7 +225,8 @@ class _SignUpState extends State<SignUp> {
       isLoading = true;
     });
     if (validated) {
-      if (passwordController.text == confirmPasswordController.text.trim() &&
+      if (passwordController.text.trim() ==
+              confirmPasswordController.text.trim() &&
           passwordController.text.trim().length >= 6) {
         if (usernameController.text.trim().length >= 3 &&
             usernameController.text.trim().length <= 30) {
@@ -275,7 +276,7 @@ class _SignUpState extends State<SignUp> {
                   child: ListBody(
                     children: <Widget>[
                       Text(
-                          'Please make sure your username is 3 - 30 characters '),
+                          'Please make sure your username is 3 - 30 characters'),
                     ],
                   ),
                 ),
