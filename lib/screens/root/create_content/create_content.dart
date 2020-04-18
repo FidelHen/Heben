@@ -46,8 +46,7 @@ class _CreateContentState extends State<CreateContent> {
             ContentTypeWidget(
               title: 'Create a post',
               description: 'Share anything with the community',
-              image:
-                  'https://images.pexels.com/photos/906097/pexels-photo-906097.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+              image: 'images/create_post.jpeg',
               onPressed: () {
                 Navigation().segue(
                     page: CreatePost(), context: context, fullScreen: false);
@@ -56,8 +55,7 @@ class _CreateContentState extends State<CreateContent> {
             ContentTypeWidget(
               title: 'Start live streaming',
               description: 'Let people join your workout in real-time',
-              image:
-                  'https://images.pexels.com/photos/2803160/pexels-photo-2803160.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+              image: 'images/start_live_streaming.jpeg',
               onPressed: () {
                 Navigation().segue(
                     page: LiveStream(), context: context, fullScreen: false);
@@ -67,8 +65,7 @@ class _CreateContentState extends State<CreateContent> {
               title: 'Start a challenge',
               description:
                   'If it doesn\'t challenge you, it doesn\'t change you!',
-              image:
-                  'https://images.pexels.com/photos/1092883/pexels-photo-1092883.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
+              image: 'images/start_a_challenge.jpeg',
               onPressed: () {
                 Navigation().segue(
                     page: StartChallenge(),
@@ -142,7 +139,7 @@ class ContentTypeWidget extends StatelessWidget {
             ),
             height: DeviceSize().getHeight(context) / 4.5,
             width: DeviceSize().getWidth(context),
-            image: NetworkImage(image),
+            image: AssetImage(image),
             boxFit: BoxFit.cover,
             colorFilter: new ColorFilter.mode(
                 Colors.black.withOpacity(0.50), BlendMode.darken),
@@ -150,12 +147,5 @@ class ContentTypeWidget extends StatelessWidget {
         ),
       ),
     );
-    //   _getNewActivity() async {
-    //   try {
-    //     await platform.invokeMethod('startNewActivity');
-    //   } on PlatformException catch (e) {
-    //     print(e.message);
-    //   }
-    // }
   }
 }

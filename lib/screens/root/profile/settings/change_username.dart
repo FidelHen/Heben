@@ -76,7 +76,7 @@ class _ChangeUsernameState extends State<ChangeUsername> {
               controller: usernameController,
               autofocus: true,
               style:
-                  GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w600),
+                  GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w500),
               keyboardAppearance: Brightness.light,
               maxLength: 30,
               decoration: InputDecoration.collapsed(

@@ -76,7 +76,7 @@ class _ChangeBioState extends State<ChangeBio> {
               controller: bioController,
               textInputAction: TextInputAction.done,
               style:
-                  GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w600),
+                  GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w500),
               keyboardAppearance: Brightness.light,
               maxLength: 150,
               decoration: InputDecoration.collapsed(

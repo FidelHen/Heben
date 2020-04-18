@@ -349,7 +349,7 @@ class _ContentVideoState extends State<ContentVideo> {
         words[str] = HighlightedWord(
             onTap: () {},
             textStyle: GoogleFonts.openSans(
-                fontWeight: FontWeight.w600, color: hebenTrendingColor));
+                fontWeight: FontWeight.w700, color: hebenActive));
       } else {}
     });
     setState(() {});

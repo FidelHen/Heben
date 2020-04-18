@@ -5,7 +5,8 @@ import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/device_size.dart';
 
 class Modal {
-  void friendsModal(BuildContext context) {
+  void friendsModal(BuildContext context, TextEditingController controller,
+      TextEditingController mainController) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -30,8 +31,14 @@ class Modal {
                       child: TextField(
                         autofocus: true,
                         keyboardAppearance: Brightness.light,
+                        controller: controller,
                         style: GoogleFonts.lato(
                             fontSize: 16, fontWeight: FontWeight.w600),
+                        onSubmitted: (text) {
+                          mainController.text += '@' + text + ' ';
+                          controller.clear();
+                          Navigator.pop(context);
+                        },
                         decoration: InputDecoration(
                           hintText: 'Search by username',
                           hintStyle: GoogleFonts.lato(
@@ -109,7 +116,8 @@ class Modal {
         });
   }
 
-  void hashtagModal(BuildContext context) {
+  void hashtagModal(BuildContext context, TextEditingController controller,
+      TextEditingController mainController) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -133,9 +141,15 @@ class Modal {
                       ),
                       child: TextField(
                         autofocus: true,
+                        controller: controller,
                         keyboardAppearance: Brightness.light,
                         style: GoogleFonts.lato(
                             fontSize: 16, fontWeight: FontWeight.w600),
+                        onSubmitted: (text) {
+                          mainController.text += '#' + text + ' ';
+                          controller.clear();
+                          Navigator.pop(context);
+                        },
                         decoration: InputDecoration(
                           hintText: 'Search by hashtag',
                           hintStyle: GoogleFonts.lato(
@@ -144,7 +158,7 @@ class Modal {
                             padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
                             child: Icon(
                               EvaIcons.hash,
-                              color: hebenRed,
+                              color: hebenActive,
                               size: 20,
                             ),
                           ),

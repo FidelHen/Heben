@@ -186,12 +186,9 @@ class _NotificationTaggedState extends State<NotificationTagged> {
                 fontWeight: FontWeight.w600, color: hebenActive));
       } else if (str.contains('#', 0)) {
         words[str] = HighlightedWord(
-            onTap: () {
-              Navigation()
-                  .segue(page: Tag(), context: context, fullScreen: false);
-            },
+            onTap: () {},
             textStyle: GoogleFonts.openSans(
-                fontWeight: FontWeight.w600, color: hebenTrendingColor));
+                fontWeight: FontWeight.w700, color: hebenActive));
       } else {}
     });
     setState(() {});

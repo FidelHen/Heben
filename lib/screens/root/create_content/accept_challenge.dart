@@ -92,11 +92,10 @@ class _AcceptChallengeState extends State<AcceptChallenge> {
                                 maxLines: 10,
                                 maxLength: 200,
                                 style: GoogleFonts.lato(
-                                    fontSize: 15, fontWeight: FontWeight.w500),
+                                    fontSize: 16, fontWeight: FontWeight.w500),
                                 keyboardAppearance: Brightness.light,
                                 decoration: InputDecoration.collapsed(
                                   hintText: 'What do you want to share?',
-                                  hintStyle: GoogleFonts.lato(fontSize: 15),
                                 ),
                               ),
                             ),

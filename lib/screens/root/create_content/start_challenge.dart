@@ -114,11 +114,10 @@ class _StartChallengeState extends State<StartChallenge> {
                 autofocus: true,
                 maxLines: 1,
                 style:
-                    GoogleFonts.lato(fontSize: 15, fontWeight: FontWeight.w500),
+                    GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w500),
                 keyboardAppearance: Brightness.light,
                 decoration: InputDecoration.collapsed(
                   hintText: 'Challenge title',
-                  hintStyle: GoogleFonts.lato(fontSize: 15),
                 ),
               ),
             ),
@@ -146,11 +145,10 @@ class _StartChallengeState extends State<StartChallenge> {
                                 maxLines: 10,
                                 maxLength: 200,
                                 style: GoogleFonts.lato(
-                                    fontSize: 15, fontWeight: FontWeight.w500),
+                                    fontSize: 16, fontWeight: FontWeight.w500),
                                 keyboardAppearance: Brightness.light,
                                 decoration: InputDecoration.collapsed(
                                   hintText: 'What do you want to share?',
-                                  hintStyle: GoogleFonts.lato(fontSize: 15),
                                 ),
                               ),
                             ),
