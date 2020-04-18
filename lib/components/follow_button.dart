@@ -8,9 +8,10 @@ import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
 
 class FollowButton extends StatefulWidget {
-  FollowButton({@required this.role});
+  FollowButton({@required this.role, @required this.isRegistering});
 
   final UserRole role;
+  final bool isRegistering;
 
   @override
   _FollowButtonState createState() => _FollowButtonState();
@@ -37,17 +38,19 @@ class _FollowButtonState extends State<FollowButton> {
     return Container(
       width: 100,
       child: GFButton(
-        onPressed: () {
-          if (widget.role == UserRole.user) {
-            Navigation()
-                .segue(page: Settings(), context: context, fullScreen: true);
-          } else {
-            setState(() {
-              buttonText = 'Following';
-              isFollowing = !isFollowing;
-            });
-          }
-        },
+        onPressed: widget.isRegistering
+            ? () {}
+            : () {
+                if (widget.role == UserRole.user) {
+                  Navigation().segue(
+                      page: Settings(), context: context, fullScreen: true);
+                } else {
+                  setState(() {
+                    buttonText = 'Following';
+                    isFollowing = !isFollowing;
+                  });
+                }
+              },
         color: widget.role == UserRole.user
             ? Colors.white
             : isFollowing ? Colors.white : hebenRed,

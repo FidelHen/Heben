@@ -9,6 +9,7 @@ import 'package:heben/utils/auth.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
+import 'package:heben/utils/service.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:platform_alert_dialog/platform_alert_dialog.dart';
 
@@ -228,8 +229,8 @@ class _SignUpState extends State<SignUp> {
       if (passwordController.text.trim() ==
               confirmPasswordController.text.trim() &&
           passwordController.text.trim().length >= 6) {
-        if (usernameController.text.trim().length >= 3 &&
-            usernameController.text.trim().length <= 30) {
+        if (Service()
+            .usernameValidator(username: usernameController.text.trim())) {
           bool usernameAvailable = await Auth().checkExistingUsername(
               username: usernameController.text, context: context);
 
@@ -276,7 +277,7 @@ class _SignUpState extends State<SignUp> {
                   child: ListBody(
                     children: <Widget>[
                       Text(
-                          'Please make sure your username is 3 - 30 characters'),
+                          'Please make sure your username is 3 - 25 characters, no spaces and special characters'),
                     ],
                   ),
                 ),

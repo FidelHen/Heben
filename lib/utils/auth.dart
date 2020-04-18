@@ -35,6 +35,7 @@ class Auth {
           'email': email.toLowerCase().trim(),
           'memberSince': DateTime.now().millisecondsSinceEpoch,
           'isRegistered': false,
+          'uid': result.user.uid
         });
       }
 

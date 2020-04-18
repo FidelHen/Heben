@@ -1,18 +1,32 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:heben/components/modals.dart';
+import 'package:heben/components/toast.dart';
 import 'package:heben/components/user_heading.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/gallery/photo.dart';
 import 'package:heben/utils/gallery/src/delegate/badge_delegate.dart';
-import 'package:heben/utils/gallery/src/delegate/checkbox_builder_delegate.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:loading_overlay/loading_overlay.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:heben/utils/gallery/src/delegate/sort_delegate.dart';
 import 'package:heben/utils/gallery/src/entity/options.dart';
 import 'package:heben/utils/gallery/src/provider/i18n_provider.dart';
+import 'package:heben/utils/user.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:uuid/uuid.dart';
 
 class ChangeImages extends StatefulWidget {
   @override
@@ -21,88 +35,183 @@ class ChangeImages extends StatefulWidget {
 
 class _ChangeImagesState extends State<ChangeImages> {
   String currentSelected = "";
+  File backgroundImage;
+  File profileImage;
+  ImageOption mediaType;
+  bool isLoading;
+
+  @override
+  void initState() {
+    isLoading = false;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: GFAppBar(
-        centerTitle: true,
-        elevation: 0,
-        title: Text(
-          'Change images',
-          style: GoogleFonts.lato(
-              color: Colors.black, fontWeight: FontWeight.w600, fontSize: 18),
-        ),
-        leading: IconButton(
-            icon: Icon(
-              EvaIcons.chevronLeft,
-              size: 40,
-              color: Colors.black,
+    return FutureBuilder(
+      future: User().getUserProfileInfo(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Scaffold(
+            backgroundColor: Colors.grey[100],
+            appBar: GFAppBar(
+              centerTitle: true,
+              elevation: 0,
+              title: Text(
+                'Change images',
+                style: GoogleFonts.lato(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18),
+              ),
+              leading: IconButton(
+                  icon: Icon(
+                    EvaIcons.chevronLeft,
+                    size: 40,
+                    color: Colors.black,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              brightness: Brightness.light,
+              backgroundColor: Colors.grey[100],
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
-        brightness: Brightness.light,
-        backgroundColor: Colors.grey[100],
-      ),
-      body: Column(children: <Widget>[
-        UserHeading(
-          name: 'Fidel Henriquez',
-          bio: 'Hey guys I am the founder of heben, thank you for joining!',
-          profileImage:
-              'https://images.unsplash.com/photo-1457449940276-e8deed18bfff?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80',
-          backgroundImage:
-              'https://images.unsplash.com/photo-1505506874110-6a7a69069a08?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80',
-          followers: 0,
-          following: 0,
-          isLive: false,
-          role: UserRole.friend,
-          isRegistering: true,
-        ),
-        Expanded(
-          child: Container(
-            color: Colors.white,
-            width: DeviceSize().getWidth(context),
-            child:
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              todoTab(
-                  title: 'Upload profile picture',
-                  onPressed: () {
-                    _pickAsset(PickType.all);
-                  }),
-              todoTab(
-                  title: 'Upload background picture',
-                  onPressed: () {
-                    _pickAsset(PickType.all);
-                  }),
-            ]),
-          ),
-        ),
-      ]),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Navigation()
-          //     .segueToRoot(page: Root(), context: context, fullScreen: true);
-        },
-        label: Row(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(right: 4.0),
-              child: Text(
-                'Save',
-                style:
-                    GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w800),
+            body: Center(
+              child: Container(
+                height: 50,
+                child: SpinKitThreeBounce(
+                  color: Colors.black,
+                  size: 40,
+                ),
               ),
             ),
-            Icon(
-              EvaIcons.saveOutline,
-              size: 20,
-            )
-          ],
-        ),
-        backgroundColor: hebenActive,
-      ),
+          );
+        } else {
+          return LoadingOverlay(
+            isLoading: isLoading,
+            opacity: 0.5,
+            color: Colors.black,
+            progressIndicator: Material(
+              color: Colors.transparent,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    height: 40,
+                    child: Text('Uploading your new images',
+                        style: GoogleFonts.lato(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        )),
+                  ),
+                  Container(
+                    height: 50,
+                    child: Center(
+                      child: SpinKitThreeBounce(
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            child: Scaffold(
+              backgroundColor: Colors.grey[100],
+              appBar: GFAppBar(
+                centerTitle: true,
+                elevation: 0,
+                title: Text(
+                  'Change images',
+                  style: GoogleFonts.lato(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18),
+                ),
+                leading: IconButton(
+                    icon: Icon(
+                      EvaIcons.chevronLeft,
+                      size: 40,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    }),
+                brightness: Brightness.light,
+                backgroundColor: Colors.grey[100],
+              ),
+              body: Column(children: <Widget>[
+                UserHeading(
+                  name: snapshot.data['name'],
+                  bio: snapshot.data['bio'],
+                  profileImage: snapshot.data['profileImage'],
+                  backgroundImage: snapshot.data['backgroundImage'],
+                  followers: snapshot.data['followers'],
+                  following: snapshot.data['following'],
+                  isLive: snapshot.data['isLive'] ?? false,
+                  role: UserRole.friend,
+                  backgroundImageFile: backgroundImage,
+                  profileImageFile: profileImage,
+                  isRegistering: true,
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.white,
+                    width: DeviceSize().getWidth(context),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          todoTab(
+                              title: 'Change profile picture',
+                              onPressed: () {
+                                mediaType = ImageOption.profile;
+                                Modal().mediaOptions(
+                                    context, _pickAsset, getPicture);
+                              }),
+                          todoTab(
+                              title: 'Change background picture',
+                              onPressed: () {
+                                mediaType = ImageOption.background;
+                                Modal().mediaOptions(
+                                    context, _pickAsset, getPicture);
+                              }),
+                        ]),
+                  ),
+                ),
+              ]),
+              floatingActionButton: FloatingActionButton.extended(
+                onPressed: () {
+                  if (backgroundImage != null || profileImage != null) {
+                    uploadImages();
+                  } else {
+                    showOverlayNotification((context) {
+                      return WarningToast(message: 'No new images selected');
+                    });
+                  }
+                },
+                label: Row(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(right: 4.0),
+                      child: Text(
+                        'Save',
+                        style: GoogleFonts.lato(
+                            fontSize: 16, fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                    Icon(
+                      EvaIcons.saveOutline,
+                      size: 20,
+                    )
+                  ],
+                ),
+                backgroundColor: hebenActive,
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 
@@ -120,72 +229,177 @@ class _ChangeImagesState extends State<ChangeImages> {
     );
   }
 
-  void _pickAsset(PickType type, {List<AssetPathEntity> pathList}) async {
-    /// context is required, other params is optional.
-    /// context is required, other params is optional.
-    /// context is required, other params is optional.
+  void getPicture() async {
+    Navigator.pop(context);
+    File currentImage = await ImagePicker.pickImage(
+        source: ImageSource.camera, maxHeight: 400, maxWidth: 400);
 
+    File croppedFile = await ImageCropper.cropImage(
+        sourcePath: currentImage.path,
+        cropStyle: mediaType == ImageOption.profile
+            ? CropStyle.circle
+            : CropStyle.rectangle,
+        aspectRatioPresets: mediaType == ImageOption.profile
+            ? [
+                CropAspectRatioPreset.square,
+              ]
+            : [CropAspectRatioPreset.ratio5x3],
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Crop',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 0.5,
+        ));
+
+    final dir = await path_provider.getTemporaryDirectory();
+    final targetPath = dir.absolute.path + "/${Uuid().v4()}.jpg";
+
+    compressAndGetImage(croppedFile, targetPath).then((result) {
+      setState(() {
+        if (mediaType == ImageOption.profile) {
+          profileImage = result;
+        } else if (mediaType == ImageOption.background) {
+          backgroundImage = result;
+        }
+      });
+    });
+  }
+
+  void _pickAsset() async {
+    Navigator.pop(context);
     List<AssetEntity> imgList = await PhotoPicker.pickAsset(
-      // BuildContext required
       context: context,
-
-      /// The following are optional parameters.
-      themeColor: Colors.green,
-      // the title color and bottom color
-
-      textColor: Colors.white,
-      // text color
-      padding: 1.0,
-      // item padding
       dividerColor: Colors.grey,
-      // divider color
       disableColor: Colors.grey.shade300,
-      // the check box disable color
       itemRadio: 0.88,
-      // the content item radio
-      maxSelected: 8,
-      // max picker image count
-      // provider: I18nProvider.english,
       provider: I18nProvider.english,
-      // i18n provider ,default is chinese. , you can custom I18nProvider or use ENProvider()
       rowCount: 3,
-      // item row count
-
       thumbSize: 150,
-      // preview thumb size , default is 64
       sortDelegate: SortDelegate.common,
-      // default is common ,or you make custom delegate to sort your gallery
-      checkBoxBuilderDelegate: DefaultCheckBoxBuilderDelegate(
-        activeColor: Colors.white,
-        unselectedColor: Colors.white,
-        checkColor: Colors.green,
-      ),
-      // default is DefaultCheckBoxBuilderDelegate ,or you make custom delegate to create checkbox
-
       badgeDelegate: const DurationBadgeDelegate(),
-      // badgeDelegate to show badge widget
-
-      pickType: type,
-
-      photoPathList: pathList,
+      pickType: PickType.onlyImage,
     );
 
     if (imgList == null || imgList.isEmpty) {
-      // showToast("No pick item.");
       return;
     } else {
-      List<String> r = [];
       for (var e in imgList) {
         var file = await e.file;
-        r.add(file.absolute.path);
-      }
-      currentSelected = r.join("\n\n");
 
-      List<AssetEntity> preview = [];
-      preview.addAll(imgList);
-      // Navigator.push(context,
-      //     MaterialPageRoute(builder: (_) => PreviewPage(list: preview)));
+        File croppedFile = await ImageCropper.cropImage(
+            sourcePath: file.path,
+            cropStyle: mediaType == ImageOption.profile
+                ? CropStyle.circle
+                : CropStyle.rectangle,
+            aspectRatioPresets: mediaType == ImageOption.profile
+                ? [
+                    CropAspectRatioPreset.square,
+                  ]
+                : [CropAspectRatioPreset.ratio16x9],
+            androidUiSettings: AndroidUiSettings(
+                toolbarTitle: 'Crop',
+                toolbarColor: Colors.deepOrange,
+                toolbarWidgetColor: Colors.white,
+                initAspectRatio: CropAspectRatioPreset.original,
+                lockAspectRatio: false),
+            iosUiSettings: IOSUiSettings(
+              minimumAspectRatio: 0.5,
+            ));
+
+        final dir = await path_provider.getTemporaryDirectory();
+        final targetPath = dir.absolute.path + "/${Uuid().v4()}.jpg";
+
+        compressAndGetImage(croppedFile, targetPath).then((result) {
+          setState(() {
+            if (mediaType == ImageOption.profile) {
+              profileImage = result;
+            } else if (mediaType == ImageOption.background) {
+              backgroundImage = result;
+            }
+          });
+        });
+      }
     }
-    setState(() {});
+  }
+
+  Future<File> compressAndGetImage(File file, String targetPath) async {
+    var result = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      targetPath,
+    );
+    return result;
+  }
+
+  uploadImages() async {
+    String profileImageURL;
+    String backgroundImageURL;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    String uid = await User().getUid();
+
+    if (profileImage != null) {
+      StorageReference profileImageRef =
+          FirebaseStorage.instance.ref().child('users/$uid/profileImage');
+
+      await profileImageRef
+          .putFile(profileImage)
+          .onComplete
+          .then((image) async {
+        await image.ref.getDownloadURL().then((url) {
+          profileImageURL = url;
+        });
+      });
+    }
+
+    if (backgroundImage != null) {
+      StorageReference backgroundImageRef =
+          FirebaseStorage.instance.ref().child('users/$uid/backgroundImage');
+      await backgroundImageRef
+          .putFile(backgroundImage)
+          .onComplete
+          .then((image) async {
+        await image.ref.getDownloadURL().then((url) {
+          backgroundImageURL = url;
+        });
+      });
+    }
+
+    if (backgroundImage != null || profileImage != null) {
+      Map<String, dynamic> data;
+
+      if (backgroundImage != null && profileImage != null) {
+        data = {
+          'profileImage': profileImageURL,
+          'backgroundImage': backgroundImageURL
+        };
+      } else if (profileImage != null) {
+        data = {
+          'profileImage': profileImageURL,
+        };
+      } else if (backgroundImage != null) {
+        data = {
+          'backgroundImage': backgroundImageURL,
+        };
+      }
+      Firestore.instance
+          .collection('users')
+          .document(uid)
+          .setData(data, merge: true)
+          .then((_) {
+        setState(() {
+          isLoading = false;
+        });
+        showOverlayNotification((context) {
+          return SuccessToast(message: 'Successfully uploaded images');
+        });
+        Navigator.pop(context);
+      });
+    }
   }
 }

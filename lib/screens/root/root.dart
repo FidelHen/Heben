@@ -121,7 +121,6 @@ class _RootState extends State<Root> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
-        heroTag: 'homeButton',
         onPressed: () {
           Navigation()
               .segue(page: CreateContent(), context: context, fullScreen: true);

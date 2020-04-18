@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:getflutter/components/appbar/gf_appbar.dart';
 import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:heben/screens/intro/landing.dart';
 import 'package:heben/screens/root/profile/settings/change_bio.dart';
 import 'package:heben/screens/root/profile/settings/change_images.dart';
 import 'package:heben/screens/root/profile/settings/change_username.dart';

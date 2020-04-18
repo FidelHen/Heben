@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:faker/faker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
@@ -22,6 +21,7 @@ import 'package:heben/utils/gallery/src/provider/i18n_provider.dart';
 import 'package:heben/utils/navigation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:uuid/uuid.dart';
 
 class AskInfo extends StatefulWidget {
   @override
@@ -208,8 +208,7 @@ class _AskInfoState extends State<AskInfo> {
         ));
 
     final dir = await path_provider.getTemporaryDirectory();
-    final targetPath =
-        dir.absolute.path + "/${Faker().randomGenerator.string(50)}.jpg";
+    final targetPath = dir.absolute.path + "/${Uuid().v4()}.jpg";
 
     compressAndGetImage(croppedFile, targetPath).then((result) {
       setState(() {
@@ -264,8 +263,7 @@ class _AskInfoState extends State<AskInfo> {
             ));
 
         final dir = await path_provider.getTemporaryDirectory();
-        final targetPath =
-            dir.absolute.path + "/${Faker().randomGenerator.string(50)}.jpg";
+        final targetPath = dir.absolute.path + "/${Uuid().v4()}.jpg";
 
         compressAndGetImage(croppedFile, targetPath).then((result) {
           setState(() {

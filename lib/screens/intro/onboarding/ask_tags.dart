@@ -10,13 +10,14 @@ import 'package:flutter_tags/flutter_tags.dart';
 import 'package:getflutter/components/appbar/gf_appbar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/components/registration_title.dart';
+import 'package:heben/components/toast.dart';
 import 'package:heben/screens/root/root.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/navigation.dart';
 import 'package:heben/utils/user.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:platform_alert_dialog/platform_alert_dialog.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class AskTags extends StatefulWidget {
   AskTags(
@@ -196,7 +197,6 @@ class _AskTagsState extends State<AskTags> {
     setState(() {
       isLoading = true;
     });
-
     if (tagTitles.length >= 3) {
       String uid = await User().getUid();
       if (widget.profileImage != null) {
@@ -263,30 +263,9 @@ class _AskTagsState extends State<AskTags> {
             .segueToRoot(page: Root(), context: context, fullScreen: true);
       });
     } else {
-      showDialog<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return PlatformAlertDialog(
-            title: Text('Error'),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: <Widget>[
-                  Text('Please select 3 or more tags'),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              PlatformDialogAction(
-                child: Text('Okay'),
-                actionType: ActionType.Default,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+      showOverlayNotification((context) {
+        return WarningToast(message: 'Please select 3 or more tags');
+      });
     }
     setState(() {
       isLoading = false;

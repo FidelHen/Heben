@@ -20,12 +20,16 @@ class UserHeading extends StatefulWidget {
       @required this.following,
       @required this.role,
       @required this.isLive,
+      this.backgroundImageFile,
+      this.profileImageFile,
       this.isRegistering});
 
   final String name;
   final String bio;
   final String profileImage;
   final String backgroundImage;
+  final File backgroundImageFile;
+  final File profileImageFile;
   final int followers;
   final int following;
   final UserRole role;
@@ -89,8 +93,10 @@ class _UserHeadingState extends State<UserHeading> {
                 ),
                 height: height * 0.2,
                 width: width,
-                image: NetworkImage(widget.backgroundImage),
-                boxFit: BoxFit.fill),
+                image: widget.backgroundImageFile != null
+                    ? FileImage(widget.backgroundImageFile)
+                    : NetworkImage(widget.backgroundImage),
+                boxFit: BoxFit.cover),
             Padding(
               padding: EdgeInsets.only(top: height * 0.02),
               child: Row(
@@ -138,8 +144,9 @@ class _UserHeadingState extends State<UserHeading> {
                                   ),
                                 )
                               : Container(),
-                          backgroundImage:
-                              NetworkImage(widget.profileImage ?? ''),
+                          backgroundImage: widget.profileImageFile != null
+                              ? FileImage(widget.profileImageFile)
+                              : NetworkImage(widget.profileImage ?? ''),
                           backgroundColor: Colors.grey[300],
                         )),
                   ),
@@ -217,6 +224,7 @@ class _UserHeadingState extends State<UserHeading> {
                     ),
                     FollowButton(
                       role: widget.role,
+                      isRegistering: isRegistering,
                     )
                   ],
                 ),
@@ -434,6 +442,7 @@ class _PreviewUserHeadingState extends State<PreviewUserHeading> {
                     ),
                     FollowButton(
                       role: widget.role,
+                      isRegistering: true,
                     )
                   ],
                 ),
