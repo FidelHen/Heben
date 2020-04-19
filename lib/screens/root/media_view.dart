@@ -62,7 +62,9 @@ class _MediaViewState extends State<MediaView> {
   @override
   void initState() {
     _itemsOpacity = 1.0;
-    highlightBodyText();
+    if (widget.body != null && widget.body.trim() != '') {
+      highlightBodyText();
+    }
     if (widget.video != null) {
       _controller = VideoPlayerController.network(
         widget.video,
@@ -161,14 +163,16 @@ class _MediaViewState extends State<MediaView> {
                     moreDisabled: true,
                   ),
                 ),
-                Container(
-                  width: DeviceSize().getWidth(context),
-                  color: Colors.black38,
-                  child: Padding(
-                    padding: kWidgetPadding,
-                    child: textWidget(DeviceSize().getWidth(context)),
-                  ),
-                ),
+                widget.body != null && widget.body.trim() != ''
+                    ? Container(
+                        width: DeviceSize().getWidth(context),
+                        color: Colors.black38,
+                        child: Padding(
+                          padding: kWidgetPadding,
+                          child: textWidget(DeviceSize().getWidth(context)),
+                        ),
+                      )
+                    : Container(),
               ],
             ),
           ),
@@ -192,8 +196,13 @@ class _MediaViewState extends State<MediaView> {
         words[str] = HighlightedWord(
             onTap: () {},
             textStyle: GoogleFonts.openSans(
-                fontWeight: FontWeight.w600, color: hebenTrendingColor));
-      } else {}
+                fontWeight: FontWeight.w700, color: hebenActive));
+      } else {
+        words[str] = HighlightedWord(
+            onTap: () {},
+            textStyle: GoogleFonts.openSans(
+                color: Colors.white, fontWeight: FontWeight.w500));
+      }
     });
     setState(() {});
   }
@@ -201,7 +210,7 @@ class _MediaViewState extends State<MediaView> {
   Widget mediaWidget(width) {
     if (widget.image != null) {
       return PhotoView(
-        imageProvider: NetworkImage('https://source.unsplash.com/random'),
+        imageProvider: NetworkImage(widget.image),
         minScale: PhotoViewComputedScale.contained,
         maxScale: PhotoViewComputedScale.contained,
         initialScale: PhotoViewComputedScale.contained,
@@ -267,8 +276,7 @@ class _MediaViewState extends State<MediaView> {
                   .trim(), // You need to pass the string you want the highlights
               words: words, // Your dictionary words
               textStyle: GoogleFonts.openSans(
-                color: Colors.white,
-              ),
+                  color: Colors.white, fontWeight: FontWeight.w500),
             ),
           ),
         ],
@@ -288,7 +296,7 @@ class _MediaViewState extends State<MediaView> {
   playVideo() {
     if (_controller.value.initialized) {
       _controller
-        ..setVolume(0)
+        ..setVolume(100)
         ..setLooping(true)
         ..play().then((_) {
           setState(() {});

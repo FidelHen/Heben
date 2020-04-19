@@ -46,6 +46,9 @@ dependencies:
   image_picker: ^0.6.5
   image_cropper: ^1.2.1
   uuid: ^2.0.4
+  enum_to_string: ^1.0.9
+  timeago: ^2.0.26
+  transparent_image: ^1.0.0
 
 dev_dependencies:
   flutter_test:

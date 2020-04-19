@@ -220,7 +220,12 @@ class _ContentTextState extends State<ContentText> {
             onTap: () {},
             textStyle: GoogleFonts.openSans(
                 fontWeight: FontWeight.w700, color: hebenActive));
-      } else {}
+      } else {
+        words[str] = HighlightedWord(
+            onTap: () {},
+            textStyle: GoogleFonts.openSans(
+                color: Colors.black, fontWeight: FontWeight.w500));
+      }
     });
     setState(() {});
   }

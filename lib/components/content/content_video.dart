@@ -152,15 +152,17 @@ class _ContentVideoState extends State<ContentVideo> {
                           ),
                         )
                       : Container(),
-                  Padding(
-                    padding: kWidgetPadding,
-                    child: TextHighlight(
-                      text: widget.body
-                          .trim(), // You need to pass the string you want the highlights
-                      words: words, // Your dictionary words
-                      textStyle: kBodyTextStyle,
-                    ),
-                  ),
+                  widget.body != null && widget.body.trim() != ''
+                      ? Padding(
+                          padding: kWidgetPadding,
+                          child: TextHighlight(
+                            text: widget.body
+                                .trim(), // You need to pass the string you want the highlights
+                            words: words, // Your dictionary words
+                            textStyle: kBodyTextStyle,
+                          ),
+                        )
+                      : Container(),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -350,7 +352,12 @@ class _ContentVideoState extends State<ContentVideo> {
             onTap: () {},
             textStyle: GoogleFonts.openSans(
                 fontWeight: FontWeight.w700, color: hebenActive));
-      } else {}
+      } else {
+        words[str] = HighlightedWord(
+            onTap: () {},
+            textStyle: GoogleFonts.openSans(
+                color: Colors.black, fontWeight: FontWeight.w500));
+      }
     });
     setState(() {});
   }

@@ -309,9 +309,17 @@ class _CreatePostState extends State<CreatePost> {
         padding: EdgeInsets.all(8.0),
         child: FloatingActionButton.extended(
           onPressed: () {
-            uploadData();
-            Navigation()
-                .segueToRoot(page: Root(), context: context, fullScreen: true);
+            if (contentController.text.trim().length != 0 ||
+                currentSelected != null) {
+              uploadData();
+              Navigation().segueToRoot(
+                  page: Root(), context: context, fullScreen: true);
+            } else {
+              showOverlayNotification((context) {
+                return WarningToast(
+                    message: 'Please make sure you have text or media');
+              });
+            }
           },
           label: Row(
             children: <Widget>[
@@ -423,7 +431,7 @@ class _CreatePostState extends State<CreatePost> {
             });
           });
         } else if (e.type == AssetType.video) {
-          if (e.videoDuration.inMinutes <= 5) {
+          if (e.videoDuration.inSeconds <= 120) {
             String url = await e.getMediaUrl();
             currentSelected = file;
             mediaType = PostContentType.video;
@@ -431,7 +439,7 @@ class _CreatePostState extends State<CreatePost> {
           } else {
             showOverlayNotification((context) {
               return WarningToast(
-                  message: 'Video cannot be longer than 5 minutes');
+                  message: 'Video cannot be longer than 2 minutes');
             });
           }
         }
@@ -470,16 +478,10 @@ class _CreatePostState extends State<CreatePost> {
   Future<File> compressVideo(File file) async {
     final _flutterVideoCompress = FlutterVideoCompress();
 
-    final info = await _flutterVideoCompress.compressVideo(
-      file.path,
-      quality:
-          VideoQuality.DefaultQuality, // default(VideoQuality.DefaultQuality)
-      deleteOrigin: false, // default(false)
-    );
-    await file.length().then((val) {
-      print(val);
-      print(info.filesize);
-    });
+    final info = await _flutterVideoCompress.compressVideo(file.path,
+        includeAudio: true,
+        quality: VideoQuality.HighestQuality,
+        deleteOrigin: true);
 
     return info.file;
   }
@@ -491,7 +493,7 @@ class _CreatePostState extends State<CreatePost> {
 
   uploadData() async {
     final DocumentReference docRef =
-        Firestore.instance.collection('post').document();
+        Firestore.instance.collection('posts').document();
     final batch = Firestore.instance.batch();
     String mediaUrl;
     Map<String, dynamic> data;
@@ -529,6 +531,8 @@ class _CreatePostState extends State<CreatePost> {
       'profileImage': snapshot.data['profileImage'],
       'username': snapshot.data['username'],
       'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'postUid': docRef.documentID,
+      'popularity': CurrentPostPopularity.normal.toString(),
       'score': 1400,
       'userUid': snapshot.data['uid'],
       'type': mediaType.toString(),

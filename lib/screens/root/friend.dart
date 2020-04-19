@@ -177,7 +177,9 @@ class _FriendState extends State<Friend> {
         ),
       );
     } else if (listIndex == 0) {
-      return AllDataList();
+      return AllDataList(
+        uid: '',
+      );
     } else if (listIndex == 1) {
       return LikedDataList();
     } else {

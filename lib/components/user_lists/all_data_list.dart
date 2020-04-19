@@ -1,10 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:heben/build/build_content.dart';
+import 'package:heben/build/build_firestore_post.dart';
+import 'package:heben/components/empty_list_button.dart';
 import 'package:heben/models/content_items.dart';
+import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
 
 class AllDataList extends StatefulWidget {
+  AllDataList({@required this.uid});
+
+  final String uid;
+
   @override
   _AllDataListState createState() => _AllDataListState();
 }
@@ -12,27 +21,64 @@ class AllDataList extends StatefulWidget {
 class _AllDataListState extends State<AllDataList> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<ContentItems> feedList = [];
+  Future getSnapshots;
 
   @override
   void initState() {
-    loadTestData();
+    // loadTestData();
+    getSnapshots = Firestore.instance
+        .collection('posts')
+        .where('userUid', isEqualTo: widget.uid)
+        .orderBy('timestamp', descending: true)
+        .getDocuments();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedList(
-      physics: BouncingScrollPhysics(),
-      shrinkWrap: true,
-      key: _listKey,
-      initialItemCount: feedList.length,
-      itemBuilder: (BuildContext context, int index, Animation animation) {
-        return FadeTransition(
-          opacity: animation,
-          child: buildContent(context, feedList[index], index),
-        );
-      },
-    );
+    return FutureBuilder(
+        future: getSnapshots,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return Container(
+              height: 50,
+              child: SpinKitCircle(
+                color: Colors.grey,
+                size: 40,
+              ),
+            );
+          } else {
+            final data = snapshot.data as QuerySnapshot;
+
+            if (data.documents.length != 0) {
+              data.documents.forEach((snapshot) {
+                ContentItems item = buildFirestorePost(snapshot: snapshot);
+                feedList.add(item);
+              });
+              return AnimatedList(
+                physics: BouncingScrollPhysics(),
+                shrinkWrap: true,
+                key: _listKey,
+                initialItemCount: feedList.length,
+                itemBuilder:
+                    (BuildContext context, int index, Animation animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: buildContent(context, feedList[index], index),
+                  );
+                },
+              );
+            } else {
+              return Container(
+                height: DeviceSize().getHeight(context) * 0.2,
+                child: Center(
+                  child: EmptyListButton(
+                      title: 'Create your first post', onTap: () {}),
+                ),
+              );
+            }
+          }
+        });
   }
 
   loadTestData() async {

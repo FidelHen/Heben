@@ -1,5 +1,6 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/components/content/content_header.dart';
 import 'package:heben/screens/root/friend.dart';
@@ -12,6 +13,7 @@ import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
 import 'package:highlight_text/highlight_text.dart';
 import 'package:like_button/like_button.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class ContentImage extends StatefulWidget {
   ContentImage({
@@ -57,7 +59,10 @@ class _ContentImageState extends State<ContentImage> {
 
   @override
   void initState() {
-    highlightBodyText();
+    if (widget.body != null && widget.body.trim() != '') {
+      highlightBodyText();
+    }
+
     currentLikes = widget.likes;
     currentComments = widget.comments;
     currentlyLiked = widget.liked;
@@ -115,18 +120,20 @@ class _ContentImageState extends State<ContentImage> {
                           ),
                         )
                       : Container(),
-                  Padding(
-                    padding: kWidgetPadding,
-                    child: TextHighlight(
-                      text: widget.body
-                          .trim(), // You need to pass the string you want the highlights
-                      words: words, // Your dictionary words
-                      textStyle: GoogleFonts.openSans(
-                        color: Colors.black,
-                      ),
-                      // textStyle: kBodyTextStyle,
-                    ),
-                  ),
+                  widget.body != null && widget.body.trim() != ''
+                      ? Padding(
+                          padding: kWidgetPadding,
+                          child: TextHighlight(
+                            text: widget.body
+                                .trim(), // You need to pass the string you want the highlights
+                            words: words, // Your dictionary words
+                            textStyle: GoogleFonts.openSans(
+                              color: Colors.black,
+                            ),
+                            // textStyle: kBodyTextStyle,
+                          ),
+                        )
+                      : Container(),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -151,9 +158,23 @@ class _ContentImageState extends State<ContentImage> {
                     },
                     child: Padding(
                       padding: EdgeInsets.only(bottom: 15),
-                      child: Image(
-                        image: NetworkImage(widget.image),
+                      child: Image.network(
+                        widget.image,
                         fit: BoxFit.cover,
+                        loadingBuilder: (BuildContext context, Widget child,
+                            ImageChunkEvent loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: Container(
+                              width: DeviceSize().getWidth(context),
+                              height: DeviceSize().getWidth(context),
+                              color: Colors.black,
+                              child: Center(
+                                  child:
+                                      SpinKitDoubleBounce(color: Colors.white)),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -271,7 +292,12 @@ class _ContentImageState extends State<ContentImage> {
             onTap: () {},
             textStyle: GoogleFonts.openSans(
                 fontWeight: FontWeight.w700, color: hebenActive));
-      } else {}
+      } else {
+        words[str] = HighlightedWord(
+            onTap: () {},
+            textStyle: GoogleFonts.openSans(
+                color: Colors.black, fontWeight: FontWeight.w500));
+      }
     });
     setState(() {});
   }

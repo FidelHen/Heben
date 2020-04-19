@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -34,9 +35,10 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile>
     with AutomaticKeepAliveClientMixin<Profile> {
-  bool loading;
   bool keepAlive = true;
   bool loadingList = true;
+  Future getInfoFuture;
+  String uid;
 
   Icon tabOneIcon = Icon(
     EvaIcons.list,
@@ -57,8 +59,8 @@ class _ProfileState extends State<Profile>
 
   @override
   void initState() {
-    loading = false;
     listIndex = 0;
+    getInfoFuture = User().getUserProfileInfo();
     super.initState();
   }
 
@@ -74,7 +76,7 @@ class _ProfileState extends State<Profile>
     super.build(context);
     profileScrollListener = 1;
     return FutureBuilder(
-        future: User().getUserProfileInfo(),
+        future: getInfoFuture,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Scaffold(
@@ -89,6 +91,7 @@ class _ProfileState extends State<Profile>
               ),
             );
           } else {
+            uid = snapshot.data['uid'];
             return Scaffold(
               backgroundColor: Colors.grey[100],
               body: SafeArea(
@@ -237,16 +240,10 @@ class _ProfileState extends State<Profile>
   }
 
   Widget currentList() {
-    if (loading) {
-      return Container(
-        height: 80,
-        child: SpinKitThreeBounce(
-          color: Colors.grey,
-          size: 25,
-        ),
+    if (listIndex == 0) {
+      return AllDataList(
+        uid: uid,
       );
-    } else if (listIndex == 0) {
-      return AllDataList();
     } else if (listIndex == 1) {
       return LikedDataList();
     } else if (listIndex == 2) {
