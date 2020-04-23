@@ -2,18 +2,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/build/build_content.dart';
 import 'package:heben/build/build_firestore_post.dart';
 import 'package:heben/components/empty_list_button.dart';
 import 'package:heben/models/content_items.dart';
+import 'package:heben/screens/root/create_content/create_post.dart';
+import 'package:heben/screens/root/create_content/start_challenge.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
+import 'package:heben/utils/navigation.dart';
 
 class AllDataList extends StatefulWidget {
-  AllDataList({@required this.uid});
+  AllDataList({@required this.uid, @required this.isFriend});
 
   final String uid;
-
+  final bool isFriend;
   @override
   _AllDataListState createState() => _AllDataListState();
 }
@@ -69,13 +73,33 @@ class _AllDataListState extends State<AllDataList> {
                 },
               );
             } else {
-              return Container(
-                height: DeviceSize().getHeight(context) * 0.2,
-                child: Center(
-                  child: EmptyListButton(
-                      title: 'Create your first post', onTap: () {}),
-                ),
-              );
+              return !widget.isFriend
+                  ? Container(
+                      height: DeviceSize().getHeight(context) * 0.2,
+                      child: Center(
+                        child: EmptyListButton(
+                            title: 'Create your first post',
+                            onTap: () {
+                              Navigation().segue(
+                                  page: CreatePost(),
+                                  context: context,
+                                  fullScreen: false);
+                            }),
+                      ),
+                    )
+                  : Container(
+                      height: DeviceSize().getHeight(context) * 0.2,
+                      child: Center(
+                        child: EmptyListButton(
+                            title: 'User has no posts, challenge',
+                            onTap: () {
+                              Navigation().segue(
+                                  page: StartChallenge(),
+                                  context: context,
+                                  fullScreen: false);
+                            }),
+                      ),
+                    );
             }
           }
         });
@@ -85,39 +109,39 @@ class _AllDataListState extends State<AllDataList> {
     await Future.delayed(const Duration(milliseconds: 250));
     setState(() {
       List<ContentItems> list = [
-        ContentChallengeItem(
-            username: Faker().internet.userName(),
-            profileImage: 'https://source.unsplash.com/1600x900/?mom',
-            timestamp: '2 days',
-            challengeTitle: '25 Push Up Challenge',
-            popularity: CurrentPostPopularity.pinned,
-            likes: 5,
-            liked: false,
-            bookmarked: true,
-            participants: 8,
-            postUid: Faker().randomGenerator.string(10),
-            image: 'https://source.unsplash.com/1600x900/?workout',
-            video: null,
-            creatorUid: '',
-            comments: 3,
-            duration: '1'),
-        ContentChallengeItem(
-            username: Faker().internet.userName(),
-            profileImage: 'https://source.unsplash.com/1600x900/?dad',
-            timestamp: '2 days',
-            challengeTitle: '25 Push Up Challenge',
-            popularity: CurrentPostPopularity.pinned,
-            likes: 5,
-            liked: false,
-            bookmarked: true,
-            participants: 8,
-            postUid: Faker().randomGenerator.string(10),
-            image: null,
-            video:
-                'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-            creatorUid: '',
-            comments: 3,
-            duration: '1'),
+        // ContentChallengeItem(
+        //     username: Faker().internet.userName(),
+        //     profileImage: 'https://source.unsplash.com/1600x900/?mom',
+        //     timestamp: '2 days',
+        //     challengeTitle: '25 Push Up Challenge',
+        //     popularity: CurrentPostPopularity.pinned,
+        //     likes: 5,
+        //     liked: false,
+        //     bookmarked: true,
+        //     participants: 8,
+        //     postUid: Faker().randomGenerator.string(10),
+        //     image: 'https://source.unsplash.com/1600x900/?workout',
+        //     video: null,
+        //     creatorUid: '',
+        //     comments: 3,
+        //     duration: '1'),
+        // ContentChallengeItem(
+        //     username: Faker().internet.userName(),
+        //     profileImage: 'https://source.unsplash.com/1600x900/?dad',
+        //     timestamp: '2 days',
+        //     challengeTitle: '25 Push Up Challenge',
+        //     popularity: CurrentPostPopularity.pinned,
+        //     likes: 5,
+        //     liked: false,
+        //     bookmarked: true,
+        //     participants: 8,
+        //     postUid: Faker().randomGenerator.string(10),
+        //     image: null,
+        //     video:
+        //         'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+        //     creatorUid: '',
+        //     comments: 3,
+        //     duration: '1'),
         ContentVideoItem(
           username: Faker().internet.userName(),
           profileImage: 'https://source.unsplash.com/1600x900/?couple',

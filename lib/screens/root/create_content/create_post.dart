@@ -6,7 +6,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:flutter_video_compress/flutter_video_compress.dart';
 import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/components/modals.dart';
@@ -71,6 +70,13 @@ class _CreatePostState extends State<CreatePost> {
       videoController.dispose();
     }
     super.dispose();
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
@@ -275,8 +281,8 @@ class _CreatePostState extends State<CreatePost> {
                   Expanded(
                       child: GestureDetector(
                     onTap: () {
-                      Modal().friendsModal(
-                          context, atController, contentController);
+                      Modal().friendsModal(context, atController,
+                          contentController, snapshot.data['uid'] ?? '');
                     },
                     child: Container(
                       color: Colors.transparent,
@@ -431,9 +437,11 @@ class _CreatePostState extends State<CreatePost> {
             });
           });
         } else if (e.type == AssetType.video) {
-          if (e.videoDuration.inSeconds <= 120) {
+          if (e.videoDuration.inSeconds <= 60) {
             String url = await e.getMediaUrl();
+
             currentSelected = file;
+
             mediaType = PostContentType.video;
             initVideo(url);
           } else {
@@ -445,6 +453,11 @@ class _CreatePostState extends State<CreatePost> {
         }
       }
     }
+  }
+
+  String getFileExtension(String fileName) {
+    final exploded = fileName.split('.');
+    return exploded[exploded.length - 1];
   }
 
   initVideo(String url) {
@@ -475,17 +488,6 @@ class _CreatePostState extends State<CreatePost> {
     return result;
   }
 
-  Future<File> compressVideo(File file) async {
-    final _flutterVideoCompress = FlutterVideoCompress();
-
-    final info = await _flutterVideoCompress.compressVideo(file.path,
-        includeAudio: true,
-        quality: VideoQuality.HighestQuality,
-        deleteOrigin: true);
-
-    return info.file;
-  }
-
   loadData() async {
     snapshot = await User().getUserProfileInfo();
     setState(() {});
@@ -502,9 +504,6 @@ class _CreatePostState extends State<CreatePost> {
       showOverlayNotification((context) {
         return LoadingToast(message: 'Uploading...');
       });
-      if (mediaType == PostContentType.video) {
-        currentSelected = await compressVideo(currentSelected);
-      }
 
       StorageReference mediaRef = FirebaseStorage.instance
           .ref()
@@ -524,7 +523,9 @@ class _CreatePostState extends State<CreatePost> {
       }
     });
 
-    snapshot = await User().getUserProfileInfo();
+    if (snapshot == null) {
+      snapshot = await User().getUserProfileInfo();
+    }
 
     data = {
       'body': contentController.text,

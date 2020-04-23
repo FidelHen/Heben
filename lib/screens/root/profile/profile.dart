@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -80,14 +79,19 @@ class _ProfileState extends State<Profile>
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Scaffold(
-              body: Center(
-                child: Container(
-                  height: 50,
-                  child: SpinKitThreeBounce(
-                    color: Colors.black,
-                    size: 40,
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Center(
+                    child: Container(
+                      height: 50,
+                      child: SpinKitThreeBounce(
+                        color: Colors.black,
+                        size: 40,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             );
           } else {
@@ -243,6 +247,7 @@ class _ProfileState extends State<Profile>
     if (listIndex == 0) {
       return AllDataList(
         uid: uid,
+        isFriend: false,
       );
     } else if (listIndex == 1) {
       return LikedDataList();

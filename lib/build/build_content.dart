@@ -71,6 +71,7 @@ Widget buildContent(context, ContentItems item, [int index]) {
       postUid: item.postUid,
       creatorUid: item.creatorUid,
       comments: item.comments,
+      intTimestamp: item.intTimestamp,
       duration: item.duration,
     );
   } else if (item is ContentHomeHeaderItem) {

@@ -9,10 +9,14 @@ class ContentProfileTile extends StatefulWidget {
     @required this.uid,
     @required this.username,
     @required this.profileImage,
+    @required this.stopGesture,
+    this.onTap,
   });
   final String uid;
   final String username;
   final String profileImage;
+  final bool stopGesture;
+  final Function onTap;
   @override
   _ContentProfileTileState createState() => _ContentProfileTileState();
 }
@@ -21,9 +25,17 @@ class _ContentProfileTileState extends State<ContentProfileTile> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigation().segue(page: Friend(), context: context, fullScreen: false);
-      },
+      onTap: !widget.stopGesture ?? false
+          ? () {
+              Navigation().segue(
+                  page: Friend(
+                    uid: widget.uid,
+                    username: widget.username,
+                  ),
+                  context: context,
+                  fullScreen: false);
+            }
+          : widget.onTap,
       child: Column(
         children: <Widget>[
           Container(

@@ -1,11 +1,17 @@
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:heben/components/content/content_profile_tile.dart';
 import 'package:heben/components/refresh.dart';
 import 'package:heben/models/profile_item.dart';
+import 'package:heben/utils/keys.dart';
+import 'package:heben/utils/user.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:algolia/algolia.dart';
 
 class PeopleTab extends StatefulWidget {
+  PeopleTab({@required this.query});
+  final String query;
   @override
   _PeopleTabState createState() => _PeopleTabState();
 }
@@ -15,9 +21,24 @@ class _PeopleTabState extends State<PeopleTab> {
   RefreshController profileRefreshController = RefreshController();
   List<ProfileItem> feedList = [];
 
+  Algolia algolia;
+
+  Future algoliaFuture;
+
   @override
   void initState() {
-    loadTestData();
+    // loadTestData();
+    algolia = Algolia.init(
+      applicationId: AlgoliaKeys().getAppId(),
+      apiKey: AlgoliaKeys().getApiKey(),
+    );
+
+    algoliaFuture = algoliaFuture = algolia.instance
+        .index('users')
+        .search(widget.query)
+        .setHitsPerPage(15)
+        .getObjects();
+
     super.initState();
   }
 
@@ -36,34 +57,77 @@ class _PeopleTabState extends State<PeopleTab> {
 
   @override
   Widget build(BuildContext context) {
-    return SmartRefresher(
-      physics: BouncingScrollPhysics(),
-      enablePullDown: false,
-      enablePullUp: true,
-      footer: refreshFooter(),
-      onLoading: () {
-        profileRefreshController.loadComplete();
-      },
-      controller: profileRefreshController,
-      child: Padding(
-        padding: EdgeInsets.only(top: 8.0),
-        child: AnimatedList(
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          key: _listKey,
-          initialItemCount: feedList.length,
-          itemBuilder: (BuildContext context, int index, Animation animation) {
-            return FadeTransition(
-              opacity: animation,
-              child: ContentProfileTile(
-                  uid: feedList[index].uid,
-                  username: feedList[index].username,
-                  profileImage: feedList[index].profileImage),
+    return FutureBuilder(
+        future: algoliaFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return Container(
+              height: 50,
+              child: SpinKitCircle(
+                color: Colors.grey,
+                size: 40,
+              ),
             );
-          },
-        ),
-      ),
-    );
+          } else {
+            AlgoliaQuerySnapshot data = snapshot.data;
+
+            for (var i = 0; i <= feedList.length - 1; i++) {
+              _listKey.currentState.removeItem(0,
+                  (BuildContext context, Animation<double> animation) {
+                return Container();
+              });
+            }
+            feedList.clear();
+
+            User().getUid().then((uid) {
+              data.hits.asMap().forEach((index, value) {
+                if (uid != value.objectID) {
+                  print(value.data['username']);
+                  feedList.add(
+                    ProfileItem(
+                        uid: value.objectID,
+                        username: value.data['username'],
+                        profileImage: value.data['profileImage']),
+                  );
+
+                  _listKey.currentState.insertItem(0);
+                }
+              });
+            });
+
+            return SmartRefresher(
+              physics: BouncingScrollPhysics(),
+              enablePullDown: false,
+              enablePullUp: true,
+              footer: refreshFooter(),
+              onLoading: () {
+                profileRefreshController.loadComplete();
+              },
+              controller: profileRefreshController,
+              child: Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: AnimatedList(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  key: _listKey,
+                  initialItemCount: feedList.length,
+                  itemBuilder:
+                      (BuildContext context, int index, Animation animation) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: ContentProfileTile(
+                        uid: feedList[index].uid,
+                        username: feedList[index].username,
+                        profileImage: feedList[index].profileImage,
+                        stopGesture: false,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          }
+        });
   }
 
   loadTestData() async {

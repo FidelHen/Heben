@@ -26,12 +26,14 @@ class ContentChallenge extends StatefulWidget {
       @required this.participants,
       @required this.postUid,
       @required this.creatorUid,
+      @required this.intTimestamp,
       @required this.comments,
       @required this.duration});
 
   final String username;
   final String profileImage;
   final String timestamp;
+  final int intTimestamp;
   final String challengeTitle;
   final String video;
   final CurrentPostPopularity popularity;
@@ -95,8 +97,15 @@ class _ContentChallengeState extends State<ContentChallenge> {
 
     return GestureDetector(
       onTap: () {
-        Navigation()
-            .segue(page: ChallengePage(), context: context, fullScreen: false);
+        Navigation().segue(
+            page: ChallengePage(
+              challengeUid: widget.postUid,
+              duration: widget.duration,
+              timestamp: widget.intTimestamp,
+              challengeTitle: widget.challengeTitle,
+            ),
+            context: context,
+            fullScreen: false);
       },
       child: Column(
         children: <Widget>[

@@ -54,7 +54,12 @@ class NotificationGoingLive extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Navigation().segue(
-                          page: Friend(), context: context, fullScreen: false);
+                          page: Friend(
+                            uid: null,
+                            username: username,
+                          ),
+                          context: context,
+                          fullScreen: false);
                     },
                     child: GFAvatar(
                       size: 25,

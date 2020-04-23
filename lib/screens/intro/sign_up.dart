@@ -347,5 +347,8 @@ class _SignUpState extends State<SignUp> {
         },
       );
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 }

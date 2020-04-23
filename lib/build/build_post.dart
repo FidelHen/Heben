@@ -25,6 +25,8 @@ Widget buildPost(context, PostItems item, [int index]) {
   } else if (item is PostCommentItem) {
     return ContentPostComment(
       body: Faker().lorem.sentence() + ' @Hello' + ' #World',
+      creatorUid: null,
+      username: null,
     );
   } else {
     return Container();

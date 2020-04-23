@@ -82,9 +82,11 @@ class _FollowersState extends State<Followers> {
               return FadeTransition(
                 opacity: animation,
                 child: ContentProfileTile(
-                    uid: feedList[index].uid,
-                    username: feedList[index].username,
-                    profileImage: feedList[index].profileImage),
+                  uid: feedList[index].uid,
+                  username: feedList[index].username,
+                  profileImage: feedList[index].profileImage,
+                  stopGesture: false,
+                ),
               );
             },
           ),

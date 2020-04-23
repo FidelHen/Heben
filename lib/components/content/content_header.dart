@@ -45,8 +45,13 @@ class ContentHeaderLight extends StatelessWidget {
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              Navigation()
-                  .segue(page: Friend(), context: context, fullScreen: false);
+              Navigation().segue(
+                  page: Friend(
+                    uid: null,
+                    username: username,
+                  ),
+                  context: context,
+                  fullScreen: false);
             },
             child: GFAvatar(
               size: 25,
@@ -140,8 +145,13 @@ class ContentHeaderDark extends StatelessWidget {
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              Navigation()
-                  .segue(page: Friend(), context: context, fullScreen: false);
+              Navigation().segue(
+                  page: Friend(
+                    uid: null,
+                    username: username,
+                  ),
+                  context: context,
+                  fullScreen: false);
             },
             child: GFAvatar(
               size: 25,

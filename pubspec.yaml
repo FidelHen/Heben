@@ -38,7 +38,6 @@ dependencies:
   firebase_messaging: ^6.0.13
   firebase_analytics: ^5.0.11
   flutter_image_compress: ^0.6.5+1
-  flutter_video_compress: ^0.3.7+8
   path_provider: ^1.6.5
   email_validator: ^1.0.4
   loading_overlay: ^0.2.1
@@ -49,6 +48,7 @@ dependencies:
   enum_to_string: ^1.0.9
   timeago: ^2.0.26
   transparent_image: ^1.0.0
+  algolia: ^0.1.7
 
 dev_dependencies:
   flutter_test:
@@ -58,3 +58,6 @@ flutter:
   uses-material-design: true
   assets:
     - images/
+
+module:
+  androidX: true

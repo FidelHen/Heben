@@ -83,7 +83,10 @@ class _ContentExploreHeaderState extends State<ContentExploreHeader> {
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigation().segue(
-                                          page: Friend(),
+                                          page: Friend(
+                                            uid: null,
+                                            username: null,
+                                          ),
                                           context: context,
                                           fullScreen: false);
                                     },

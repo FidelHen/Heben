@@ -77,7 +77,10 @@ class ContentStream extends StatelessWidget {
                                   child: GestureDetector(
                                     onTap: () {
                                       Navigation().segue(
-                                          page: Friend(),
+                                          page: Friend(
+                                            uid: creatorUid,
+                                            username: username,
+                                          ),
                                           context: context,
                                           fullScreen: false);
                                     },

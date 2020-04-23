@@ -142,6 +142,7 @@ class ContentChallengeItem implements ContentItems {
     @required this.postUid,
     @required this.creatorUid,
     @required this.comments,
+    @required this.intTimestamp,
     @required this.duration,
   });
 
@@ -154,6 +155,7 @@ class ContentChallengeItem implements ContentItems {
   final int likes;
   final bool liked;
   final String image;
+  final int intTimestamp;
   final int participants;
   final String postUid;
   final String creatorUid;

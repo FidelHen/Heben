@@ -84,6 +84,7 @@ class _FollowingState extends State<Following> {
                 child: ContentProfileTile(
                     uid: feedList[index].uid,
                     username: feedList[index].username,
+                    stopGesture: false,
                     profileImage: feedList[index].profileImage),
               );
             },

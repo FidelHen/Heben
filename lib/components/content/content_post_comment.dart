@@ -8,8 +8,13 @@ import 'package:heben/utils/navigation.dart';
 import 'package:highlight_text/highlight_text.dart';
 
 class ContentPostComment extends StatefulWidget {
-  ContentPostComment({@required this.body});
+  ContentPostComment(
+      {@required this.body,
+      @required this.creatorUid,
+      @required this.username});
 
+  final String creatorUid;
+  final String username;
   final String body;
   @override
   _ContentPostCommentState createState() => _ContentPostCommentState();
@@ -41,8 +46,13 @@ class _ContentPostCommentState extends State<ContentPostComment> {
             padding: EdgeInsets.only(right: 6.0),
             child: GestureDetector(
               onTap: () {
-                Navigation()
-                    .segue(page: Friend(), context: context, fullScreen: false);
+                Navigation().segue(
+                    page: Friend(
+                      uid: widget.creatorUid,
+                      username: widget.username,
+                    ),
+                    context: context,
+                    fullScreen: false);
               },
               child: GFAvatar(
                 size: 25,
@@ -116,8 +126,13 @@ class _ContentPostCommentState extends State<ContentPostComment> {
       if (str.contains('@', 0)) {
         words[str] = HighlightedWord(
             onTap: () {
-              Navigation()
-                  .segue(page: Friend(), context: context, fullScreen: false);
+              Navigation().segue(
+                  page: Friend(
+                    uid: null,
+                    username: str.toString().substring(1),
+                  ),
+                  context: context,
+                  fullScreen: false);
             },
             textStyle: GoogleFonts.openSans(
                 fontWeight: FontWeight.w600, color: hebenActive));

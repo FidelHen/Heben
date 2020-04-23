@@ -17,14 +17,20 @@ class _SearchState extends State<Search> {
   bool tabOneActive = true;
   bool tabTwoActive = false;
   bool tabThreeActive = false;
+  bool isSearching;
+
+  TextEditingController searchController;
 
   @override
   void initState() {
+    isSearching = false;
+    searchController = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
+    searchController.dispose();
     super.dispose();
   }
 
@@ -48,14 +54,13 @@ class _SearchState extends State<Search> {
                 ),
                 child: TextField(
                   autofocus: true,
-                  // controller: _searchQueryController,
-                  // onChanged: (_) {
-                  //   setState(() {
-                  //     isLoading = false;
-                  //     _future = updateList();
-                  //   });
-                  // },
+                  controller: searchController,
                   keyboardAppearance: Brightness.light,
+                  onSubmitted: (text) {
+                    setState(() {
+                      isSearching = true;
+                    });
+                  },
                   style: GoogleFonts.lato(
                       fontSize: 16, fontWeight: FontWeight.w600),
                   decoration: InputDecoration(
@@ -87,63 +92,82 @@ class _SearchState extends State<Search> {
               Navigator.pop(context);
             }),
       ),
-      body: DefaultTabController(
-        length: 3,
-        child: Theme(
-          data: ThemeData(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Container(
-                color: Colors.grey[200],
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(15),
-                    bottomRight: Radius.circular(15),
-                  ),
-                  child: Container(
-                    color: Colors.white,
-                    child: TabBar(
-                      unselectedLabelColor: Colors.grey[400],
-                      labelColor: Colors.black,
-                      indicatorColor: Colors.transparent,
-                      labelStyle: GoogleFonts.lato(
-                          fontSize: 14, fontWeight: FontWeight.w600),
-                      isScrollable: false,
-                      indicator: UnderlineTabIndicator(
-                          borderSide: BorderSide(width: 2, color: hebenRed)),
-                      tabs: [
-                        Tab(
-                          text: 'People',
-                        ),
-                        Tab(
-                          text: 'Challenges',
-                        ),
-                        Tab(
-                          text: 'Streams',
-                        ),
-                      ],
-                    ),
-                  ),
+      body: isSearching
+          ? DefaultTabController(
+              length: 3,
+              child: Theme(
+                data: ThemeData(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
                 ),
-              ),
-              Expanded(
-                child: TabBarView(
-                  physics: NeverScrollableScrollPhysics(),
-                  children: [
-                    PeopleTab(),
-                    ChallengesTab(),
-                    StreamsTab(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Container(
+                      color: Colors.grey[200],
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(15),
+                          bottomRight: Radius.circular(15),
+                        ),
+                        child: Container(
+                          color: Colors.white,
+                          child: TabBar(
+                            unselectedLabelColor: Colors.grey[400],
+                            labelColor: Colors.black,
+                            indicatorColor: Colors.transparent,
+                            labelStyle: GoogleFonts.lato(
+                                fontSize: 14, fontWeight: FontWeight.w600),
+                            isScrollable: false,
+                            indicator: UnderlineTabIndicator(
+                                borderSide:
+                                    BorderSide(width: 2, color: hebenRed)),
+                            tabs: [
+                              Tab(
+                                text: 'People',
+                              ),
+                              Tab(
+                                text: 'Challenges',
+                              ),
+                              Tab(
+                                text: 'Streams',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        physics: NeverScrollableScrollPhysics(),
+                        children: [
+                          PeopleTab(
+                            query: searchController.text.trim(),
+                          ),
+                          ChallengesTab(),
+                          StreamsTab(),
+                        ],
+                      ),
+                    )
                   ],
                 ),
-              )
-            ],
-          ),
-        ),
-      ),
+              ),
+            )
+          : Container(
+              width: DeviceSize().getWidth(context),
+              child: Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Search for users, challenges, and streams',
+                        style:
+                            GoogleFonts.openSans(fontWeight: FontWeight.w600),
+                      ),
+                    ]),
+              ),
+            ),
     );
   }
 

@@ -197,6 +197,7 @@ class _LogInState extends State<LogIn> {
             email: emailController.text.trim(),
             password: passwordController.text.trim(),
             context: context);
+            
       } else {
         showDialog<void>(
           context: context,

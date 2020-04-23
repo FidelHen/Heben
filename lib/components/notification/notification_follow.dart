@@ -21,7 +21,13 @@ class NotificationFollow extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigation().segue(page: Friend(), context: context, fullScreen: false);
+        Navigation().segue(
+            page: Friend(
+              uid: null,
+              username: username,
+            ),
+            context: context,
+            fullScreen: false);
       },
       child: Container(
         decoration: firstIndex

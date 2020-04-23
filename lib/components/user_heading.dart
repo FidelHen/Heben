@@ -232,23 +232,25 @@ class _UserHeadingState extends State<UserHeading> {
             ),
           ),
         ),
-        Container(
-          color: Colors.white,
-          child: Container(
-            color: Colors.white,
-            child: Padding(
-              padding: EdgeInsets.only(left: safeArea, right: safeArea),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  widget.bio,
-                  style: GoogleFonts.openSans(
-                      fontSize: 14, fontWeight: FontWeight.w500),
+        widget.bio.length != 0
+            ? Container(
+                color: Colors.white,
+                child: Container(
+                  color: Colors.white,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: safeArea, right: safeArea),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        widget.bio,
+                        style: GoogleFonts.openSans(
+                            fontSize: 14, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
-        ),
+              )
+            : Container(),
       ]),
     );
   }

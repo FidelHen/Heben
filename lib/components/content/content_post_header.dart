@@ -237,8 +237,13 @@ class _ContentPostHeaderState extends State<ContentPostHeader> {
       if (str.contains('@', 0)) {
         words[str] = HighlightedWord(
             onTap: () {
-              Navigation()
-                  .segue(page: Friend(), context: context, fullScreen: false);
+              Navigation().segue(
+                  page: Friend(
+                    uid: null,
+                    username: str.toString().substring(1),
+                  ),
+                  context: context,
+                  fullScreen: false);
             },
             textStyle: GoogleFonts.openSans(
                 fontWeight: FontWeight.w600, color: hebenActive));

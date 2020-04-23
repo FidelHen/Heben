@@ -13,7 +13,6 @@ import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
 import 'package:highlight_text/highlight_text.dart';
 import 'package:like_button/like_button.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class ContentImage extends StatefulWidget {
   ContentImage({
@@ -282,8 +281,13 @@ class _ContentImageState extends State<ContentImage> {
       if (str.contains('@', 0)) {
         words[str] = HighlightedWord(
             onTap: () {
-              Navigation()
-                  .segue(page: Friend(), context: context, fullScreen: false);
+              Navigation().segue(
+                  page: Friend(
+                    uid: null,
+                    username: str.toString().substring(1),
+                  ),
+                  context: context,
+                  fullScreen: false);
             },
             textStyle: GoogleFonts.openSans(
                 fontWeight: FontWeight.w600, color: hebenActive));

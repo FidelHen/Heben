@@ -4,7 +4,6 @@ import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/screens/root/friend.dart';
 import 'package:heben/screens/root/post.dart';
-import 'package:heben/screens/root/tag.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
@@ -92,7 +91,12 @@ class _NotificationTaggedState extends State<NotificationTagged> {
                   GestureDetector(
                     onTap: () {
                       Navigation().segue(
-                          page: Friend(), context: context, fullScreen: false);
+                          page: Friend(
+                            uid: null,
+                            username: widget.username,
+                          ),
+                          context: context,
+                          fullScreen: false);
                     },
                     child: GFAvatar(
                       size: 25,
@@ -179,8 +183,13 @@ class _NotificationTaggedState extends State<NotificationTagged> {
       if (str.contains('@', 0)) {
         words[str] = HighlightedWord(
             onTap: () {
-              Navigation()
-                  .segue(page: Friend(), context: context, fullScreen: false);
+              Navigation().segue(
+                  page: Friend(
+                    uid: null,
+                    username: str.toString().substring(1),
+                  ),
+                  context: context,
+                  fullScreen: false);
             },
             textStyle: GoogleFonts.openSans(
                 fontWeight: FontWeight.w600, color: hebenActive));

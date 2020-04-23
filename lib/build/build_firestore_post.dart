@@ -10,13 +10,8 @@ ContentItems buildFirestorePost({@required DocumentSnapshot snapshot}) {
   CurrentPostPopularity popularity = EnumToString.fromString(
       CurrentPostPopularity.values, data['type'].toString().split('.')[1]);
 
-  final int now = DateTime.now().millisecondsSinceEpoch.toInt();
-  final int previous = DateTime.fromMillisecondsSinceEpoch(data['timestamp'])
-      .millisecondsSinceEpoch
-      .toInt();
-
-  final timeAgo =
-      DateTime.now().subtract(Duration(milliseconds: now - previous));
+  final timeAgo = DateTime.fromMillisecondsSinceEpoch(data['timestamp'])
+      .subtract(Duration(seconds: DateTime.now().second));
 
   if (data['type'] == PostContentType.text.toString()) {
     return ContentTextItem(
@@ -61,6 +56,24 @@ ContentItems buildFirestorePost({@required DocumentSnapshot snapshot}) {
         bookmarked: false,
         challengeTitle: data['challengeTitle'],
         challengeUid: data['challengeUid']);
+  } else if (data['type'] == PostContentType.challenge.toString()) {
+    return ContentChallengeItem(
+        username: data['username'],
+        profileImage: data['profileImage'],
+        timestamp: timeago.format(timeAgo, locale: 'en_short'),
+        challengeTitle: data['challengeTitle'],
+        popularity: popularity,
+        likes: data['likes'],
+        liked: false,
+        intTimestamp: data['timestamp'],
+        comments: data['comments'],
+        participants: data['participants'],
+        postUid: snapshot.documentID,
+        image: data['image'],
+        video: data['video'],
+        creatorUid: data['userUid'],
+        duration: data['duration'],
+        bookmarked: false);
   } else {
     return null;
   }
