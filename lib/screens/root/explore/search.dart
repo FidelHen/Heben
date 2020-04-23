@@ -144,7 +144,9 @@ class _SearchState extends State<Search> {
                           PeopleTab(
                             query: searchController.text.trim(),
                           ),
-                          ChallengesTab(),
+                          ChallengesTab(
+                            query: searchController.text.trim(),
+                          ),
                           StreamsTab(),
                         ],
                       ),

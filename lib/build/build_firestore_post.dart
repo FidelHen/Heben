@@ -5,13 +5,29 @@ import 'package:heben/models/content_items.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:heben/utils/enums.dart';
 
-ContentItems buildFirestorePost({@required DocumentSnapshot snapshot}) {
+ContentItems buildFirestorePost(
+    {@required DocumentSnapshot snapshot, @required String uid}) {
   final data = snapshot.data;
   CurrentPostPopularity popularity = EnumToString.fromString(
       CurrentPostPopularity.values, data['type'].toString().split('.')[1]);
 
   final timeAgo = DateTime.fromMillisecondsSinceEpoch(data['timestamp'])
       .subtract(Duration(seconds: DateTime.now().second));
+
+  bool isLiked;
+  bool isBookmarked;
+
+  if (data['liked'][uid] == true) {
+    isLiked = true;
+  } else {
+    isLiked = false;
+  }
+
+  if (data['bookmarked'][uid] == true) {
+    isBookmarked = true;
+  } else {
+    isBookmarked = false;
+  }
 
   if (data['type'] == PostContentType.text.toString()) {
     return ContentTextItem(
@@ -21,10 +37,10 @@ ContentItems buildFirestorePost({@required DocumentSnapshot snapshot}) {
       body: data['body'] ?? '',
       popularity: popularity,
       likes: data['likes'],
-      liked: false,
+      liked: isLiked ?? false,
       comments: data['comments'],
       postUid: snapshot.documentID,
-      bookmarked: false,
+      bookmarked: isBookmarked ?? false,
     );
   } else if (data['type'] == PostContentType.image.toString()) {
     return ContentImageItem(
@@ -35,10 +51,10 @@ ContentItems buildFirestorePost({@required DocumentSnapshot snapshot}) {
         image: data['image'] ?? '',
         popularity: popularity,
         likes: data['likes'],
-        liked: false,
+        liked: isLiked ?? false,
         comments: data['comments'],
         postUid: snapshot.documentID,
-        bookmarked: false,
+        bookmarked: isBookmarked ?? false,
         challengeTitle: data['challengeTitle'],
         challengeUid: data['challengeUid']);
   } else if (data['type'] == PostContentType.video.toString()) {
@@ -50,30 +66,31 @@ ContentItems buildFirestorePost({@required DocumentSnapshot snapshot}) {
         video: data['video'] ?? '',
         popularity: popularity,
         likes: data['likes'],
-        liked: false,
+        liked: isLiked ?? false,
         comments: data['comments'],
         postUid: snapshot.documentID,
-        bookmarked: false,
+        bookmarked: isBookmarked ?? false,
         challengeTitle: data['challengeTitle'],
         challengeUid: data['challengeUid']);
   } else if (data['type'] == PostContentType.challenge.toString()) {
     return ContentChallengeItem(
-        username: data['username'],
-        profileImage: data['profileImage'],
-        timestamp: timeago.format(timeAgo, locale: 'en_short'),
-        challengeTitle: data['challengeTitle'],
-        popularity: popularity,
-        likes: data['likes'],
-        liked: false,
-        intTimestamp: data['timestamp'],
-        comments: data['comments'],
-        participants: data['participants'],
-        postUid: snapshot.documentID,
-        image: data['image'],
-        video: data['video'],
-        creatorUid: data['userUid'],
-        duration: data['duration'],
-        bookmarked: false);
+      username: data['username'],
+      profileImage: data['profileImage'],
+      timestamp: timeago.format(timeAgo, locale: 'en_short'),
+      challengeTitle: data['challengeTitle'],
+      popularity: popularity,
+      likes: data['likes'],
+      liked: isLiked ?? false,
+      intTimestamp: data['timestamp'],
+      comments: data['comments'],
+      participants: data['participants'],
+      postUid: snapshot.documentID,
+      image: data['image'],
+      video: data['video'],
+      creatorUid: data['userUid'],
+      duration: data['duration'],
+      bookmarked: isBookmarked ?? false,
+    );
   } else {
     return null;
   }

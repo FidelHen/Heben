@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
                     child: Container(
                       height: 50,
                       child: SpinKitThreeBounce(
-                        color: Colors.white,
+                        color: Colors.black,
                         size: 40,
                       ),
                     ),

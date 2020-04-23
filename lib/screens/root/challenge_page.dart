@@ -15,6 +15,7 @@ import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
+import 'package:heben/utils/user.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ChallengePage extends StatefulWidget {
@@ -38,6 +39,7 @@ class _ChallengePageState extends State<ChallengePage> {
   List<ContentItems> feedList = [];
   Future getPostFuture;
   bool buttonIsHidden;
+  String uid;
 
   @override
   void initState() {
@@ -50,6 +52,8 @@ class _ChallengePageState extends State<ChallengePage> {
         .getDocuments();
 
     buttonIsHidden = false;
+
+    loadUid();
 
     super.initState();
   }
@@ -109,7 +113,8 @@ class _ChallengePageState extends State<ChallengePage> {
             final data = snapshot.data as QuerySnapshot;
             if (data.documents.length != 0) {
               data.documents.forEach((snapshot) {
-                ContentItems item = buildFirestorePost(snapshot: snapshot);
+                ContentItems item =
+                    buildFirestorePost(snapshot: snapshot, uid: uid);
                 feedList.add(item);
               });
               return Scaffold(
@@ -244,6 +249,10 @@ class _ChallengePageState extends State<ChallengePage> {
             }
           }
         });
+  }
+
+  loadUid() async {
+    uid = await User().getUid();
   }
 
   loadTestData() async {

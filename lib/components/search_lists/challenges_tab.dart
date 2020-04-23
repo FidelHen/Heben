@@ -1,28 +1,54 @@
+import 'package:algolia/algolia.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/build/build_content.dart';
-import 'package:heben/components/refresh.dart';
+import 'package:heben/build/build_firestore_post.dart';
 import 'package:heben/models/content_items.dart';
+import 'package:heben/utils/device_size.dart';
+import 'package:heben/utils/keys.dart';
+import 'package:heben/utils/user.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ChallengesTab extends StatefulWidget {
+  ChallengesTab({@required this.query});
+  final String query;
   @override
   _ChallengesTabState createState() => _ChallengesTabState();
 }
 
 class _ChallengesTabState extends State<ChallengesTab> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
-  RefreshController challengesRefreshController = RefreshController();
+  RefreshController profileRefreshController = RefreshController();
   List<ContentItems> feedList = [];
+  bool isLoading;
+  Algolia algolia;
+
+  Future algoliaFuture;
 
   @override
-  void initState() {
-    loadTestData();
-    super.initState();
+  void didChangeDependencies() {
+    isLoading = true;
+    algolia = Algolia.init(
+      applicationId: AlgoliaKeys().getAppId(),
+      apiKey: AlgoliaKeys().getApiKey(),
+    );
+
+    algoliaFuture = algoliaFuture = algolia.instance
+        .index('challenges')
+        .search(widget.query)
+        .setHitsPerPage(10)
+        .getObjects();
+
+    loadData();
+    buildList();
+    super.didChangeDependencies();
   }
 
   @override
   void dispose() {
-    challengesRefreshController.dispose();
+    profileRefreshController.dispose();
     super.dispose();
   }
 
@@ -35,31 +61,87 @@ class _ChallengesTabState extends State<ChallengesTab> {
 
   @override
   Widget build(BuildContext context) {
-    return SmartRefresher(
-      physics: BouncingScrollPhysics(),
-      enablePullDown: false,
-      enablePullUp: true,
-      footer: refreshFooter(),
-      onLoading: () {
-        challengesRefreshController.loadComplete();
-      },
-      controller: challengesRefreshController,
-      child: Padding(
+    return buildList();
+  }
+
+  loadData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    String uid = await User().getUid();
+    algoliaFuture.then((snapshot) {
+      feedList.clear();
+      final data = snapshot as AlgoliaQuerySnapshot;
+
+      data.hits.asMap().forEach((index, value) {
+        Firestore.instance
+            .collection('posts')
+            .document(value.objectID)
+            .get()
+            .then((result) {
+          feedList.insert(
+              index, buildFirestorePost(snapshot: result, uid: uid));
+        }).then((_) {
+          setState(() {
+            isLoading = false;
+          });
+        });
+      });
+
+      if (data.hits.length == 0) {
+        feedList.clear();
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
+  }
+
+  Widget buildList() {
+    if (isLoading) {
+      return Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Container(
+          height: 50,
+          width: DeviceSize().getWidth(context),
+          child: Center(
+            child: SpinKitCircle(
+              color: Colors.grey,
+              size: 40,
+            ),
+          ),
+        ),
+      );
+    } else if (feedList.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Container(
+          height: 50,
+          width: DeviceSize().getWidth(context),
+          child: Center(
+            child: Text(
+              'No challenges found',
+              style: GoogleFonts.openSans(
+                  fontWeight: FontWeight.w600, fontSize: 16),
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Padding(
         padding: EdgeInsets.only(top: 8.0),
-        child: AnimatedList(
-          physics: NeverScrollableScrollPhysics(),
+        child: ListView.builder(
+          physics: BouncingScrollPhysics(),
           shrinkWrap: true,
           key: _listKey,
-          initialItemCount: feedList.length,
-          itemBuilder: (BuildContext context, int index, Animation animation) {
-            return FadeTransition(
-              opacity: animation,
-              child: buildContent(context, feedList[index], index),
-            );
+          itemCount: feedList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return buildContent(context, feedList[index], index);
           },
         ),
-      ),
-    );
+      );
+    }
   }
 
   loadTestData() async {

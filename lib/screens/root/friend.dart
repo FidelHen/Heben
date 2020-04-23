@@ -38,6 +38,8 @@ class _FriendState extends State<Friend> {
 
   Future getPostFuture;
 
+  String userUid;
+
   @override
   void initState() {
     loading = false;
@@ -45,6 +47,7 @@ class _FriendState extends State<Friend> {
     if (widget.uid != null) {
       getPostFuture =
           Firestore.instance.collection('users').document(widget.uid).get();
+      userUid = widget.uid;
     } else {
       getPostFuture = Firestore.instance
           .collection('users')
@@ -102,14 +105,16 @@ class _FriendState extends State<Friend> {
             );
           } else {
             DocumentSnapshot data;
+
             if (widget.uid == null) {
               final snap = snapshot.data as QuerySnapshot;
               data = snap.documents.first;
+              userUid = data['uid'];
             } else {
               data = snapshot.data as DocumentSnapshot;
             }
 
-            if (data.exists) {
+            if (data != null) {
               return Scaffold(
                 backgroundColor: Colors.grey[100],
                 appBar: GFAppBar(
@@ -260,7 +265,7 @@ class _FriendState extends State<Friend> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Sorry, this user no longer exists',
+                          'Sorry, this user does not exists',
                           textAlign: TextAlign.center,
                           style: GoogleFonts.openSans(
                               fontWeight: FontWeight.w600, fontSize: 16),
@@ -278,11 +283,14 @@ class _FriendState extends State<Friend> {
   Widget currentList(String uid) {
     if (listIndex == 0) {
       return AllDataList(
-        uid: uid,
+        uid: userUid,
         isFriend: true,
       );
     } else if (listIndex == 1) {
-      return LikedDataList();
+      return LikedDataList(
+        uid: userUid,
+        isFriend: true,
+      );
     } else {
       return Container();
     }

@@ -8,6 +8,7 @@ import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/constants.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
+import 'package:heben/utils/social.dart';
 import 'package:like_button/like_button.dart';
 import 'package:video_player/video_player.dart';
 
@@ -204,6 +205,7 @@ class _ContentChallengeState extends State<ContentChallenge> {
                               dotSecondaryColor: Colors.redAccent,
                             ),
                             isLiked: widget.liked,
+                            onTap: onLikeButtonTapped,
                             likeBuilder: (bool isLiked) {
                               return Icon(
                                 EvaIcons.heart,
@@ -233,6 +235,7 @@ class _ContentChallengeState extends State<ContentChallenge> {
                           ),
                           LikeButton(
                             size: 25,
+                            onTap: onBookmarkButtonTapped,
                             circleColor: CircleColor(
                                 start: Colors.white, end: hebenBookmarkColor),
                             bubblesColor: BubblesColor(
@@ -283,5 +286,23 @@ class _ContentChallengeState extends State<ContentChallenge> {
           setState(() {});
         });
     }
+  }
+
+  Future<bool> onLikeButtonTapped(bool isLiked) async {
+    if (!isLiked) {
+      Social().likePost(postUid: widget.postUid);
+    } else {
+      Social().unlikePost(postUid: widget.postUid);
+    }
+    return !isLiked;
+  }
+
+  Future<bool> onBookmarkButtonTapped(bool isLiked) async {
+    if (!isLiked) {
+      Social().bookmarkPost(postUid: widget.postUid);
+    } else {
+      Social().unBookmarkPost(postUid: widget.postUid);
+    }
+    return !isLiked;
   }
 }

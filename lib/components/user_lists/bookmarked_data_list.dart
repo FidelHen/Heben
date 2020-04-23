@@ -1,10 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/build/build_content.dart';
+import 'package:heben/build/build_firestore_post.dart';
 import 'package:heben/models/content_items.dart';
+import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
 
 class BookmarkedDataList extends StatefulWidget {
+  BookmarkedDataList({@required this.uid});
+  final String uid;
+
   @override
   _BookmarkedDataListState createState() => _BookmarkedDataListState();
 }
@@ -12,27 +20,96 @@ class BookmarkedDataList extends StatefulWidget {
 class _BookmarkedDataListState extends State<BookmarkedDataList> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<ContentItems> feedList = [];
+  Future getSnapshots;
+  bool isLoading;
 
   @override
   void initState() {
-    loadTestData();
+    // loadTestData();
+    isLoading = true;
+    getSnapshots = Firestore.instance
+        .collection('users')
+        .document(widget.uid)
+        .collection('bookmarks')
+        .orderBy('timestamp', descending: true)
+        .getDocuments();
+    loadData();
+    buildList();
     super.initState();
   }
 
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return AnimatedList(
-      physics: BouncingScrollPhysics(),
-      shrinkWrap: true,
-      key: _listKey,
-      initialItemCount: feedList.length,
-      itemBuilder: (BuildContext context, int index, Animation animation) {
-        return FadeTransition(
-          opacity: animation,
-          child: buildContent(context, feedList[index], index),
-        );
-      },
-    );
+    return buildList();
+  }
+
+  loadData() async {
+    QuerySnapshot docSnap;
+
+    await getSnapshots.then((snapshot) {
+      docSnap = snapshot as QuerySnapshot;
+    });
+
+    docSnap.documents.forEach((doc) async {
+      await Firestore.instance
+          .collection('posts')
+          .document(doc.documentID)
+          .get()
+          .then((doc) {
+        feedList.add(buildFirestorePost(snapshot: doc, uid: widget.uid));
+        setState(() {});
+      }).then((_) {
+        setState(() {
+          isLoading = false;
+        });
+      });
+    });
+
+    if (docSnap.documents.length == 0) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Widget buildList() {
+    if (isLoading) {
+      return Container(
+        height: 50,
+        child: SpinKitCircle(
+          color: Colors.grey,
+          size: 40,
+        ),
+      );
+    } else if (feedList.isEmpty) {
+      return Container(
+        height: DeviceSize().getHeight(context) * 0.2,
+        child: Center(
+          child: Text(
+            'Your bookmarks will show up here',
+            style:
+                GoogleFonts.openSans(fontWeight: FontWeight.w600, fontSize: 16),
+          ),
+        ),
+      );
+    } else {
+      return ListView.builder(
+        physics: BouncingScrollPhysics(),
+        shrinkWrap: true,
+        key: _listKey,
+        itemCount: feedList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return buildContent(context, feedList[index], index);
+        },
+      );
+    }
   }
 
   loadTestData() async {

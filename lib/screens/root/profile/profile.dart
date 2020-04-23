@@ -250,9 +250,14 @@ class _ProfileState extends State<Profile>
         isFriend: false,
       );
     } else if (listIndex == 1) {
-      return LikedDataList();
+      return LikedDataList(
+        uid: uid,
+        isFriend: false,
+      );
     } else if (listIndex == 2) {
-      return BookmarkedDataList();
+      return BookmarkedDataList(
+        uid: uid,
+      );
     } else {
       return Container();
     }

@@ -10,6 +10,7 @@ import 'package:heben/utils/constants.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
+import 'package:heben/utils/social.dart';
 import 'package:highlight_text/highlight_text.dart';
 import 'package:like_button/like_button.dart';
 import 'package:video_player/video_player.dart';
@@ -174,6 +175,7 @@ class _ContentPostHeaderState extends State<ContentPostHeader> {
                     dotSecondaryColor: Colors.redAccent,
                   ),
                   isLiked: widget.liked,
+                  onTap: onLikeButtonTapped,
                   likeBuilder: (bool isLiked) {
                     return Icon(
                       EvaIcons.heart,
@@ -200,6 +202,7 @@ class _ContentPostHeaderState extends State<ContentPostHeader> {
                 ),
                 LikeButton(
                   size: 25,
+                  onTap: onBookmarkButtonTapped,
                   circleColor:
                       CircleColor(start: Colors.black, end: hebenBookmarkColor),
                   bubblesColor: BubblesColor(
@@ -322,6 +325,24 @@ class _ContentPostHeaderState extends State<ContentPostHeader> {
     } else {
       return Container();
     }
+  }
+
+  Future<bool> onLikeButtonTapped(bool isLiked) async {
+    if (!isLiked) {
+      Social().likePost(postUid: widget.postUid);
+    } else {
+      Social().unlikePost(postUid: widget.postUid);
+    }
+    return !isLiked;
+  }
+
+  Future<bool> onBookmarkButtonTapped(bool isLiked) async {
+    if (!isLiked) {
+      Social().bookmarkPost(postUid: widget.postUid);
+    } else {
+      Social().unBookmarkPost(postUid: widget.postUid);
+    }
+    return !isLiked;
   }
 
   Widget heroWidget(width) {

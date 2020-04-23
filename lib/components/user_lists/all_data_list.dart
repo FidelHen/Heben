@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/build/build_content.dart';
 import 'package:heben/build/build_firestore_post.dart';
 import 'package:heben/components/empty_list_button.dart';
@@ -26,83 +25,96 @@ class _AllDataListState extends State<AllDataList> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<ContentItems> feedList = [];
   Future getSnapshots;
+  bool isLoading;
 
   @override
   void initState() {
     // loadTestData();
+    isLoading = true;
     getSnapshots = Firestore.instance
         .collection('posts')
         .where('userUid', isEqualTo: widget.uid)
         .orderBy('timestamp', descending: true)
         .getDocuments();
+    loadData();
+    buildList();
     super.initState();
   }
 
   @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getSnapshots,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return Container(
-              height: 50,
-              child: SpinKitCircle(
-                color: Colors.grey,
-                size: 40,
+    return buildList();
+  }
+
+  loadData() async {
+    getSnapshots.then((snapshot) {
+      final data = snapshot as QuerySnapshot;
+
+      data.documents.forEach((doc) {
+        feedList.add(buildFirestorePost(snapshot: doc, uid: widget.uid));
+      });
+
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
+  Widget buildList() {
+    if (isLoading) {
+      return Container(
+        height: 50,
+        child: SpinKitCircle(
+          color: Colors.grey,
+          size: 40,
+        ),
+      );
+    } else if (feedList.isEmpty) {
+      return !widget.isFriend
+          ? Container(
+              height: DeviceSize().getHeight(context) * 0.2,
+              child: Center(
+                child: EmptyListButton(
+                    title: 'Create your first post',
+                    onTap: () {
+                      Navigation().segue(
+                          page: CreatePost(),
+                          context: context,
+                          fullScreen: false);
+                    }),
+              ),
+            )
+          : Container(
+              height: DeviceSize().getHeight(context) * 0.2,
+              child: Center(
+                child: EmptyListButton(
+                    title: 'User has no posts, challenge',
+                    onTap: () {
+                      Navigation().segue(
+                          page: StartChallenge(),
+                          context: context,
+                          fullScreen: false);
+                    }),
               ),
             );
-          } else {
-            final data = snapshot.data as QuerySnapshot;
-
-            if (data.documents.length != 0) {
-              data.documents.forEach((snapshot) {
-                ContentItems item = buildFirestorePost(snapshot: snapshot);
-                feedList.add(item);
-              });
-              return AnimatedList(
-                physics: BouncingScrollPhysics(),
-                shrinkWrap: true,
-                key: _listKey,
-                initialItemCount: feedList.length,
-                itemBuilder:
-                    (BuildContext context, int index, Animation animation) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child: buildContent(context, feedList[index], index),
-                  );
-                },
-              );
-            } else {
-              return !widget.isFriend
-                  ? Container(
-                      height: DeviceSize().getHeight(context) * 0.2,
-                      child: Center(
-                        child: EmptyListButton(
-                            title: 'Create your first post',
-                            onTap: () {
-                              Navigation().segue(
-                                  page: CreatePost(),
-                                  context: context,
-                                  fullScreen: false);
-                            }),
-                      ),
-                    )
-                  : Container(
-                      height: DeviceSize().getHeight(context) * 0.2,
-                      child: Center(
-                        child: EmptyListButton(
-                            title: 'User has no posts, challenge',
-                            onTap: () {
-                              Navigation().segue(
-                                  page: StartChallenge(),
-                                  context: context,
-                                  fullScreen: false);
-                            }),
-                      ),
-                    );
-            }
-          }
-        });
+    } else {
+      return ListView.builder(
+        physics: BouncingScrollPhysics(),
+        shrinkWrap: true,
+        key: _listKey,
+        itemCount: feedList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return buildContent(context, feedList[index], index);
+        },
+      );
+    }
   }
 
   loadTestData() async {

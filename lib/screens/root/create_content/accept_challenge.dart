@@ -530,7 +530,9 @@ class _AcceptChallengeState extends State<AcceptChallenge> {
       'userUid': snapshot.data['uid'],
       'type': mediaType.toString(),
       'likes': 0,
-      'comments': 0
+      'comments': 0,
+      'liked': {},
+      'bookmarked': {}
     };
 
     if (mediaType == PostContentType.video) {

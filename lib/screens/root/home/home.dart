@@ -1,11 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/build/build_content.dart';
+import 'package:heben/build/build_firestore_post.dart';
 import 'package:heben/components/refresh.dart';
 import 'package:heben/models/content_items.dart';
+import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
+import 'package:heben/utils/user.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 RefreshController homeRefreshController = RefreshController();
@@ -30,14 +35,19 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
-  List<ContentItems> currentFeedList = [];
-
+  List<ContentItems> feedList = [];
+  Future getSnapshots;
+  String uid;
+  bool isLoading;
   bool keepAlive = true;
   bool get wantKeepAlive => keepAlive;
 
   @override
   void initState() {
-    loadTestData();
+    // loadTestData();
+    isLoading = true;
+
+    loadData();
     super.initState();
   }
 
@@ -77,34 +87,99 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
               ];
             },
             body: SmartRefresher(
-              controller: homeRefreshController,
-              enablePullDown: true,
-              enablePullUp: true,
-              header: refreshHeader(),
-              footer: refreshFooter(),
-              onLoading: () {
-                homeRefreshController.loadComplete();
-              },
-              onRefresh: () {
-                loadTestData();
-                homeRefreshController.refreshCompleted();
-              },
-              child: AnimatedList(
-                physics: BouncingScrollPhysics(),
-                shrinkWrap: true,
-                key: _listKey,
-                initialItemCount: currentFeedList.length,
-                itemBuilder:
-                    (BuildContext context, int index, Animation animation) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child: buildContent(context, currentFeedList[index], index),
-                  );
+                controller: homeRefreshController,
+                enablePullDown: !isLoading,
+                enablePullUp: !isLoading,
+                header: refreshHeader(),
+                footer: refreshFooter(),
+                onLoading: () {
+                  homeRefreshController.loadComplete();
                 },
-              ),
-            )),
+                onRefresh: () {
+                  loadTestData();
+                  homeRefreshController.refreshCompleted();
+                },
+                child: buildList())),
       ),
     );
+  }
+
+  loadData() async {
+    uid = await User().getUid();
+    getSnapshots = Firestore.instance
+        .collection('timeline')
+        .document(uid)
+        .collection('timelinePosts')
+        .orderBy('addedOn', descending: false)
+        .limit(15)
+        .getDocuments();
+
+    QuerySnapshot docSnap;
+    feedList.clear();
+    feedList.add(ContentHomeHeaderItem(streamerList: []));
+
+    await getSnapshots.then((snapshot) {
+      docSnap = snapshot as QuerySnapshot;
+    });
+
+    docSnap.documents.forEach((doc) async {
+      await Firestore.instance
+          .collection('posts')
+          .document(doc.documentID)
+          .get()
+          .then((doc) {
+        feedList.add(buildFirestorePost(snapshot: doc, uid: uid));
+        setState(() {});
+      }).then((_) {
+        setState(() {
+          isLoading = false;
+        });
+      });
+    });
+
+    if (docSnap.documents.length == 0) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Widget buildList() {
+    if (isLoading) {
+      return Container(
+        width: DeviceSize().getWidth(context),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Center(
+              child: Container(
+                height: 50,
+                child: SpinKitThreeBounce(
+                  color: Colors.black,
+                  size: 40,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      if (feedList.isEmpty) {
+        return Container(
+          color: Colors.red,
+        );
+      } else {
+        return ListView.builder(
+          physics: BouncingScrollPhysics(),
+          shrinkWrap: true,
+          key: _listKey,
+          itemCount: feedList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return buildContent(context, feedList[index], index);
+          },
+        );
+      }
+    }
   }
 
   loadTestData() async {
@@ -213,7 +288,7 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
         ),
       ];
 
-      currentFeedList.insertAll(0, list);
+      feedList.insertAll(0, list);
 
       for (int offset = 0; offset < list.length; offset++) {
         _listKey.currentState.insertItem(0 + offset);

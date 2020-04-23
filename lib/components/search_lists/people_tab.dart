@@ -1,9 +1,10 @@
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/components/content/content_profile_tile.dart';
-import 'package:heben/components/refresh.dart';
 import 'package:heben/models/profile_item.dart';
+import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/keys.dart';
 import 'package:heben/utils/user.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -20,14 +21,14 @@ class _PeopleTabState extends State<PeopleTab> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   RefreshController profileRefreshController = RefreshController();
   List<ProfileItem> feedList = [];
-
+  bool isLoading;
   Algolia algolia;
 
   Future algoliaFuture;
 
   @override
-  void initState() {
-    // loadTestData();
+  void didChangeDependencies() {
+    isLoading = true;
     algolia = Algolia.init(
       applicationId: AlgoliaKeys().getAppId(),
       apiKey: AlgoliaKeys().getApiKey(),
@@ -39,7 +40,9 @@ class _PeopleTabState extends State<PeopleTab> {
         .setHitsPerPage(15)
         .getObjects();
 
-    super.initState();
+    loadData();
+    buildList();
+    super.didChangeDependencies();
   }
 
   @override
@@ -57,77 +60,96 @@ class _PeopleTabState extends State<PeopleTab> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: algoliaFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return Container(
-              height: 50,
-              child: SpinKitCircle(
-                color: Colors.grey,
-                size: 40,
-              ),
-            );
-          } else {
-            AlgoliaQuerySnapshot data = snapshot.data;
+    return buildList();
+  }
 
-            for (var i = 0; i <= feedList.length - 1; i++) {
-              _listKey.currentState.removeItem(0,
-                  (BuildContext context, Animation<double> animation) {
-                return Container();
-              });
-            }
-            feedList.clear();
+  loadData() async {
+    setState(() {
+      isLoading = true;
+    });
 
-            User().getUid().then((uid) {
-              data.hits.asMap().forEach((index, value) {
-                if (uid != value.objectID) {
-                  print(value.data['username']);
-                  feedList.add(
-                    ProfileItem(
-                        uid: value.objectID,
-                        username: value.data['username'],
-                        profileImage: value.data['profileImage']),
-                  );
+    String uid = await User().getUid();
+    algoliaFuture.then((snapshot) {
+      feedList.clear();
+      final data = snapshot as AlgoliaQuerySnapshot;
 
-                  _listKey.currentState.insertItem(0);
-                }
-              });
-            });
+      data.hits.asMap().forEach((index, value) {
+        if (uid != value.objectID) {
+          feedList.insert(
+              index,
+              ProfileItem(
+                  uid: value.objectID,
+                  username: value.data['username'],
+                  profileImage: value.data['profileImage']));
 
-            return SmartRefresher(
-              physics: BouncingScrollPhysics(),
-              enablePullDown: false,
-              enablePullUp: true,
-              footer: refreshFooter(),
-              onLoading: () {
-                profileRefreshController.loadComplete();
-              },
-              controller: profileRefreshController,
-              child: Padding(
-                padding: EdgeInsets.only(top: 8.0),
-                child: AnimatedList(
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  key: _listKey,
-                  initialItemCount: feedList.length,
-                  itemBuilder:
-                      (BuildContext context, int index, Animation animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: ContentProfileTile(
-                        uid: feedList[index].uid,
-                        username: feedList[index].username,
-                        profileImage: feedList[index].profileImage,
-                        stopGesture: false,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            );
-          }
+          setState(() {
+            isLoading = false;
+          });
+        } else {
+          setState(() {
+            isLoading = false;
+          });
+        }
+      });
+
+      if (data.hits.length == 0) {
+        feedList.clear();
+        setState(() {
+          isLoading = false;
         });
+      }
+    });
+  }
+
+  Widget buildList() {
+    if (isLoading) {
+      return Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Container(
+          height: 50,
+          width: DeviceSize().getWidth(context),
+          child: Center(
+            child: SpinKitCircle(
+              color: Colors.grey,
+              size: 40,
+            ),
+          ),
+        ),
+      );
+    } else if (feedList.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Container(
+          height: 50,
+          width: DeviceSize().getWidth(context),
+          child: Center(
+            child: Text(
+              'No users found',
+              style: GoogleFonts.openSans(
+                  fontWeight: FontWeight.w600, fontSize: 16),
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Padding(
+        padding: EdgeInsets.only(top: 8.0),
+        child: ListView.builder(
+          physics: BouncingScrollPhysics(),
+          shrinkWrap: true,
+          key: _listKey,
+          itemCount: feedList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ContentProfileTile(
+              uid: feedList[index].uid,
+              username: feedList[index].username,
+              profileImage: feedList[index].profileImage,
+              stopGesture: false,
+            );
+          },
+        ),
+      );
+    }
   }
 
   loadTestData() async {

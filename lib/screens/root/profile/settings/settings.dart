@@ -59,14 +59,14 @@ class _SettingsState extends State<Settings> {
                                 context: context,
                                 fullScreen: false);
                           }),
-                      settingsItem(
-                          title: 'Change username',
-                          onPressed: () {
-                            Navigation().segue(
-                                page: ChangeUsername(),
-                                context: context,
-                                fullScreen: false);
-                          }),
+                      // settingsItem(
+                      //     title: 'Change username',
+                      //     onPressed: () {
+                      //       Navigation().segue(
+                      //           page: ChangeUsername(),
+                      //           context: context,
+                      //           fullScreen: false);
+                      //     }),
                       settingsItem(
                           title: 'Change bio',
                           onPressed: () {

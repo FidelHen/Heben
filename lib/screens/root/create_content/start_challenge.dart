@@ -610,7 +610,9 @@ class _StartChallengeState extends State<StartChallenge> {
       'userUid': snapshot.data['uid'],
       'type': PostContentType.challenge.toString(),
       'likes': 0,
-      'comments': 0
+      'comments': 0,
+      'liked': {},
+      'bookmarked': {}
     };
 
     participantData = {
@@ -628,7 +630,9 @@ class _StartChallengeState extends State<StartChallenge> {
       'userUid': snapshot.data['uid'],
       'type': mediaType.toString(),
       'likes': 0,
-      'comments': 0
+      'comments': 0,
+      'liked': {},
+      'bookmarked': {}
     };
 
     if (mediaType == PostContentType.video) {

@@ -538,7 +538,9 @@ class _CreatePostState extends State<CreatePost> {
       'userUid': snapshot.data['uid'],
       'type': mediaType.toString(),
       'likes': 0,
-      'comments': 0
+      'comments': 0,
+      'liked': {},
+      'bookmarked': {}
     };
 
     if (mediaType == PostContentType.video) {

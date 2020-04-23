@@ -13,6 +13,7 @@ import 'package:heben/utils/constants.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
+import 'package:heben/utils/social.dart';
 import 'package:highlight_text/highlight_text.dart';
 import 'package:like_button/like_button.dart';
 import 'package:video_player/video_player.dart';
@@ -120,7 +121,7 @@ class _ContentVideoState extends State<ContentVideo> {
               video: widget.video,
               bookmarked: widget.bookmarked,
               comments: widget.comments,
-              liked: widget.liked,
+              liked: currentlyLiked,
               likes: widget.likes,
             ),
             context: context,
@@ -181,7 +182,7 @@ class _ContentVideoState extends State<ContentVideo> {
                             video: widget.video,
                             bookmarked: widget.bookmarked,
                             comments: widget.comments,
-                            liked: widget.liked,
+                            liked: currentlyLiked,
                             likes: widget.likes,
                           )));
                     },
@@ -214,6 +215,7 @@ class _ContentVideoState extends State<ContentVideo> {
                         ),
                         LikeButton(
                           size: 25,
+                          onTap: onLikeButtonTapped,
                           circleColor: CircleColor(
                               start: Colors.black, end: Colors.redAccent),
                           bubblesColor: BubblesColor(
@@ -248,6 +250,7 @@ class _ContentVideoState extends State<ContentVideo> {
                         ),
                         LikeButton(
                           size: 25,
+                          onTap: onBookmarkButtonTapped,
                           circleColor: CircleColor(
                               start: Colors.black, end: hebenBookmarkColor),
                           bubblesColor: BubblesColor(
@@ -415,5 +418,23 @@ class _ContentVideoState extends State<ContentVideo> {
     } else {
       return '$secondsLeft';
     }
+  }
+
+  Future<bool> onLikeButtonTapped(bool isLiked) async {
+    if (!isLiked) {
+      Social().likePost(postUid: widget.postUid);
+    } else {
+      Social().unlikePost(postUid: widget.postUid);
+    }
+    return !isLiked;
+  }
+
+  Future<bool> onBookmarkButtonTapped(bool isLiked) async {
+    if (!isLiked) {
+      Social().bookmarkPost(postUid: widget.postUid);
+    } else {
+      Social().unBookmarkPost(postUid: widget.postUid);
+    }
+    return !isLiked;
   }
 }
