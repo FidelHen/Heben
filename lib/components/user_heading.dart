@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:getflutter/getflutter.dart';
@@ -9,17 +10,20 @@ import 'package:heben/screens/root/profile/followers.dart';
 import 'package:heben/screens/root/profile/following.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
+import 'package:heben/utils/social.dart';
 
 class UserHeading extends StatefulWidget {
   UserHeading(
       {@required this.name,
       @required this.bio,
+      @required this.userUid,
       @required this.profileImage,
       @required this.backgroundImage,
       @required this.followers,
       @required this.following,
       @required this.role,
       @required this.isLive,
+      @required this.isFollowing,
       this.backgroundImageFile,
       this.profileImageFile,
       this.isRegistering});
@@ -32,8 +36,10 @@ class UserHeading extends StatefulWidget {
   final File profileImageFile;
   final int followers;
   final int following;
+  final bool isFollowing;
   final UserRole role;
   final bool isLive;
+  final String userUid;
   final bool isRegistering;
 
   @override
@@ -48,6 +54,8 @@ class _UserHeadingState extends State<UserHeading> {
   );
 
   bool isRegistering;
+  int following;
+  int followers;
 
   @override
   void initState() {
@@ -56,6 +64,10 @@ class _UserHeadingState extends State<UserHeading> {
     } else {
       isRegistering = true;
     }
+
+    following = widget.following;
+    followers = widget.followers;
+
     super.initState();
   }
 
@@ -95,7 +107,9 @@ class _UserHeadingState extends State<UserHeading> {
                 width: width,
                 image: widget.backgroundImageFile != null
                     ? FileImage(widget.backgroundImageFile)
-                    : NetworkImage(widget.backgroundImage),
+                    : widget.role != UserRole.user
+                        ? NetworkImage(widget.backgroundImage)
+                        : CachedNetworkImageProvider(widget.backgroundImage),
                 boxFit: BoxFit.cover),
             Padding(
               padding: EdgeInsets.only(top: height * 0.02),
@@ -118,7 +132,7 @@ class _UserHeadingState extends State<UserHeading> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            '${widget.followers}',
+                            '$followers',
                             style: profileStatsStyle,
                           ),
                           Text(
@@ -146,8 +160,11 @@ class _UserHeadingState extends State<UserHeading> {
                               : Container(),
                           backgroundImage: widget.profileImageFile != null
                               ? FileImage(widget.profileImageFile)
-                              : NetworkImage(widget.profileImage ?? ''),
-                          backgroundColor: Colors.grey[300],
+                              : widget.role != UserRole.user
+                                  ? NetworkImage(widget.profileImage)
+                                  : CachedNetworkImageProvider(
+                                      widget.profileImage),
+                          backgroundColor: Colors.grey,
                         )),
                   ),
                   Padding(
@@ -165,7 +182,7 @@ class _UserHeadingState extends State<UserHeading> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            '${widget.following}',
+                            '$following',
                             style: profileStatsStyle,
                           ),
                           Text(
@@ -223,9 +240,11 @@ class _UserHeadingState extends State<UserHeading> {
                       ),
                     ),
                     FollowButton(
-                      role: widget.role,
-                      isRegistering: isRegistering,
-                    )
+                        role: widget.role,
+                        isRegistering: isRegistering,
+                        unfollow: unfollow,
+                        follow: follow,
+                        isFollowing: widget.isFollowing ?? false)
                   ],
                 ),
               ),
@@ -253,6 +272,20 @@ class _UserHeadingState extends State<UserHeading> {
             : Container(),
       ]),
     );
+  }
+
+  follow() {
+    Social().followUser(userUid: widget.userUid);
+    setState(() {
+      followers += 1;
+    });
+  }
+
+  unfollow() {
+    Social().unfollowUser(userUid: widget.userUid);
+    setState(() {
+      followers -= 1;
+    });
   }
 }
 
@@ -445,6 +478,9 @@ class _PreviewUserHeadingState extends State<PreviewUserHeading> {
                     FollowButton(
                       role: widget.role,
                       isRegistering: true,
+                      unfollow: () {},
+                      follow: () {},
+                      isFollowing: false,
                     )
                   ],
                 ),

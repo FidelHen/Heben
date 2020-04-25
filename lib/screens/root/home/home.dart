@@ -6,8 +6,10 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/build/build_content.dart';
 import 'package:heben/build/build_firestore_post.dart';
+import 'package:heben/components/empty_list_button.dart';
 import 'package:heben/components/refresh.dart';
 import 'package:heben/models/content_items.dart';
+import 'package:heben/models/profile_item.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/user.dart';
@@ -36,9 +38,11 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<ContentItems> feedList = [];
+  List<ProfileItem> usersToFollow = [];
   Future getSnapshots;
   String uid;
   bool isLoading;
+  bool noContent;
   bool keepAlive = true;
   bool get wantKeepAlive => keepAlive;
 
@@ -46,7 +50,7 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
   void initState() {
     // loadTestData();
     isLoading = true;
-
+    noContent = true;
     loadData();
     super.initState();
   }
@@ -96,8 +100,7 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
                   homeRefreshController.loadComplete();
                 },
                 onRefresh: () {
-                  loadTestData();
-                  homeRefreshController.refreshCompleted();
+                  loadData();
                 },
                 child: buildList())),
       ),
@@ -116,7 +119,6 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
 
     QuerySnapshot docSnap;
     feedList.clear();
-    feedList.add(ContentHomeHeaderItem(streamerList: []));
 
     await getSnapshots.then((snapshot) {
       docSnap = snapshot as QuerySnapshot;
@@ -132,16 +134,38 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
         setState(() {});
       }).then((_) {
         setState(() {
+          noContent = false;
           isLoading = false;
         });
       });
     });
 
     if (docSnap.documents.length == 0) {
-      setState(() {
-        isLoading = false;
+      await Firestore.instance
+          .collection('users')
+          .where('isRegistered', isEqualTo: true)
+          .orderBy('score', descending: true)
+          .getDocuments()
+          .then((result) {
+        result.documents.forEach((doc) {
+          if (doc.data['uid'] != uid) {
+            if (doc.data['profileImage'] != '') {
+              usersToFollow.add(ProfileItem(
+                  profileImage: doc.data['profileImage'],
+                  uid: doc.data['uid'],
+                  username: doc.data['username']));
+            }
+          }
+          setState(() {
+            isLoading = false;
+          });
+        });
       });
+    } else {
+      feedList.insert(0, ContentHomeHeaderItem(streamerList: []));
     }
+
+    homeRefreshController.refreshCompleted();
   }
 
   Widget buildList() {
@@ -166,8 +190,59 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
     } else {
       if (feedList.isEmpty) {
         return Container(
-          color: Colors.red,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: EmptyListButton(
+                    title: 'Follow users to populate feed', onTap: () {}),
+              ),
+            ],
+          ),
         );
+        // return Padding(
+        //   padding: EdgeInsets.all(25),
+        //   child: GridView.builder(
+        //       shrinkWrap: true,
+        //       physics: NeverScrollableScrollPhysics(),
+        //       itemCount: usersToFollow.length,
+        //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        //         crossAxisCount: 2,
+        //       ),
+        //       itemBuilder: (BuildContext context, int index) {
+        //         return Padding(
+        //           padding: EdgeInsets.all(10),
+        //           child: RaisedButton(
+        //             onPressed: () {},
+        //             color: Colors.white,
+        //             shape: RoundedRectangleBorder(
+        //               borderRadius: new BorderRadius.circular(11.0),
+        //             ),
+        //             child: Column(
+        //               mainAxisAlignment: MainAxisAlignment.center,
+        //               children: <Widget>[
+        //                 GFAvatar(
+        //                   backgroundColor: Colors.grey,
+        //                   backgroundImage:
+        //                       NetworkImage(usersToFollow[index].profileImage),
+        //                 ),
+        //                 Padding(
+        //                   padding: const EdgeInsets.all(8.0),
+        //                   child: Text(
+        //                     usersToFollow[index].username,
+        //                     style: GoogleFonts.openSans(
+        //                         fontSize: 14,
+        //                         fontWeight: FontWeight.w600,
+        //                         color: Colors.black),
+        //                   ),
+        //                 ),
+        //               ],
+        //             ),
+        //           ),
+        //         );
+        //       }),
+        // );
       } else {
         return ListView.builder(
           physics: BouncingScrollPhysics(),

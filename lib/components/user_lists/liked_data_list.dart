@@ -8,6 +8,7 @@ import 'package:heben/build/build_firestore_post.dart';
 import 'package:heben/models/content_items.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
+import 'package:heben/utils/user.dart';
 
 class LikedDataList extends StatefulWidget {
   LikedDataList({@required this.uid, @required this.isFriend});
@@ -52,6 +53,8 @@ class _LikedDataListState extends State<LikedDataList> {
 
   loadData() async {
     QuerySnapshot docSnap;
+
+    String myUid = await User().getUid();
     await getSnapshots.then((snapshot) {
       docSnap = snapshot as QuerySnapshot;
     });
@@ -62,7 +65,7 @@ class _LikedDataListState extends State<LikedDataList> {
           .document(doc.documentID)
           .get()
           .then((doc) {
-        feedList.add(buildFirestorePost(snapshot: doc, uid: widget.uid));
+        feedList.add(buildFirestorePost(snapshot: doc, uid: myUid));
         setState(() {});
       }).then((_) {
         setState(() {

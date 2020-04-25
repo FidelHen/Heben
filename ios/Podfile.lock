@@ -285,13 +285,12 @@ PODS:
     - SDWebImageWebPCoder
   - flutter_plugin_android_lifecycle (0.0.1):
     - Flutter
-  - flutter_rtmp (0.0.1):
-    - Flutter
-    - LFLiveKit
-    - MJExtension
   - flutter_statusbarcolor (0.0.1):
     - Flutter
   - FlutterIJK (0.1.1)
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
   - GoogleAppMeasurement (6.4.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
@@ -343,7 +342,6 @@ PODS:
   - image_picker (0.0.1):
     - Flutter
   - leveldb-library (1.22)
-  - LFLiveKit (2.6)
   - libwebp (1.1.0):
     - libwebp/demux (= 1.1.0)
     - libwebp/mux (= 1.1.0)
@@ -356,7 +354,6 @@ PODS:
   - Mantle (2.1.1):
     - Mantle/extobjc (= 2.1.1)
   - Mantle/extobjc (2.1.1)
-  - MJExtension (3.2.1)
   - nanopb (0.3.9011):
     - nanopb/decode (= 0.3.9011)
     - nanopb/encode (= 0.3.9011)
@@ -376,6 +373,15 @@ PODS:
   - SDWebImageWebPCoder (0.5.0):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.5)
+  - shared_preferences (0.0.1):
+    - Flutter
+  - shared_preferences_macos (0.0.1):
+    - Flutter
+  - shared_preferences_web (0.0.1):
+    - Flutter
+  - sqflite (0.0.1):
+    - Flutter
+    - FMDB (~> 2.7.2)
   - TOCropViewController (2.5.2)
   - vibrate (0.0.1):
     - Flutter
@@ -398,7 +404,6 @@ DEPENDENCIES:
   - flutter_ijkplayer (from `.symlinks/plugins/flutter_ijkplayer/ios`)
   - flutter_image_compress (from `.symlinks/plugins/flutter_image_compress/ios`)
   - flutter_plugin_android_lifecycle (from `.symlinks/plugins/flutter_plugin_android_lifecycle/ios`)
-  - flutter_rtmp (from `.symlinks/plugins/flutter_rtmp/ios`)
   - flutter_statusbarcolor (from `.symlinks/plugins/flutter_statusbarcolor/ios`)
   - image_cropper (from `.symlinks/plugins/image_cropper/ios`)
   - image_picker (from `.symlinks/plugins/image_picker/ios`)
@@ -406,6 +411,10 @@ DEPENDENCIES:
   - path_provider_macos (from `.symlinks/plugins/path_provider_macos/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - photo_manager (from `.symlinks/plugins/photo_manager/ios`)
+  - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
+  - shared_preferences_macos (from `.symlinks/plugins/shared_preferences_macos/ios`)
+  - shared_preferences_web (from `.symlinks/plugins/shared_preferences_web/ios`)
+  - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - vibrate (from `.symlinks/plugins/vibrate/ios`)
   - video_player (from `.symlinks/plugins/video_player/ios`)
   - video_player_web (from `.symlinks/plugins/video_player_web/ios`)
@@ -428,6 +437,7 @@ SPEC REPOS:
     - FirebaseMessaging
     - FirebaseStorage
     - FlutterIJK
+    - FMDB
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleDataTransportCCTSupport
@@ -436,10 +446,8 @@ SPEC REPOS:
     - gRPC-Core
     - GTMSessionFetcher
     - leveldb-library
-    - LFLiveKit
     - libwebp
     - Mantle
-    - MJExtension
     - nanopb
     - PromisesObjC
     - Protobuf
@@ -474,8 +482,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_image_compress/ios"
   flutter_plugin_android_lifecycle:
     :path: ".symlinks/plugins/flutter_plugin_android_lifecycle/ios"
-  flutter_rtmp:
-    :path: ".symlinks/plugins/flutter_rtmp/ios"
   flutter_statusbarcolor:
     :path: ".symlinks/plugins/flutter_statusbarcolor/ios"
   image_cropper:
@@ -490,6 +496,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler/ios"
   photo_manager:
     :path: ".symlinks/plugins/photo_manager/ios"
+  shared_preferences:
+    :path: ".symlinks/plugins/shared_preferences/ios"
+  shared_preferences_macos:
+    :path: ".symlinks/plugins/shared_preferences_macos/ios"
+  shared_preferences_web:
+    :path: ".symlinks/plugins/shared_preferences_web/ios"
+  sqflite:
+    :path: ".symlinks/plugins/sqflite/ios"
   vibrate:
     :path: ".symlinks/plugins/vibrate/ios"
   video_player:
@@ -526,9 +540,9 @@ SPEC CHECKSUMS:
   flutter_ijkplayer: ef9006131553deb6d8ae6d7fbd3bcbf93b135930
   flutter_image_compress: 082f8daaf6c1b0c9fe798251c750ef0ecd98d7ae
   flutter_plugin_android_lifecycle: 47de533a02850f070f5696a623995e93eddcdb9b
-  flutter_rtmp: e17cd3f93446134576e5b8a37174d8b5f59acdd9
   flutter_statusbarcolor: 8afb1071ed8c58be929f1e32b36c629771fd2259
   FlutterIJK: f3c0ead9ca31b93d993d46dda53156fdc7b22d2c
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GoogleAppMeasurement: 6e68a94d0eaeb1d73ef6b0ed4f7334e29d63ae29
   GoogleDataTransport: b29a21d813e906014ca16c00897827e40e4a24ab
   GoogleDataTransportCCTSupport: 6f15a89b0ca35d6fa523e1f752ef818588885988
@@ -539,10 +553,8 @@ SPEC CHECKSUMS:
   image_cropper: 3c16d7651730ffe85897f5a1c4e2547e6b54989a
   image_picker: e3eacd46b94694dde7cf2705955cece853aa1a8f
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
-  LFLiveKit: 2219563721f8aa0f188effc3395a06e2d53b23f2
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   Mantle: 35238ae6f2e2b2d474fa7b67fee82a59fea71915
-  MJExtension: 635f2c663dcb1bf76fa4b715b2570a5710aec545
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
   path_provider_macos: f760a3c5b04357c380e2fddb6f9db6f3015897e0
@@ -552,6 +564,10 @@ SPEC CHECKSUMS:
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
   SDWebImage: 7edb9c3ea661e77a66661f7f044de8c1b55d1120
   SDWebImageWebPCoder: e7ae855f058e3dcae99696920b6a5d134e9dcddf
+  shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
+  shared_preferences_macos: f3f29b71ccbb56bf40c9dd6396c9acf15e214087
+  shared_preferences_web: 141cce0c3ed1a1c5bf2a0e44f52d31eeb66e5ea9
+  sqflite: 4001a31ff81d210346b500c55b17f4d6c7589dd0
   TOCropViewController: e9da34f484aedd4e5d5a8ab230ba217cfe16c729
   vibrate: 967ba16b8bd87d2fa3646472bb10429f1927c32f
   video_player: 69c5f029fac4ffe4fc8a85ea7f7b793709661549

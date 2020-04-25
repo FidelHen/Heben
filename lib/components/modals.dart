@@ -7,6 +7,7 @@ import 'package:heben/models/profile_item.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/keys.dart';
+import 'package:heben/utils/social.dart';
 
 class Modal {
   void friendsModal(BuildContext context, TextEditingController controller,
@@ -151,7 +152,8 @@ class Modal {
         });
   }
 
-  void nameModal(BuildContext context, TextEditingController nameController) {
+  void nameModal(BuildContext context, TextEditingController nameController,
+      Function updateName) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -178,6 +180,9 @@ class Modal {
                       child: TextField(
                         controller: nameController,
                         autofocus: true,
+                        onChanged: (text) {
+                          updateName();
+                        },
                         keyboardAppearance: Brightness.light,
                         style: GoogleFonts.lato(
                             fontSize: 16, fontWeight: FontWeight.w600),
@@ -224,7 +229,8 @@ class Modal {
         });
   }
 
-  void bioModal(BuildContext context, TextEditingController bioController) {
+  void bioModal(BuildContext context, TextEditingController bioController,
+      Function updateBio) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -252,6 +258,9 @@ class Modal {
                       child: TextField(
                         controller: bioController,
                         autofocus: true,
+                        onChanged: (text) {
+                          updateBio();
+                        },
                         maxLines: 4,
                         maxLength: 150,
                         textInputAction: TextInputAction.done,
@@ -350,69 +359,121 @@ class Modal {
         });
   }
 
-  void postOptions(BuildContext context) {
-    showModalBottomSheet(
-        context: context,
-        shape: RoundedRectangleBorder(
-            borderRadius: new BorderRadius.only(
-          topLeft: const Radius.circular(18.0),
-          topRight: const Radius.circular(18.0),
-        )),
-        builder: (BuildContext bc) {
-          return SafeArea(
-            child: Container(
-              child: Wrap(
-                children: <Widget>[
-                  Container(
-                    height: 20,
-                    child: Center(
-                      child: Container(
-                        width: 40,
-                        height: 6,
-                        decoration: BoxDecoration(
-                            color: Colors.grey[400],
-                            borderRadius: BorderRadius.circular(15)),
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                      leading: Padding(
-                        padding: EdgeInsets.only(left: 5.0, top: 5),
-                        child: Image.asset(
-                          'images/heben_logo.png',
-                          height: 24,
+  void postOptions(BuildContext context, bool isOwner, String postUid) {
+    if (isOwner) {
+      showModalBottomSheet(
+          context: context,
+          shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.only(
+            topLeft: const Radius.circular(18.0),
+            topRight: const Radius.circular(18.0),
+          )),
+          builder: (BuildContext bc) {
+            return SafeArea(
+              child: Container(
+                child: Wrap(
+                  children: <Widget>[
+                    Container(
+                      height: 20,
+                      child: Center(
+                        child: Container(
+                          width: 40,
+                          height: 6,
+                          decoration: BoxDecoration(
+                              color: Colors.grey[400],
+                              borderRadius: BorderRadius.circular(15)),
                         ),
                       ),
-                      title: Text(
-                        'Pin to profile',
-                        style: GoogleFonts.lato(fontWeight: FontWeight.w600),
-                      ),
-                      onTap: () => {}),
-                  ListTile(
-                      leading: Icon(
-                        EvaIcons.personAddOutline,
-                        color: Colors.black,
-                      ),
-                      title: Text(
-                        'Follow',
-                        style: GoogleFonts.lato(fontWeight: FontWeight.w600),
-                      ),
-                      onTap: () => {}),
-                  ListTile(
-                      leading: Icon(
-                        EvaIcons.alertTriangleOutline,
-                        color: Colors.black,
-                      ),
-                      title: Text(
-                        'Report',
-                        style: GoogleFonts.lato(fontWeight: FontWeight.w600),
-                      ),
-                      onTap: () => {}),
-                ],
+                    ),
+                    ListTile(
+                        leading: Padding(
+                          padding: EdgeInsets.only(left: 5.0, top: 5),
+                          child: Image.asset(
+                            'images/heben_logo.png',
+                            height: 24,
+                          ),
+                        ),
+                        title: Text(
+                          'Pin to profile',
+                          style: GoogleFonts.lato(fontWeight: FontWeight.w600),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Social().pinPost(postUid: postUid);
+                        }),
+                    ListTile(
+                        leading:
+                            Icon(EvaIcons.trash2Outline, color: Colors.red),
+                        title: Text(
+                          'Delete',
+                          style: GoogleFonts.lato(fontWeight: FontWeight.w600),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Social().deletePost(postUid: postUid);
+                        }),
+                  ],
+                ),
               ),
-            ),
-          );
-        });
+            );
+          });
+    } else {
+      showModalBottomSheet(
+          context: context,
+          shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.only(
+            topLeft: const Radius.circular(18.0),
+            topRight: const Radius.circular(18.0),
+          )),
+          builder: (BuildContext bc) {
+            return SafeArea(
+              child: Container(
+                child: Wrap(
+                  children: <Widget>[
+                    Container(
+                      height: 20,
+                      child: Center(
+                        child: Container(
+                          width: 40,
+                          height: 6,
+                          decoration: BoxDecoration(
+                              color: Colors.grey[400],
+                              borderRadius: BorderRadius.circular(15)),
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                        leading: Padding(
+                          padding: EdgeInsets.only(left: 5.0, top: 5),
+                          child: Image.asset(
+                            'images/heben_logo.png',
+                            height: 24,
+                          ),
+                        ),
+                        title: Text(
+                          'Pin to profile',
+                          style: GoogleFonts.lato(fontWeight: FontWeight.w600),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Social().pinPost(postUid: postUid);
+                        }),
+                    ListTile(
+                        leading: Icon(
+                          EvaIcons.alertTriangleOutline,
+                          color: Colors.black,
+                        ),
+                        title: Text(
+                          'Report',
+                          style: GoogleFonts.lato(fontWeight: FontWeight.w600),
+                        ),
+                        onTap: () {}),
+                  ],
+                ),
+              ),
+            );
+          });
+    }
   }
 
   void streamOptions(BuildContext context) {
@@ -442,16 +503,6 @@ class Modal {
                   ),
                   ListTile(
                       leading: Icon(
-                        EvaIcons.personAddOutline,
-                        color: Colors.black,
-                      ),
-                      title: Text(
-                        'Follow',
-                        style: GoogleFonts.lato(fontWeight: FontWeight.w600),
-                      ),
-                      onTap: () => {}),
-                  ListTile(
-                      leading: Icon(
                         EvaIcons.alertTriangleOutline,
                         color: Colors.black,
                       ),
@@ -459,7 +510,7 @@ class Modal {
                         'Report',
                         style: GoogleFonts.lato(fontWeight: FontWeight.w600),
                       ),
-                      onTap: () => {}),
+                      onTap: () {}),
                 ],
               ),
             ),

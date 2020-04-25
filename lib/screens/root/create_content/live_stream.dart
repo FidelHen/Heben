@@ -1,7 +1,6 @@
 import 'package:argon_buttons_flutter/argon_buttons_flutter.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rtmp/flutter_rtmp.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:flutter_tags/flutter_tags.dart';
@@ -16,7 +15,6 @@ class LiveStream extends StatefulWidget {
 }
 
 class _LiveStreamState extends State<LiveStream> {
-  RtmpManager _manager;
   List<String> _tags = [
     '#Bodybuilding',
     '#Yoga',
@@ -34,14 +32,13 @@ class _LiveStreamState extends State<LiveStream> {
   @override
   void initState() {
     FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
-    _manager = RtmpManager(onCreated: () {});
     super.initState();
   }
 
   @override
   void dispose() {
     FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-    _manager.stopLive();
+
     super.dispose();
   }
 
@@ -62,18 +59,6 @@ class _LiveStreamState extends State<LiveStream> {
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
                       color: Colors.black,
-                      child: RtmpView(
-                        manager: _manager,
-                        permissionLoadingWidgetBuilder: (BuildContext context) {
-                          return Column(
-                            children: <Widget>[
-                              Center(
-                                  child:
-                                      SpinKitDoubleBounce(color: Colors.white))
-                            ],
-                          );
-                        },
-                      ),
                     ),
                   ),
                 ),
@@ -209,9 +194,5 @@ class _LiveStreamState extends State<LiveStream> {
         // }),
       ),
     );
-  }
-
-  switchCamera() async {
-    await _manager.switchCamera();
   }
 }

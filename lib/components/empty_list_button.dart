@@ -22,6 +22,7 @@ class EmptyListButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(11.0),
               ),
               child: Text(title,
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.openSans(
                       fontWeight: FontWeight.w600,
                       color: hebenActive,

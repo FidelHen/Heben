@@ -7,6 +7,7 @@ import 'package:heben/components/modals.dart';
 import 'package:heben/screens/root/friend.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
+import 'package:heben/utils/user.dart';
 
 /*
   light content header
@@ -45,13 +46,17 @@ class ContentHeaderLight extends StatelessWidget {
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              Navigation().segue(
-                  page: Friend(
-                    uid: null,
-                    username: username,
-                  ),
-                  context: context,
-                  fullScreen: false);
+              User().getUsername().then((userUsername) {
+                if (userUsername != username) {
+                  Navigation().segue(
+                      page: Friend(
+                        uid: null,
+                        username: username,
+                      ),
+                      context: context,
+                      fullScreen: false);
+                }
+              });
             },
             child: GFAvatar(
               size: 25,
@@ -100,12 +105,18 @@ class ContentHeaderLight extends StatelessWidget {
                   : IconButton(
                       icon: Icon(EvaIcons.moreHorizotnal),
                       onPressed: () {
-                        Modal().postOptions(context);
+                        User().getUsername().then((userUsername) {
+                          Modal().postOptions(
+                              context, userUsername == username, postUid);
+                        });
                       })
               : IconButton(
                   icon: Icon(EvaIcons.moreHorizotnal),
                   onPressed: () {
-                    Modal().postOptions(context);
+                    User().getUsername().then((userUsername) {
+                      Modal().postOptions(
+                          context, userUsername == username, postUid);
+                    });
                   })
         ],
       ),
@@ -128,6 +139,7 @@ class ContentHeaderDark extends StatelessWidget {
   final String profileImage;
   final String timestamp;
   final String postUid;
+
   final CurrentPostPopularity popularity;
   final bool moreDisabled;
 
@@ -204,7 +216,10 @@ class ContentHeaderDark extends StatelessWidget {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        Modal().postOptions(context);
+                        User().getUsername().then((userUsername) {
+                          Modal().postOptions(
+                              context, userUsername == username, postUid);
+                        });
                       })
               : IconButton(
                   icon: Icon(
@@ -212,7 +227,10 @@ class ContentHeaderDark extends StatelessWidget {
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    Modal().postOptions(context);
+                    User().getUsername().then((userUsername) {
+                      Modal().postOptions(
+                          context, userUsername == username, postUid);
+                    });
                   })
         ],
       ),

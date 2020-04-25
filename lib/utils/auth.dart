@@ -8,6 +8,7 @@ import 'package:heben/screens/root/root.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
 import 'package:platform_alert_dialog/platform_alert_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth {
   signUpWithEmail(
@@ -35,7 +36,12 @@ class Auth {
           'email': email.toLowerCase().trim(),
           'memberSince': DateTime.now().millisecondsSinceEpoch,
           'isRegistered': false,
-          'uid': result.user.uid
+          'uid': result.user.uid,
+        });
+
+        SharedPreferences.getInstance().then((pref) {
+          pref.setString('uid', result.user.uid);
+          pref.setString('username', username.toLowerCase().trim());
         });
       }
 
@@ -111,7 +117,9 @@ class Auth {
     });
   }
 
-  logOut({@required BuildContext context}) {
+  logOut({@required BuildContext context}) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.clear();
     FirebaseAuth.instance.signOut().then((_) {
       Navigation()
           .segueToRoot(page: Landing(), context: context, fullScreen: true);
@@ -234,6 +242,10 @@ class Auth {
   redirectUser({@required String uid, @required BuildContext context}) {
     Firestore.instance.collection('users').document(uid).get().then((doc) {
       if (doc.exists) {
+        SharedPreferences.getInstance().then((pref) {
+          pref.setString('uid', doc.data['uid']);
+          pref.setString('username', doc.data['username']);
+        });
         if (doc.data['isRegistered'] != null) {
           if (doc.data['isRegistered']) {
             Navigation()

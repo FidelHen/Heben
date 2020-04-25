@@ -250,9 +250,26 @@ class _AskTagsState extends State<AskTags> {
             'bio': widget.bio ?? '',
             'isRegistered': true,
             'followers': 0,
-            'following': 0
+            'following': 0,
+            'score': 0
           },
           merge: true);
+
+      batch.setData(
+          Firestore.instance
+              .collection('followers')
+              .document(uid)
+              .collection('users')
+              .document(uid),
+          {'uid': uid});
+
+      batch.setData(
+          Firestore.instance
+              .collection('following')
+              .document(uid)
+              .collection('users')
+              .document(uid),
+          {'uid': uid});
 
       batch.commit().then((_) {
         setState(() {

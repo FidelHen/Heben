@@ -19,29 +19,32 @@ class SuccessToast extends StatelessWidget {
           onHorizontalDragEnd: (_) {
             OverlaySupportEntry.of(context).dismiss();
           },
-          child: GFToast(
-            child: Row(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(
-                    EvaIcons.checkmarkCircle,
-                    color: hebenSuccess,
+          child: Padding(
+            padding: EdgeInsets.only(top: 4.0),
+            child: GFToast(
+              child: Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      EvaIcons.checkmarkCircle,
+                      color: hebenSuccess,
+                    ),
                   ),
-                ),
-                Expanded(
-                    child: Text(
-                  message,
-                  style: GoogleFonts.openSans(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14),
-                )),
-              ],
+                  Expanded(
+                      child: Text(
+                    message,
+                    style: GoogleFonts.openSans(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14),
+                  )),
+                ],
+              ),
+              backgroundColor: Colors.white,
+              type: GFToastType.rounded,
+              autoDismiss: false,
             ),
-            backgroundColor: Colors.white,
-            type: GFToastType.rounded,
-            autoDismiss: false,
           ),
         ),
       ),
@@ -63,29 +66,32 @@ class WarningToast extends StatelessWidget {
           onHorizontalDragEnd: (_) {
             OverlaySupportEntry.of(context).dismiss();
           },
-          child: GFToast(
-            child: Row(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(
-                    EvaIcons.alertCircleOutline,
-                    color: Colors.orangeAccent,
+          child: Padding(
+            padding: EdgeInsets.only(top: 4.0),
+            child: GFToast(
+              child: Row(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      EvaIcons.alertCircleOutline,
+                      color: Colors.orangeAccent,
+                    ),
                   ),
-                ),
-                Expanded(
-                    child: Text(
-                  message,
-                  style: GoogleFonts.openSans(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14),
-                )),
-              ],
+                  Expanded(
+                      child: Text(
+                    message,
+                    style: GoogleFonts.openSans(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14),
+                  )),
+                ],
+              ),
+              backgroundColor: Colors.white,
+              type: GFToastType.rounded,
+              autoDismiss: false,
             ),
-            backgroundColor: Colors.white,
-            type: GFToastType.rounded,
-            autoDismiss: false,
           ),
         ),
       ),
@@ -107,43 +113,46 @@ class LoadingToast extends StatelessWidget {
           onHorizontalDragEnd: (_) {
             OverlaySupportEntry.of(context).dismiss();
           },
-          child: GFToast(
-            child: Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(
-                        EvaIcons.cloudUploadOutline,
-                        color: Colors.black,
+          child: Padding(
+            padding: EdgeInsets.only(top: 4.0),
+            child: GFToast(
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(
+                          EvaIcons.cloudUploadOutline,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Expanded(
+                          child: Text(
+                        message,
+                        style: GoogleFonts.openSans(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14),
+                      )),
+                    ],
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      child: LinearProgressIndicator(
+                        backgroundColor: Colors.black26,
+                        valueColor: AlwaysStoppedAnimation(
+                            hebenSuccess.withOpacity(0.75)),
                       ),
                     ),
-                    Expanded(
-                        child: Text(
-                      message,
-                      style: GoogleFonts.openSans(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14),
-                    )),
-                  ],
-                ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Container(
-                    child: LinearProgressIndicator(
-                      backgroundColor: Colors.black26,
-                      valueColor: AlwaysStoppedAnimation(
-                          hebenSuccess.withOpacity(0.75)),
-                    ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
+              backgroundColor: Colors.white,
+              type: GFToastType.rounded,
+              autoDismiss: false,
             ),
-            backgroundColor: Colors.white,
-            type: GFToastType.rounded,
-            autoDismiss: false,
           ),
         ),
       ),

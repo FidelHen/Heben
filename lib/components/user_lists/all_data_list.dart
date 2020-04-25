@@ -11,6 +11,7 @@ import 'package:heben/screens/root/create_content/start_challenge.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
+import 'package:heben/utils/user.dart';
 
 class AllDataList extends StatefulWidget {
   AllDataList({@required this.uid, @required this.isFriend});
@@ -54,11 +55,12 @@ class _AllDataListState extends State<AllDataList> {
   }
 
   loadData() async {
+    String myUid = await User().getUid();
     getSnapshots.then((snapshot) {
       final data = snapshot as QuerySnapshot;
 
       data.documents.forEach((doc) {
-        feedList.add(buildFirestorePost(snapshot: doc, uid: widget.uid));
+        feedList.add(buildFirestorePost(snapshot: doc, uid: myUid));
       });
 
       setState(() {

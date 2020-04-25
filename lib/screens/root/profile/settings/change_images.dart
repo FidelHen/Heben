@@ -145,10 +145,12 @@ class _ChangeImagesState extends State<ChangeImages> {
                 UserHeading(
                   name: snapshot.data['name'],
                   bio: snapshot.data['bio'],
+                  isFollowing: null,
                   profileImage: snapshot.data['profileImage'],
                   backgroundImage: snapshot.data['backgroundImage'],
                   followers: snapshot.data['followers'],
                   following: snapshot.data['following'],
+                  userUid: snapshot.data['uid'],
                   isLive: snapshot.data['isLive'] ?? false,
                   role: UserRole.friend,
                   backgroundImageFile: backgroundImage,

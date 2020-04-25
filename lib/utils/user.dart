@@ -5,12 +5,28 @@ import 'package:heben/components/toast.dart';
 import 'package:heben/utils/auth.dart';
 import 'package:heben/utils/service.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class User {
   Future<String> getUid() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    if (pref.get('uid') == null) {
+      FirebaseUser user = await FirebaseAuth.instance.currentUser();
 
-    return user.uid;
+      return user.uid;
+    } else {
+      return pref.get('uid');
+    }
+  }
+
+  Future<String> getUsername() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    if (pref.get('username') == null) {
+      DocumentSnapshot snap = await getUserProfileInfo();
+      return snap.data['username'];
+    } else {
+      return pref.get('username');
+    }
   }
 
   Future<DocumentSnapshot> getUserProfileInfo() async {

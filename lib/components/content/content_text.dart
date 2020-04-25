@@ -78,7 +78,7 @@ class _ContentTextState extends State<ContentText> {
               bookmarked: widget.bookmarked,
               comments: widget.comments,
               liked: currentlyLiked,
-              likes: widget.likes,
+              likes: currentLikes,
             ),
             context: context,
             fullScreen: false);

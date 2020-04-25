@@ -12,6 +12,7 @@ import 'package:heben/utils/constants.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
+import 'package:heben/utils/user.dart';
 import 'package:highlight_text/highlight_text.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:video_player/video_player.dart';
@@ -136,7 +137,10 @@ class _MediaViewState extends State<MediaView> {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      Modal().postOptions(context);
+                      User().getUsername().then((userUsername) {
+                        Modal().postOptions(context,
+                            userUsername == widget.username, widget.postUid);
+                      });
                     }),
               ),
             ),

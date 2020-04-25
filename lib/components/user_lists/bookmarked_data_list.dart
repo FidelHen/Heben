@@ -8,6 +8,7 @@ import 'package:heben/build/build_firestore_post.dart';
 import 'package:heben/models/content_items.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
+import 'package:heben/utils/user.dart';
 
 class BookmarkedDataList extends StatefulWidget {
   BookmarkedDataList({@required this.uid});
@@ -52,6 +53,7 @@ class _BookmarkedDataListState extends State<BookmarkedDataList> {
 
   loadData() async {
     QuerySnapshot docSnap;
+    String myUid = await User().getUid();
 
     await getSnapshots.then((snapshot) {
       docSnap = snapshot as QuerySnapshot;
@@ -63,7 +65,7 @@ class _BookmarkedDataListState extends State<BookmarkedDataList> {
           .document(doc.documentID)
           .get()
           .then((doc) {
-        feedList.add(buildFirestorePost(snapshot: doc, uid: widget.uid));
+        feedList.add(buildFirestorePost(snapshot: doc, uid: myUid));
         setState(() {});
       }).then((_) {
         setState(() {

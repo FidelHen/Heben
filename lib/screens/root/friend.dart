@@ -10,6 +10,7 @@ import 'package:heben/components/user_lists/all_data_list.dart';
 import 'package:heben/components/user_lists/liked_data_list.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
+import 'package:heben/utils/user.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class Friend extends StatefulWidget {
@@ -22,8 +23,11 @@ class Friend extends StatefulWidget {
 
 class _FriendState extends State<Friend> {
   RefreshController friendRefreshController = RefreshController();
-  bool loading;
+  bool isLoading;
+  bool isFollowing;
   bool loadingList = true;
+
+  DocumentSnapshot data;
 
   Icon tabOneIcon = Icon(
     EvaIcons.list,
@@ -36,24 +40,13 @@ class _FriendState extends State<Friend> {
 
   int listIndex;
 
-  Future getPostFuture;
-
   String userUid;
 
   @override
   void initState() {
-    loading = false;
     listIndex = 0;
-    if (widget.uid != null) {
-      getPostFuture =
-          Firestore.instance.collection('users').document(widget.uid).get();
-      userUid = widget.uid;
-    } else {
-      getPostFuture = Firestore.instance
-          .collection('users')
-          .where('username', isEqualTo: widget.username)
-          .getDocuments();
-    }
+
+    loadData();
 
     super.initState();
   }
@@ -65,219 +58,251 @@ class _FriendState extends State<Friend> {
     }
   }
 
+  loadData() async {
+    isLoading = true;
+
+    if (widget.uid != null) {
+      userUid = widget.uid;
+    } else {
+      await Firestore.instance
+          .collection('usernames')
+          .document(widget.username)
+          .get()
+          .then((snapshot) {
+        userUid = snapshot.data['uid'];
+      });
+    }
+
+    String uid = await User().getUid();
+
+    await Firestore.instance
+        .collection('following')
+        .document(uid)
+        .collection('users')
+        .document(userUid)
+        .get()
+        .then((snapshot) {
+      isFollowing = snapshot.exists;
+    });
+
+    await Firestore.instance
+        .collection('users')
+        .document(userUid)
+        .get()
+        .then((snapshot) async {
+      data = snapshot;
+    });
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getPostFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return Scaffold(
-              backgroundColor: Colors.grey[100],
-              appBar: GFAppBar(
-                centerTitle: true,
-                elevation: 0,
-                leading: IconButton(
-                    icon: Icon(
-                      EvaIcons.chevronLeft,
-                      size: 40,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }),
-                brightness: Brightness.light,
-                backgroundColor: Colors.grey[100],
-              ),
-              body: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Center(
-                    child: Container(
-                      height: 50,
-                      child: SpinKitThreeBounce(
-                        color: Colors.black,
-                        size: 40,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            );
-          } else {
-            DocumentSnapshot data;
+    return buildList();
+  }
 
-            if (widget.uid == null) {
-              final snap = snapshot.data as QuerySnapshot;
-              data = snap.documents.first;
-              userUid = data['uid'];
-            } else {
-              data = snapshot.data as DocumentSnapshot;
-            }
-
-            if (data != null) {
-              return Scaffold(
-                backgroundColor: Colors.grey[100],
-                appBar: GFAppBar(
-                  title: Text(
-                    data['username'] ?? '',
-                    style: GoogleFonts.lato(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  leading: IconButton(
-                      icon: Icon(
-                        EvaIcons.chevronLeft,
-                        size: 40,
-                        color: Colors.black,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                  brightness: Brightness.light,
-                  elevation: 0,
-                  backgroundColor: Colors.grey[100],
+  Widget buildList() {
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.grey[100],
+        appBar: GFAppBar(
+          centerTitle: true,
+          elevation: 0,
+          leading: IconButton(
+              icon: Icon(
+                EvaIcons.chevronLeft,
+                size: 40,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
+          brightness: Brightness.light,
+          backgroundColor: Colors.grey[100],
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Center(
+              child: Container(
+                height: 50,
+                child: SpinKitThreeBounce(
+                  color: Colors.black,
+                  size: 40,
                 ),
-                body: SmartRefresher(
-                  controller: friendRefreshController,
-                  enablePullDown: true,
-                  enablePullUp: true,
-                  header: refreshHeader(),
-                  footer: refreshFooter(),
-                  onLoading: () {
-                    friendRefreshController.loadComplete();
-                  },
-                  onRefresh: () {
-                    friendRefreshController.refreshCompleted();
-                  },
-                  child: ListView(children: [
-                    UserHeading(
-                      name: data['name'] ?? '',
-                      bio: data['bio'] ?? '',
-                      profileImage: data['profileImage'] ?? '',
-                      backgroundImage: data['backgroundImage'] ?? '',
-                      followers: data['followers'] ?? 0,
-                      following: data['following'] ?? 0,
-                      role: UserRole.friend,
-                      isLive: data['isLive'] ?? false,
-                    ),
-                    Container(
-                      color: Colors.white,
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 15),
-                        child: DefaultTabController(
-                          initialIndex: 0,
-                          length: 2,
-                          child: Theme(
-                            data: ThemeData(
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                            ),
-                            child: Column(
-                              children: <Widget>[
-                                Container(
-                                  color: Colors.grey[200],
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(15),
-                                      bottomRight: Radius.circular(15),
-                                    ),
-                                    child: Container(
-                                      color: Colors.white,
-                                      child: TabBar(
-                                        indicatorColor: Colors.transparent,
-                                        onTap: (index) {
-                                          setState(
-                                            () {
-                                              if (index == 0) {
-                                                listIndex = 0;
-                                                tabOneIcon = Icon(
-                                                  EvaIcons.list,
-                                                  color: Colors.black,
-                                                );
-                                                tabTwoIcon = Icon(
-                                                  EvaIcons.heart,
-                                                  color: Colors.grey[400],
-                                                );
-                                              } else if (index == 1) {
-                                                listIndex = 1;
-                                                tabOneIcon = Icon(
-                                                  EvaIcons.list,
-                                                  color: Colors.grey[400],
-                                                );
-                                                tabTwoIcon = Icon(
-                                                  EvaIcons.heart,
-                                                  color: Colors.redAccent,
-                                                );
-                                              }
-                                            },
+              ),
+            )
+          ],
+        ),
+      );
+    } else {
+      if (data != null) {
+        return Scaffold(
+          backgroundColor: Colors.grey[100],
+          appBar: GFAppBar(
+            title: Text(
+              data['username'] ?? '',
+              style: GoogleFonts.lato(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600),
+            ),
+            leading: IconButton(
+                icon: Icon(
+                  EvaIcons.chevronLeft,
+                  size: 40,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            brightness: Brightness.light,
+            elevation: 0,
+            backgroundColor: Colors.grey[100],
+          ),
+          body: SmartRefresher(
+            controller: friendRefreshController,
+            enablePullDown: true,
+            enablePullUp: true,
+            header: refreshHeader(),
+            footer: refreshFooter(),
+            onLoading: () {
+              friendRefreshController.loadComplete();
+            },
+            onRefresh: () {
+              friendRefreshController.refreshCompleted();
+            },
+            child: ListView(children: [
+              UserHeading(
+                name: data['name'] ?? '',
+                bio: data['bio'] ?? '',
+                isFollowing: isFollowing,
+                profileImage: data['profileImage'] ?? '',
+                backgroundImage: data['backgroundImage'] ?? '',
+                followers: data['followers'] ?? 0,
+                following: data['following'] ?? 0,
+                role: UserRole.friend,
+                isLive: data['isLive'] ?? false,
+                userUid: data['uid'],
+              ),
+              Container(
+                color: Colors.white,
+                child: Padding(
+                  padding: EdgeInsets.only(top: 15),
+                  child: DefaultTabController(
+                    initialIndex: 0,
+                    length: 2,
+                    child: Theme(
+                      data: ThemeData(
+                        splashColor: Colors.transparent,
+                        highlightColor: Colors.transparent,
+                      ),
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            color: Colors.grey[200],
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(15),
+                                bottomRight: Radius.circular(15),
+                              ),
+                              child: Container(
+                                color: Colors.white,
+                                child: TabBar(
+                                  indicatorColor: Colors.transparent,
+                                  onTap: (index) {
+                                    setState(
+                                      () {
+                                        if (index == 0) {
+                                          listIndex = 0;
+                                          tabOneIcon = Icon(
+                                            EvaIcons.list,
+                                            color: Colors.black,
                                           );
-                                        },
-                                        tabs: [
-                                          Tab(icon: tabOneIcon),
-                                          Tab(icon: tabTwoIcon),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                                          tabTwoIcon = Icon(
+                                            EvaIcons.heart,
+                                            color: Colors.grey[400],
+                                          );
+                                        } else if (index == 1) {
+                                          listIndex = 1;
+                                          tabOneIcon = Icon(
+                                            EvaIcons.list,
+                                            color: Colors.grey[400],
+                                          );
+                                          tabTwoIcon = Icon(
+                                            EvaIcons.heart,
+                                            color: Colors.redAccent,
+                                          );
+                                        }
+                                      },
+                                    );
+                                  },
+                                  tabs: [
+                                    Tab(icon: tabOneIcon),
+                                    Tab(icon: tabTwoIcon),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: currentList(data['uid']),
-                    ),
-                  ]),
-                ),
-              );
-            } else {
-              return Scaffold(
-                backgroundColor: Colors.grey[100],
-                appBar: GFAppBar(
-                  centerTitle: true,
-                  elevation: 0,
-                  leading: IconButton(
-                      icon: Icon(
-                        EvaIcons.chevronLeft,
-                        size: 40,
-                        color: Colors.black,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                  brightness: Brightness.light,
-                  backgroundColor: Colors.grey[100],
-                ),
-                body: Container(
-                  width: DeviceSize().getWidth(context),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        EvaIcons.alertCircleOutline,
-                        size: 50,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Sorry, this user does not exists',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.openSans(
-                              fontWeight: FontWeight.w600, fontSize: 16),
-                        ),
-                      )
-                    ],
                   ),
                 ),
-              );
-            }
-          }
-        });
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: currentList(data['uid']),
+              ),
+            ]),
+          ),
+        );
+      } else {
+        return Scaffold(
+          backgroundColor: Colors.grey[100],
+          appBar: GFAppBar(
+            centerTitle: true,
+            elevation: 0,
+            leading: IconButton(
+                icon: Icon(
+                  EvaIcons.chevronLeft,
+                  size: 40,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            brightness: Brightness.light,
+            backgroundColor: Colors.grey[100],
+          ),
+          body: Container(
+            width: DeviceSize().getWidth(context),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  EvaIcons.alertCircleOutline,
+                  size: 50,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Sorry, this user does not exists',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.openSans(
+                        fontWeight: FontWeight.w600, fontSize: 16),
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      }
+    }
   }
 
   Widget currentList(String uid) {

@@ -8,10 +8,18 @@ import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
 
 class FollowButton extends StatefulWidget {
-  FollowButton({@required this.role, @required this.isRegistering});
+  FollowButton(
+      {@required this.role,
+      @required this.isRegistering,
+      @required this.unfollow,
+      @required this.isFollowing,
+      @required this.follow});
 
   final UserRole role;
   final bool isRegistering;
+  final Function unfollow;
+  final Function follow;
+  final bool isFollowing;
 
   @override
   _FollowButtonState createState() => _FollowButtonState();
@@ -23,11 +31,15 @@ class _FollowButtonState extends State<FollowButton> {
 
   @override
   void initState() {
-    isFollowing = false;
+    isFollowing = widget.isFollowing ?? false;
     if (widget.role == UserRole.user) {
       buttonText = 'Settings';
     } else {
-      buttonText = 'Follow';
+      if (isFollowing) {
+        buttonText = 'Following';
+      } else {
+        buttonText = 'Follow';
+      }
     }
 
     super.initState();
@@ -45,10 +57,19 @@ class _FollowButtonState extends State<FollowButton> {
                   Navigation().segue(
                       page: Settings(), context: context, fullScreen: true);
                 } else {
-                  setState(() {
-                    buttonText = 'Following';
-                    isFollowing = !isFollowing;
-                  });
+                  if (!isFollowing) {
+                    setState(() {
+                      widget.follow();
+                      buttonText = 'Following';
+                      isFollowing = !isFollowing;
+                    });
+                  } else {
+                    setState(() {
+                      widget.unfollow();
+                      buttonText = 'Follow';
+                      isFollowing = !isFollowing;
+                    });
+                  }
                 }
               },
         color: widget.role == UserRole.user

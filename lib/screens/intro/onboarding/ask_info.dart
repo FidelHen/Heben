@@ -47,15 +47,15 @@ class _AskInfoState extends State<AskInfo> {
     bioController = TextEditingController();
 
     nameController.addListener(() {
-      nameText = nameController.text.trim().length == 0
-          ? 'Name'
-          : nameController.text.trim();
+      setState(() {
+        nameText = nameController.text.trim();
+      });
     });
 
     bioController.addListener(() {
-      bioText = bioController.text.trim().length == 0
-          ? 'Bio'
-          : bioController.text.trim();
+      setState(() {
+        bioText = bioController.text.trim();
+      });
     });
     super.initState();
   }
@@ -110,12 +110,13 @@ class _AskInfoState extends State<AskInfo> {
                     todoTab(
                         title: 'Add your name',
                         onPressed: () {
-                          Modal().nameModal(context, nameController);
+                          Modal()
+                              .nameModal(context, nameController, updateName());
                         }),
                     todoTab(
                         title: 'Add your bio',
                         onPressed: () {
-                          Modal().bioModal(context, bioController);
+                          Modal().bioModal(context, bioController, updateBio());
                         }),
                     todoTab(
                         title: 'Upload profile picture',
@@ -182,6 +183,18 @@ class _AskInfoState extends State<AskInfo> {
     );
   }
 
+  updateName() {
+    setState(() {
+      nameText = nameController.text.trim();
+    });
+  }
+
+  updateBio() {
+    setState(() {
+      bioText = bioController.text.trim();
+    });
+  }
+
   void getPicture() async {
     Navigator.pop(context);
     File currentImage = await ImagePicker.pickImage(
@@ -199,7 +212,7 @@ class _AskInfoState extends State<AskInfo> {
             : [CropAspectRatioPreset.ratio5x3],
         androidUiSettings: AndroidUiSettings(
             toolbarTitle: 'Crop',
-            toolbarColor: Colors.deepOrange,
+            toolbarColor: hebenRed,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false),
@@ -254,7 +267,7 @@ class _AskInfoState extends State<AskInfo> {
                 : [CropAspectRatioPreset.ratio16x9],
             androidUiSettings: AndroidUiSettings(
                 toolbarTitle: 'Crop',
-                toolbarColor: Colors.deepOrange,
+                toolbarColor: hebenRed,
                 toolbarWidgetColor: Colors.white,
                 initAspectRatio: CropAspectRatioPreset.original,
                 lockAspectRatio: false),

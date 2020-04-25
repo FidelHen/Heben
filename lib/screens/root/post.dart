@@ -8,6 +8,7 @@ import 'package:heben/models/post_items.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
+import 'package:heben/utils/user.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class Post extends StatefulWidget {
@@ -99,7 +100,12 @@ class _PostState extends State<Post> {
                             color: Colors.black,
                           ),
                           onPressed: () {
-                            Modal().postOptions(context);
+                            User().getUsername().then((userUsername) {
+                              Modal().postOptions(
+                                  context,
+                                  userUsername == widget.username,
+                                  widget.postUid);
+                            });
                           }),
                     ),
                   ],

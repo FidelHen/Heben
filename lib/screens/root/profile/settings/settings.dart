@@ -6,7 +6,6 @@ import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/screens/root/profile/settings/change_bio.dart';
 import 'package:heben/screens/root/profile/settings/change_images.dart';
-import 'package:heben/screens/root/profile/settings/change_username.dart';
 import 'package:heben/screens/root/profile/settings/contact_us.dart';
 import 'package:heben/screens/root/profile/settings/terms_and_conditions.dart';
 import 'package:heben/utils/auth.dart';

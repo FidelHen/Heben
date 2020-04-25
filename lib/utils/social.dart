@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:heben/components/toast.dart';
 import 'package:heben/utils/user.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class Social {
   likePost({@required String postUid}) async {
     String uid = await User().getUid();
+
     final batch = Firestore.instance.batch();
     final timestamp = DateTime.now().millisecondsSinceEpoch;
 
@@ -66,6 +69,19 @@ class Social {
     batch.commit();
   }
 
+  pinPost({@required String postUid}) async {
+    String uid = await User().getUid();
+
+    Firestore.instance
+        .collection('users')
+        .document(uid)
+        .setData({'pinnedPost': postUid}, merge: true).then((_) {
+      showOverlayNotification((context) {
+        return SuccessToast(message: 'Post is now pinned');
+      });
+    });
+  }
+
   bookmarkPost({@required String postUid}) async {
     String uid = await User().getUid();
     final batch = Firestore.instance.batch();
@@ -93,6 +109,84 @@ class Social {
       Firestore.instance.collection('posts').document(postUid),
       {'bookmarked.$uid': true},
     );
+
+    batch.commit();
+  }
+
+  followUser({@required userUid}) async {
+    String uid = await User().getUid();
+
+    final batch = Firestore.instance.batch();
+
+    batch.setData(
+        Firestore.instance
+            .collection('following')
+            .document(uid)
+            .collection('users')
+            .document(userUid),
+        {'uid': userUid});
+
+    batch.setData(
+        Firestore.instance
+            .collection('followers')
+            .document(userUid)
+            .collection('users')
+            .document(uid),
+        {'uid': uid});
+
+    await Firestore.instance
+        .collection('posts')
+        .where('userUid', isEqualTo: userUid)
+        .getDocuments()
+        .then((snapshot) {
+      snapshot.documents.forEach((doc) {
+        Map<String, dynamic> map = doc.data;
+        map.addAll({'addedOn': DateTime.now().millisecondsSinceEpoch});
+        batch.setData(
+            Firestore.instance
+                .collection('timeline')
+                .document(uid)
+                .collection('timelinePosts')
+                .document(map['postUid']),
+            map);
+      });
+    });
+
+    batch.setData(Firestore.instance.collection('users').document(uid),
+        {'following': FieldValue.increment(1)},
+        merge: true);
+
+    batch.setData(Firestore.instance.collection('users').document(userUid),
+        {'followers': FieldValue.increment(1)},
+        merge: true);
+
+    batch.commit();
+  }
+
+  unfollowUser({@required userUid}) async {
+    String uid = await User().getUid();
+
+    final batch = Firestore.instance.batch();
+
+    batch.delete(Firestore.instance
+        .collection('following')
+        .document(uid)
+        .collection('users')
+        .document(userUid));
+
+    batch.delete(Firestore.instance
+        .collection('followers')
+        .document(userUid)
+        .collection('users')
+        .document(uid));
+
+    batch.setData(Firestore.instance.collection('users').document(uid),
+        {'following': FieldValue.increment(-1)},
+        merge: true);
+
+    batch.setData(Firestore.instance.collection('users').document(userUid),
+        {'followers': FieldValue.increment(-1)},
+        merge: true);
 
     batch.commit();
   }
@@ -128,5 +222,55 @@ class Social {
 
   deletePost({@required String postUid}) async {
     String uid = await User().getUid();
+
+    final batch = Firestore.instance.batch();
+
+    await Firestore.instance
+        .collection('posts')
+        .document(postUid)
+        .collection('activity')
+        .getDocuments()
+        .then((snapshot) {
+      snapshot.documents.forEach((doc) {
+        if (doc.data['bookmarked']) {
+          batch.delete(Firestore.instance
+              .collection('users')
+              .document(doc.data['uid'])
+              .collection('bookmarks')
+              .document(postUid));
+        }
+        if (doc.data['liked']) {
+          batch.delete(Firestore.instance
+              .collection('users')
+              .document(doc.data['uid'])
+              .collection('likes')
+              .document(postUid));
+        }
+        batch.delete(doc.reference);
+      });
+    });
+
+    await Firestore.instance
+        .collection('followers')
+        .document(uid)
+        .collection('users')
+        .getDocuments()
+        .then((snapshot) {
+      snapshot.documents.forEach((doc) {
+        batch.delete(Firestore.instance
+            .collection('timeline')
+            .document(doc.data['uid'])
+            .collection('timelinePosts')
+            .document(postUid));
+      });
+    });
+
+    batch.delete(Firestore.instance.collection('posts').document(postUid));
+
+    batch.commit().then((_) {
+      showOverlayNotification((context) {
+        return SuccessToast(message: 'Post is now deleted');
+      });
+    });
   }
 }
