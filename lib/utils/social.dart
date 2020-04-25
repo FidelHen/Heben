@@ -113,7 +113,7 @@ class Social {
     batch.commit();
   }
 
-  followUser({@required userUid}) async {
+  followUser({@required String userUid}) async {
     String uid = await User().getUid();
 
     final batch = Firestore.instance.batch();
@@ -132,7 +132,9 @@ class Social {
             .document(userUid)
             .collection('users')
             .document(uid),
-        {'uid': uid});
+        {
+          'uid': uid,
+        });
 
     await Firestore.instance
         .collection('posts')
@@ -163,7 +165,7 @@ class Social {
     batch.commit();
   }
 
-  unfollowUser({@required userUid}) async {
+  unfollowUser({@required String userUid}) async {
     String uid = await User().getUid();
 
     final batch = Firestore.instance.batch();

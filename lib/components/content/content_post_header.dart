@@ -13,6 +13,7 @@ import 'package:heben/utils/navigation.dart';
 import 'package:heben/utils/social.dart';
 import 'package:highlight_text/highlight_text.dart';
 import 'package:like_button/like_button.dart';
+import 'package:vibrate/vibrate.dart';
 import 'package:video_player/video_player.dart';
 
 class ContentPostHeader extends StatefulWidget {
@@ -328,6 +329,7 @@ class _ContentPostHeaderState extends State<ContentPostHeader> {
   }
 
   Future<bool> onLikeButtonTapped(bool isLiked) async {
+    Vibrate.feedback(FeedbackType.medium);
     if (!isLiked) {
       Social().likePost(postUid: widget.postUid);
     } else {
@@ -337,6 +339,7 @@ class _ContentPostHeaderState extends State<ContentPostHeader> {
   }
 
   Future<bool> onBookmarkButtonTapped(bool isLiked) async {
+    Vibrate.feedback(FeedbackType.medium);
     if (!isLiked) {
       Social().bookmarkPost(postUid: widget.postUid);
     } else {

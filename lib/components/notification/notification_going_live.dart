@@ -45,7 +45,7 @@ class NotificationGoingLive extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(15, 8, 15, 8),
               margin: EdgeInsets.fromLTRB(0, 16, 0, 16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.transparent,
                 borderRadius: const BorderRadius.all(Radius.circular(5)),
               ),
               child: Row(

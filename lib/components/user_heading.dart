@@ -124,7 +124,9 @@ class _UserHeadingState extends State<UserHeading> {
                           ? () {}
                           : () {
                               Navigation().segue(
-                                  page: Followers(),
+                                  page: Followers(
+                                    uid: widget.userUid,
+                                  ),
                                   context: context,
                                   fullScreen: false);
                             },
@@ -174,7 +176,9 @@ class _UserHeadingState extends State<UserHeading> {
                           ? () {}
                           : () {
                               Navigation().segue(
-                                  page: Following(),
+                                  page: Following(
+                                    uid: widget.userUid,
+                                  ),
                                   context: context,
                                   fullScreen: false);
                             },

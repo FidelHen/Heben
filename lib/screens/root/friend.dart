@@ -69,29 +69,32 @@ class _FriendState extends State<Friend> {
           .document(widget.username)
           .get()
           .then((snapshot) {
-        userUid = snapshot.data['uid'];
+        if (snapshot.exists) {
+          userUid = snapshot.data['uid'];
+        }
       });
     }
+    if (userUid != null) {
+      String uid = await User().getUid();
 
-    String uid = await User().getUid();
+      await Firestore.instance
+          .collection('following')
+          .document(uid)
+          .collection('users')
+          .document(userUid)
+          .get()
+          .then((snapshot) {
+        isFollowing = snapshot.exists;
+      });
 
-    await Firestore.instance
-        .collection('following')
-        .document(uid)
-        .collection('users')
-        .document(userUid)
-        .get()
-        .then((snapshot) {
-      isFollowing = snapshot.exists;
-    });
-
-    await Firestore.instance
-        .collection('users')
-        .document(userUid)
-        .get()
-        .then((snapshot) async {
-      data = snapshot;
-    });
+      await Firestore.instance
+          .collection('users')
+          .document(userUid)
+          .get()
+          .then((snapshot) async {
+        data = snapshot;
+      });
+    }
 
     setState(() {
       isLoading = false;

@@ -14,6 +14,7 @@ import 'package:heben/utils/navigation.dart';
 import 'package:heben/utils/social.dart';
 import 'package:highlight_text/highlight_text.dart';
 import 'package:like_button/like_button.dart';
+import 'package:vibrate/vibrate.dart';
 
 class ContentImage extends StatefulWidget {
   ContentImage({
@@ -355,6 +356,7 @@ class _ContentImageState extends State<ContentImage> {
   }
 
   Future<bool> onLikeButtonTapped(bool isLiked) async {
+    Vibrate.feedback(FeedbackType.medium);
     if (!isLiked) {
       Social().likePost(postUid: widget.postUid);
     } else {
@@ -364,6 +366,7 @@ class _ContentImageState extends State<ContentImage> {
   }
 
   Future<bool> onBookmarkButtonTapped(bool isLiked) async {
+    Vibrate.feedback(FeedbackType.medium);
     if (!isLiked) {
       Social().bookmarkPost(postUid: widget.postUid);
     } else {

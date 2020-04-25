@@ -3,6 +3,7 @@ import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/screens/root/friend.dart';
 import 'package:heben/utils/navigation.dart';
+import 'package:heben/utils/user.dart';
 
 class ContentProfileTile extends StatefulWidget {
   ContentProfileTile({
@@ -26,14 +27,17 @@ class _ContentProfileTileState extends State<ContentProfileTile> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: !widget.stopGesture ?? false
-          ? () {
-              Navigation().segue(
-                  page: Friend(
-                    uid: widget.uid,
-                    username: widget.username,
-                  ),
-                  context: context,
-                  fullScreen: false);
+          ? () async {
+              String myUid = await User().getUid();
+              if (myUid != widget.uid) {
+                Navigation().segue(
+                    page: Friend(
+                      uid: widget.uid,
+                      username: widget.username,
+                    ),
+                    context: context,
+                    fullScreen: false);
+              }
             }
           : widget.onTap,
       child: Column(

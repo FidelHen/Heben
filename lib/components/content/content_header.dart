@@ -38,7 +38,7 @@ class ContentHeaderLight extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(15, 6, 15, 6),
       margin: EdgeInsets.fromLTRB(0, 6, 0, 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.transparent,
         borderRadius: const BorderRadius.all(Radius.circular(5)),
       ),
       child: Row(

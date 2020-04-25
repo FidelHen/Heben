@@ -201,48 +201,6 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
             ],
           ),
         );
-        // return Padding(
-        //   padding: EdgeInsets.all(25),
-        //   child: GridView.builder(
-        //       shrinkWrap: true,
-        //       physics: NeverScrollableScrollPhysics(),
-        //       itemCount: usersToFollow.length,
-        //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        //         crossAxisCount: 2,
-        //       ),
-        //       itemBuilder: (BuildContext context, int index) {
-        //         return Padding(
-        //           padding: EdgeInsets.all(10),
-        //           child: RaisedButton(
-        //             onPressed: () {},
-        //             color: Colors.white,
-        //             shape: RoundedRectangleBorder(
-        //               borderRadius: new BorderRadius.circular(11.0),
-        //             ),
-        //             child: Column(
-        //               mainAxisAlignment: MainAxisAlignment.center,
-        //               children: <Widget>[
-        //                 GFAvatar(
-        //                   backgroundColor: Colors.grey,
-        //                   backgroundImage:
-        //                       NetworkImage(usersToFollow[index].profileImage),
-        //                 ),
-        //                 Padding(
-        //                   padding: const EdgeInsets.all(8.0),
-        //                   child: Text(
-        //                     usersToFollow[index].username,
-        //                     style: GoogleFonts.openSans(
-        //                         fontSize: 14,
-        //                         fontWeight: FontWeight.w600,
-        //                         color: Colors.black),
-        //                   ),
-        //                 ),
-        //               ],
-        //             ),
-        //           ),
-        //         );
-        //       }),
-        // );
       } else {
         return ListView.builder(
           physics: BouncingScrollPhysics(),

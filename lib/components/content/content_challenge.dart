@@ -10,6 +10,7 @@ import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
 import 'package:heben/utils/social.dart';
 import 'package:like_button/like_button.dart';
+import 'package:vibrate/vibrate.dart';
 import 'package:video_player/video_player.dart';
 
 class ContentChallenge extends StatefulWidget {
@@ -289,6 +290,7 @@ class _ContentChallengeState extends State<ContentChallenge> {
   }
 
   Future<bool> onLikeButtonTapped(bool isLiked) async {
+    Vibrate.feedback(FeedbackType.medium);
     if (!isLiked) {
       Social().likePost(postUid: widget.postUid);
     } else {
@@ -298,6 +300,7 @@ class _ContentChallengeState extends State<ContentChallenge> {
   }
 
   Future<bool> onBookmarkButtonTapped(bool isLiked) async {
+    Vibrate.feedback(FeedbackType.medium);
     if (!isLiked) {
       Social().bookmarkPost(postUid: widget.postUid);
     } else {
