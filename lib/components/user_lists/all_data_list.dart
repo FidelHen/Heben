@@ -56,11 +56,41 @@ class _AllDataListState extends State<AllDataList> {
 
   loadData() async {
     String myUid = await User().getUid();
+    // Get pinned post if there is one
+
+    await Firestore.instance
+        .collection('users')
+        .document(widget.uid)
+        .get()
+        .then((snapshot) async {
+      if (snapshot.data['pinnedPost'] != null ||
+          snapshot.data['pinnedPost'] != '') {
+        await Firestore.instance
+            .collection('posts')
+            .document(snapshot.data['pinnedPost'])
+            .get()
+            .then((postSnap) {
+          if (postSnap.exists) {
+            feedList.add(buildFirestorePost(
+                snapshot: postSnap, uid: myUid, isPinned: true));
+          }
+        }).then((_) {
+          setState(() {
+            isLoading = false;
+          });
+        });
+      }
+    });
+
     getSnapshots.then((snapshot) {
       final data = snapshot as QuerySnapshot;
 
       data.documents.forEach((doc) {
-        feedList.add(buildFirestorePost(snapshot: doc, uid: myUid));
+        if (feedList.length == 0) {
+          feedList.add(buildFirestorePost(snapshot: doc, uid: myUid));
+        } else {
+          feedList.insert(1, buildFirestorePost(snapshot: doc, uid: myUid));
+        }
       });
 
       setState(() {

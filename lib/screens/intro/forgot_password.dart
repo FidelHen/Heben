@@ -126,7 +126,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   validator() {
     bool validated = EmailValidator.validate(emailController.text);
-    FocusScope.of(context).requestFocus(FocusNode());
+    FocusScope.of(context).unfocus();
     setState(() {
       isLoading = true;
     });

@@ -145,7 +145,7 @@ class _ContactUsState extends State<ContactUs> {
   validator() async {
     if (subjectController.text.trim().length >= 2 &&
         bodyController.text.trim().length >= 2) {
-      FocusScope.of(context).requestFocus(FocusNode());
+      FocusScope.of(context).unfocus();
       setState(() {
         isLoading = true;
       });

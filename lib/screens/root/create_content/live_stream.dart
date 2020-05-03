@@ -38,7 +38,6 @@ class _LiveStreamState extends State<LiveStream> {
   @override
   void dispose() {
     FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
-
     super.dispose();
   }
 
@@ -58,7 +57,7 @@ class _LiveStreamState extends State<LiveStream> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
-                      color: Colors.black,
+                      color: Colors.transparent,
                     ),
                   ),
                 ),
@@ -170,13 +169,13 @@ class _LiveStreamState extends State<LiveStream> {
                               ),
                               onTap:
                                   (startLoading, stopLoading, btnState) async {
-                                if (btnState == ButtonState.Idle) {
-                                  if (btnState == ButtonState.Idle) {
-                                    startLoading();
-                                    await Future.delayed(Duration(seconds: 3));
-                                    stopLoading();
-                                  }
-                                }
+                                // if (btnState == ButtonState.Idle) {
+                                //   if (btnState == ButtonState.Idle) {
+                                //     startLoading();
+                                //     await Future.delayed(Duration(seconds: 3));
+                                //     stopLoading();
+                                //   }
+                                // }
                               },
                             ),
                           ]),

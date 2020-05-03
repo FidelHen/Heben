@@ -63,7 +63,7 @@ class _ContentExploreHeaderState extends State<ContentExploreHeader> {
                       color: Colors.grey,
                       image: DecorationImage(
                           image: NetworkImage(
-                              'https://source.unsplash.com/1600x900/?workout'),
+                              'https://images.pexels.com/photos/2774181/pexels-photo-2774181.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'),
                           fit: BoxFit.cover),
                       borderRadius: BorderRadius.all(Radius.circular(5)),
                     ),
@@ -122,7 +122,7 @@ class _ContentExploreHeaderState extends State<ContentExploreHeader> {
                                       borderRadius:
                                           BorderRadius.all(Radius.circular(25)),
                                     ),
-                                    child: Text(Faker().lorem.word(),
+                                    child: Text('Squats',
                                         style: GoogleFonts.openSans(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 12,
@@ -138,7 +138,7 @@ class _ContentExploreHeaderState extends State<ContentExploreHeader> {
                                       borderRadius:
                                           BorderRadius.all(Radius.circular(25)),
                                     ),
-                                    child: Text(Faker().lorem.word(),
+                                    child: Text('SwoleSZN',
                                         style: GoogleFonts.openSans(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 12,
@@ -152,7 +152,7 @@ class _ContentExploreHeaderState extends State<ContentExploreHeader> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(25)),
                                   ),
-                                  child: Text(Faker().lorem.word(),
+                                  child: Text('Quarantined',
                                       style: GoogleFonts.openSans(
                                           fontWeight: FontWeight.w600,
                                           fontSize: 12,

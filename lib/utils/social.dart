@@ -31,7 +31,11 @@ class Social {
 
     batch.updateData(
       Firestore.instance.collection('posts').document(postUid),
-      {'likes': FieldValue.increment(1), 'liked.$uid': true},
+      {
+        'likes': FieldValue.increment(1),
+        'liked.$uid': true,
+        'score': FieldValue.increment(30)
+      },
     );
 
     batch.commit();
@@ -63,7 +67,11 @@ class Social {
 
     batch.updateData(
       Firestore.instance.collection('posts').document(postUid),
-      {'likes': FieldValue.increment(-1), 'liked.$uid': false},
+      {
+        'likes': FieldValue.increment(-1),
+        'liked.$uid': false,
+        'score': FieldValue.increment(-40)
+      },
     );
 
     batch.commit();
@@ -72,10 +80,17 @@ class Social {
   pinPost({@required String postUid}) async {
     String uid = await User().getUid();
 
-    Firestore.instance
-        .collection('users')
-        .document(uid)
-        .setData({'pinnedPost': postUid}, merge: true).then((_) {
+    final batch = Firestore.instance.batch();
+
+    batch.setData(Firestore.instance.collection('posts').document(postUid),
+        {'score': FieldValue.increment(50)},
+        merge: true);
+
+    batch.setData(Firestore.instance.collection('users').document(uid),
+        {'pinnedPost': postUid},
+        merge: true);
+
+    batch.commit().then((_) {
       showOverlayNotification((context) {
         return SuccessToast(message: 'Post is now pinned');
       });
@@ -107,7 +122,7 @@ class Social {
 
     batch.updateData(
       Firestore.instance.collection('posts').document(postUid),
-      {'bookmarked.$uid': true},
+      {'bookmarked.$uid': true, 'score': FieldValue.increment(40)},
     );
 
     batch.commit();
@@ -154,12 +169,20 @@ class Social {
       });
     });
 
-    batch.setData(Firestore.instance.collection('users').document(uid),
-        {'following': FieldValue.increment(1)},
+    batch.setData(
+        Firestore.instance.collection('users').document(uid),
+        {
+          'following': FieldValue.increment(1),
+          'score': FieldValue.increment(25)
+        },
         merge: true);
 
-    batch.setData(Firestore.instance.collection('users').document(userUid),
-        {'followers': FieldValue.increment(1)},
+    batch.setData(
+        Firestore.instance.collection('users').document(userUid),
+        {
+          'followers': FieldValue.increment(1),
+          'score': FieldValue.increment(50)
+        },
         merge: true);
 
     batch.commit();

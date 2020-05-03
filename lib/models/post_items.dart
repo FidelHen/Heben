@@ -38,5 +38,18 @@ class PostHeaderItem implements PostItems {
 }
 
 class PostCommentItem implements PostItems {
-  PostCommentItem();
+  PostCommentItem(
+      {@required this.username,
+      @required this.profileImage,
+      @required this.timestamp,
+      @required this.body,
+      @required this.commentUid,
+      @required this.userUid});
+
+  final String username;
+  final String profileImage;
+  final String timestamp;
+  final String body;
+  final String commentUid;
+  final String userUid;
 }

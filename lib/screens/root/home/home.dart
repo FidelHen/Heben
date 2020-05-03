@@ -39,11 +39,11 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<ContentItems> feedList = [];
   List<ProfileItem> usersToFollow = [];
-  Future getSnapshots;
   String uid;
   bool isLoading;
   bool noContent;
   bool keepAlive = true;
+  DocumentSnapshot lastDocument;
   bool get wantKeepAlive => keepAlive;
 
   @override
@@ -97,7 +97,7 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
                 header: refreshHeader(),
                 footer: refreshFooter(),
                 onLoading: () {
-                  homeRefreshController.loadComplete();
+                  loadMoreData();
                 },
                 onRefresh: () {
                   loadData();
@@ -109,63 +109,79 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
 
   loadData() async {
     uid = await User().getUid();
-    getSnapshots = Firestore.instance
+    Firestore.instance
         .collection('timeline')
         .document(uid)
         .collection('timelinePosts')
         .orderBy('addedOn', descending: false)
         .limit(15)
-        .getDocuments();
-
-    QuerySnapshot docSnap;
-    feedList.clear();
-
-    await getSnapshots.then((snapshot) {
-      docSnap = snapshot as QuerySnapshot;
-    });
-
-    docSnap.documents.forEach((doc) async {
-      await Firestore.instance
-          .collection('posts')
-          .document(doc.documentID)
-          .get()
-          .then((doc) {
-        feedList.add(buildFirestorePost(snapshot: doc, uid: uid));
-        setState(() {});
-      }).then((_) {
-        setState(() {
-          noContent = false;
-          isLoading = false;
-        });
-      });
-    });
-
-    if (docSnap.documents.length == 0) {
-      await Firestore.instance
-          .collection('users')
-          .where('isRegistered', isEqualTo: true)
-          .orderBy('score', descending: true)
-          .getDocuments()
-          .then((result) {
-        result.documents.forEach((doc) {
-          if (doc.data['uid'] != uid) {
-            if (doc.data['profileImage'] != '') {
-              usersToFollow.add(ProfileItem(
-                  profileImage: doc.data['profileImage'],
-                  uid: doc.data['uid'],
-                  username: doc.data['username']));
-            }
-          }
+        .getDocuments()
+        .then((snapshot) {
+      feedList.clear();
+      if (snapshot.documents.length == 1 || snapshot.documents.length == 0) {
+        lastDocument = null;
+      } else {
+        lastDocument = snapshot.documents.last;
+      }
+      if (snapshot.documents.length != 0) {
+        feedList.insert(0, ContentHomeHeaderItem(streamerList: []));
+      }
+      snapshot.documents.forEach((doc) async {
+        await Firestore.instance
+            .collection('posts')
+            .document(doc.documentID)
+            .get()
+            .then((doc) {
+          feedList.add(buildFirestorePost(snapshot: doc, uid: uid));
+          setState(() {});
+        }).then((_) {
           setState(() {
+            noContent = false;
             isLoading = false;
           });
         });
       });
-    } else {
-      feedList.insert(0, ContentHomeHeaderItem(streamerList: []));
-    }
+    });
 
     homeRefreshController.refreshCompleted();
+  }
+
+  loadMoreData() async {
+    if (lastDocument != null) {
+      await Firestore.instance
+          .collection('timeline')
+          .document(uid)
+          .collection('timelinePosts')
+          .orderBy('addedOn', descending: false)
+          .limit(10)
+          .startAfterDocument(lastDocument)
+          .getDocuments()
+          .then((snapshot) {
+        if (snapshot.documents.length == 1 || snapshot.documents.length == 0) {
+          lastDocument = null;
+        } else {
+          lastDocument = snapshot.documents.last;
+        }
+
+        snapshot.documents.forEach((doc) async {
+          print(doc);
+          await Firestore.instance
+              .collection('posts')
+              .document(doc.documentID)
+              .get()
+              .then((docSnapshot) {
+            feedList.add(buildFirestorePost(snapshot: docSnapshot, uid: uid));
+            setState(() {});
+          }).then((_) {
+            setState(() {});
+          });
+        });
+      });
+
+      homeRefreshController.loadComplete();
+    } else {
+      homeRefreshController.loadNoData();
+    }
   }
 
   Widget buildList() {

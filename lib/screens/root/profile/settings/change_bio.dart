@@ -118,7 +118,7 @@ class _ChangeBioState extends State<ChangeBio> {
   }
 
   uploadData() async {
-    FocusScope.of(context).requestFocus(FocusNode());
+    FocusScope.of(context).unfocus();
     setState(() {
       isLoading = true;
     });

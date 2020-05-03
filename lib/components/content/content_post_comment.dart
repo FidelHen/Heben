@@ -1,4 +1,3 @@
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,13 +8,19 @@ import 'package:highlight_text/highlight_text.dart';
 
 class ContentPostComment extends StatefulWidget {
   ContentPostComment(
-      {@required this.body,
-      @required this.creatorUid,
-      @required this.username});
+      {@required this.username,
+      @required this.profileImage,
+      @required this.timestamp,
+      @required this.body,
+      @required this.commentUid,
+      @required this.userUid});
 
-  final String creatorUid;
   final String username;
+  final String profileImage;
+  final String timestamp;
   final String body;
+  final String commentUid;
+  final String userUid;
   @override
   _ContentPostCommentState createState() => _ContentPostCommentState();
 }
@@ -48,7 +53,7 @@ class _ContentPostCommentState extends State<ContentPostComment> {
               onTap: () {
                 Navigation().segue(
                     page: Friend(
-                      uid: widget.creatorUid,
+                      uid: widget.userUid,
                       username: widget.username,
                     ),
                     context: context,
@@ -57,8 +62,7 @@ class _ContentPostCommentState extends State<ContentPostComment> {
               child: GFAvatar(
                 size: 25,
                 backgroundColor: Colors.grey,
-                backgroundImage: NetworkImage(
-                    'https://source.unsplash.com/1600x900/?portrait,woman'),
+                backgroundImage: NetworkImage(widget.profileImage),
               ),
             ),
           ),
@@ -80,7 +84,7 @@ class _ContentPostCommentState extends State<ContentPostComment> {
                     children: <Widget>[
                       Expanded(
                         child: Text(
-                          Faker().internet.userName(),
+                          widget.username,
                           style: GoogleFonts.lato(
                             fontWeight: FontWeight.w800,
                             fontSize: 14,
@@ -88,7 +92,7 @@ class _ContentPostCommentState extends State<ContentPostComment> {
                         ),
                       ),
                       Text(
-                        '30 mins',
+                        widget.timestamp,
                         style: GoogleFonts.lato(
                             fontWeight: FontWeight.w600,
                             fontSize: 12,

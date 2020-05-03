@@ -187,7 +187,7 @@ class _LogInState extends State<LogIn> {
 
   validator() {
     bool validated = EmailValidator.validate(emailController.text);
-    FocusScope.of(context).requestFocus(FocusNode());
+    FocusScope.of(context).unfocus();
     setState(() {
       isLoading = true;
     });
@@ -197,7 +197,6 @@ class _LogInState extends State<LogIn> {
             email: emailController.text.trim(),
             password: passwordController.text.trim(),
             context: context);
-            
       } else {
         showDialog<void>(
           context: context,

@@ -1,4 +1,3 @@
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:heben/components/content/content_post_comment.dart';
 import 'package:heben/components/content/content_post_header.dart';
@@ -24,10 +23,12 @@ Widget buildPost(context, PostItems item, [int index]) {
     );
   } else if (item is PostCommentItem) {
     return ContentPostComment(
-      body: Faker().lorem.sentence() + ' @Hello' + ' #World',
-      creatorUid: null,
-      username: null,
-    );
+        username: item.username,
+        profileImage: item.profileImage,
+        timestamp: item.timestamp,
+        body: item.body,
+        commentUid: item.commentUid,
+        userUid: item.userUid);
   } else {
     return Container();
   }

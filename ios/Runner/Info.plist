@@ -56,6 +56,10 @@
 	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+	<string>armv7</string>
+	</array>	
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
 </dict>

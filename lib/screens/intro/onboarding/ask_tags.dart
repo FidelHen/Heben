@@ -251,7 +251,7 @@ class _AskTagsState extends State<AskTags> {
             'isRegistered': true,
             'followers': 0,
             'following': 0,
-            'score': 0
+            'score': 1400
           },
           merge: true);
 

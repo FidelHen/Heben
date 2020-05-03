@@ -6,10 +6,21 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:heben/utils/enums.dart';
 
 ContentItems buildFirestorePost(
-    {@required DocumentSnapshot snapshot, @required String uid}) {
+    {@required DocumentSnapshot snapshot,
+    @required String uid,
+    bool isPinned}) {
   final data = snapshot.data;
-  CurrentPostPopularity popularity = EnumToString.fromString(
-      CurrentPostPopularity.values, data['type'].toString().split('.')[1]);
+
+  CurrentPostPopularity popularity;
+  if (isPinned == null) {
+    popularity = EnumToString.fromString(
+        CurrentPostPopularity.values, data['type'].toString().split('.')[1]);
+  } else {
+    popularity = isPinned
+        ? CurrentPostPopularity.pinned
+        : EnumToString.fromString(CurrentPostPopularity.values,
+            data['type'].toString().split('.')[1]);
+  }
 
   final timeAgo = DateTime.fromMillisecondsSinceEpoch(data['timestamp'])
       .subtract(Duration(seconds: DateTime.now().second));

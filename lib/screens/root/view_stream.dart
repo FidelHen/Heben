@@ -60,7 +60,7 @@ class _ViewStreamState extends State<ViewStream> {
     return GestureDetector(
       onTap: () {
         if (_itemsOpacity == 1.0) {
-          FocusScope.of(context).requestFocus(FocusNode());
+          FocusScope.of(context).unfocus();
         }
         setState(() {
           _itemsOpacity = _itemsOpacity == 0.0 ? 1.0 : 0.0;
@@ -74,11 +74,13 @@ class _ViewStreamState extends State<ViewStream> {
               height: DeviceSize().getHeight(context),
               width: DeviceSize().getWidth(context),
               color: Colors.blueAccent,
-              child: IjkPlayer(
-                mediaController: controller,
-                controllerWidgetBuilder: (mediaController) {
-                  return Container();
-                },
+              child: SizedBox(
+                child: IjkPlayer(
+                  mediaController: controller,
+                  controllerWidgetBuilder: (mediaController) {
+                    return Container();
+                  },
+                ),
               ),
             ),
             GFAppBar(
@@ -273,7 +275,7 @@ class _ViewStreamState extends State<ViewStream> {
 
   loadStream() async {
     await controller.setNetworkDataSource(
-        'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+        'https://firebasestorage.googleapis.com/v0/b/smartbot-5abdc.appspot.com/o/Pexels%20Videos%202785531.mp4?alt=media&token=3d7f46a5-a40a-4935-b191-50df1bfe1601',
         autoPlay: true);
     await controller.play();
   }
@@ -287,37 +289,37 @@ class _ViewStreamState extends State<ViewStream> {
             profileImage: 'https://source.unsplash.com/1600x900/?portrait',
             postUid: Faker().lorem.word(),
             creatorUid: Faker().lorem.word(),
-            body: Faker().lorem.sentence()),
+            body: 'So hypeddd!!!'),
         ContentStreamCommentItem(
             username: Faker().internet.userName(),
             profileImage: 'https://source.unsplash.com/1600x900/?dad',
             postUid: Faker().lorem.word(),
             creatorUid: Faker().lorem.word(),
-            body: Faker().lorem.sentence()),
+            body: 'Glad you\'re streaming again!'),
         ContentStreamCommentItem(
             username: Faker().internet.userName(),
             profileImage: 'https://source.unsplash.com/1600x900/?mom',
             postUid: Faker().lorem.word(),
             creatorUid: Faker().lorem.word(),
-            body: Faker().lorem.sentence()),
+            body: 'Really love what you\'re doing! Keep it up'),
         ContentStreamCommentItem(
             username: Faker().internet.userName(),
             profileImage: 'https://source.unsplash.com/1600x900/?workout',
             postUid: Faker().lorem.word(),
             creatorUid: Faker().lorem.word(),
-            body: Faker().lorem.sentence()),
+            body: 'Let\'s go another set!'),
         ContentStreamCommentItem(
             username: Faker().internet.userName(),
             profileImage: 'https://source.unsplash.com/1600x900/?male',
             postUid: Faker().lorem.word(),
             creatorUid: Faker().lorem.word(),
-            body: Faker().lorem.sentence()),
+            body: 'Loving this new workout!'),
         ContentStreamCommentItem(
             username: Faker().internet.userName(),
             profileImage: 'https://source.unsplash.com/1600x900/?female',
             postUid: Faker().lorem.word(),
             creatorUid: Faker().lorem.word(),
-            body: Faker().lorem.sentence()),
+            body: 'Let\'s get it!'),
       ];
 
       feedList.insertAll(0, list);

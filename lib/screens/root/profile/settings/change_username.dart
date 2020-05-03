@@ -118,7 +118,7 @@ class _ChangeUsernameState extends State<ChangeUsername> {
   }
 
   uploadData() async {
-    FocusScope.of(context).requestFocus(FocusNode());
+    FocusScope.of(context).unfocus();
     setState(() {
       isLoading = true;
     });
