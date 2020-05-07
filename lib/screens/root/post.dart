@@ -241,7 +241,17 @@ class _PostState extends State<Post> {
                                       0) {
                                     FocusScope.of(context)
                                         .requestFocus(FocusNode());
-
+                                    //TODO: Add notifications
+                                    commentController.text
+                                        .trim()
+                                        .split(' ')
+                                        .forEach((str) {
+                                      if (str.contains('@', 0)) {
+                                        print(str);
+                                      } else if (str.contains('#', 0)) {
+                                        print(str);
+                                      }
+                                    });
                                     DocumentReference docRef = Firestore
                                         .instance
                                         .collection('posts')
@@ -261,6 +271,7 @@ class _PostState extends State<Post> {
                                             profileImage: userSnapshot
                                                 .data['profileImage'],
                                             timestamp: 'now',
+                                            postUid: widget.postUid,
                                             body: commentController.text,
                                             commentUid: docRef.documentID,
                                             userUid: userSnapshot.data['uid']),
@@ -272,7 +283,10 @@ class _PostState extends State<Post> {
                                         Firestore.instance
                                             .collection('posts')
                                             .document(widget.postUid),
-                                        {'score': FieldValue.increment(50)});
+                                        {
+                                          'score': FieldValue.increment(50),
+                                          'comments': FieldValue.increment(1)
+                                        });
 
                                     batch.setData(docRef, {
                                       'username': userSnapshot.data['username'],
@@ -336,6 +350,7 @@ class _PostState extends State<Post> {
                 profileImage: doc.data['profileImage'],
                 timestamp: timeago.format(timeAgo, locale: 'en_short'),
                 body: doc.data['body'],
+                postUid: widget.postUid,
                 commentUid: doc.documentID,
                 userUid: doc.data['userUid']),
           );
@@ -374,6 +389,7 @@ class _PostState extends State<Post> {
                   timestamp: timeago.format(timeAgo, locale: 'en_short'),
                   body: doc.data['body'],
                   commentUid: doc.documentID,
+                  postUid: widget.postUid,
                   userUid: doc.data['userUid']),
             );
           });

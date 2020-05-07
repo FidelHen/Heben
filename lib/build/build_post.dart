@@ -28,6 +28,7 @@ Widget buildPost(context, PostItems item, [int index]) {
         timestamp: item.timestamp,
         body: item.body,
         commentUid: item.commentUid,
+        postUid: item.postUid,
         userUid: item.userUid);
   } else {
     return Container();

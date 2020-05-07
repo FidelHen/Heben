@@ -43,6 +43,7 @@ class PostCommentItem implements PostItems {
       @required this.profileImage,
       @required this.timestamp,
       @required this.body,
+      @required this.postUid,
       @required this.commentUid,
       @required this.userUid});
 
@@ -51,5 +52,6 @@ class PostCommentItem implements PostItems {
   final String timestamp;
   final String body;
   final String commentUid;
+  final String postUid;
   final String userUid;
 }

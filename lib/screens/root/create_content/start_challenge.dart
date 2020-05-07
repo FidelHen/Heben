@@ -45,6 +45,7 @@ class _StartChallengeState extends State<StartChallenge> {
   FocusNode mainNode;
   DocumentSnapshot snapshot;
   PostContentType mediaType;
+  List<Map<String, String>> challengedUsers = [];
   int _radioValue;
 
   @override
@@ -67,7 +68,8 @@ class _StartChallengeState extends State<StartChallenge> {
               color: Colors.black,
             ),
             onPressed: () {
-              Modal().challengeFriendsModal(context, snapshot.data['uid']);
+              Modal().challengeFriendsModal(
+                  context, snapshot.data['uid'], addUsersToChallenge);
             },
           ),
         ),
@@ -287,17 +289,16 @@ class _StartChallengeState extends State<StartChallenge> {
                 ),
                 Container(
                   height: 65,
-                  child: GridView.builder(
+                  child: ListView.builder(
                     itemCount: challengeList.length,
                     physics: AlwaysScrollableScrollPhysics(),
                     scrollDirection: Axis.horizontal,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 1),
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
                           onTap: () {
                             setState(() {
                               challengeList.removeAt(index);
+                              challengedUsers.removeAt(index - 2);
                             });
                           },
                           child: challengeList[index]);
@@ -414,6 +415,32 @@ class _StartChallengeState extends State<StartChallenge> {
   loadData() async {
     snapshot = await User().getUserProfileInfo();
     setState(() {});
+  }
+
+  addUsersToChallenge(String username, String profileImage) {
+    bool alreadyExist = false;
+    challengedUsers.forEach((user) {
+      if (user['username'] == username) {
+        alreadyExist = true;
+      }
+    });
+
+    if (!alreadyExist) {
+      challengedUsers.add({'username': username, 'profileImage': profileImage});
+      challengeList.add(Padding(
+        padding: EdgeInsets.only(right: 8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            CircleAvatar(
+              backgroundColor: Colors.grey,
+              backgroundImage: NetworkImage(profileImage),
+            )
+          ],
+        ),
+      ));
+    }
   }
 
   void getPicture() async {
@@ -559,6 +586,15 @@ class _StartChallengeState extends State<StartChallenge> {
     Map<String, dynamic> data;
     Map<String, dynamic> participantData;
 
+    //TODO: Add notifications
+    descriptionController.text.trim().split(' ').forEach((str) {
+      if (str.contains('@', 0)) {
+        print(str);
+      } else if (str.contains('#', 0)) {
+        print(str);
+      }
+    });
+
     showOverlayNotification((context) {
       return LoadingToast(message: 'Uploading...');
     });
@@ -613,7 +649,8 @@ class _StartChallengeState extends State<StartChallenge> {
       'likes': 0,
       'comments': 0,
       'liked': {},
-      'bookmarked': {}
+      'bookmarked': {},
+      'challenged': challengedUsers
     };
 
     participantData = {
@@ -633,7 +670,8 @@ class _StartChallengeState extends State<StartChallenge> {
       'likes': 0,
       'comments': 0,
       'liked': {},
-      'bookmarked': {}
+      'bookmarked': {},
+      'challenged': challengedUsers
     };
 
     if (mediaType == PostContentType.video) {

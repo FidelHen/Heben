@@ -501,6 +501,15 @@ class _CreatePostState extends State<CreatePost> {
     String mediaUrl;
     Map<String, dynamic> data;
 
+    //TODO: Add notifications
+    contentController.text.trim().split(' ').forEach((str) {
+      if (str.contains('@', 0)) {
+        print(str);
+      } else if (str.contains('#', 0)) {
+        print(str);
+      }
+    });
+
     if (currentSelected != null) {
       showOverlayNotification((context) {
         return LoadingToast(message: 'Uploading...');

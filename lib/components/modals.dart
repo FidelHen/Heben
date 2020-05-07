@@ -51,7 +51,7 @@ class Modal {
         });
   }
 
-  void challengeFriendsModal(BuildContext context, String uid) {
+  void challengeFriendsModal(BuildContext context, String uid, Function onTap) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -78,8 +78,9 @@ class Modal {
                     height: DeviceSize().getHeight(context) / 1.2,
                     child: FriendsModalList(
                       uid: uid,
-                      isChallenge: false,
+                      isChallenge: true,
                       controller: null,
+                      onTap: onTap,
                       mainController: null,
                     ),
                   )
@@ -476,6 +477,92 @@ class Modal {
     }
   }
 
+  void postCommentOptions(
+      BuildContext context, bool isOwner, Function deleteComment) {
+    if (isOwner) {
+      showModalBottomSheet(
+          context: context,
+          shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.only(
+            topLeft: const Radius.circular(18.0),
+            topRight: const Radius.circular(18.0),
+          )),
+          builder: (BuildContext bc) {
+            return SafeArea(
+              child: Container(
+                child: Wrap(
+                  children: <Widget>[
+                    Container(
+                      height: 20,
+                      child: Center(
+                        child: Container(
+                          width: 40,
+                          height: 6,
+                          decoration: BoxDecoration(
+                              color: Colors.grey[400],
+                              borderRadius: BorderRadius.circular(15)),
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                        leading:
+                            Icon(EvaIcons.trash2Outline, color: Colors.red),
+                        title: Text(
+                          'Delete',
+                          style: GoogleFonts.lato(fontWeight: FontWeight.w600),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          deleteComment();
+                        }),
+                  ],
+                ),
+              ),
+            );
+          });
+    } else {
+      showModalBottomSheet(
+          context: context,
+          shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.only(
+            topLeft: const Radius.circular(18.0),
+            topRight: const Radius.circular(18.0),
+          )),
+          builder: (BuildContext bc) {
+            return SafeArea(
+              child: Container(
+                child: Wrap(
+                  children: <Widget>[
+                    Container(
+                      height: 20,
+                      child: Center(
+                        child: Container(
+                          width: 40,
+                          height: 6,
+                          decoration: BoxDecoration(
+                              color: Colors.grey[400],
+                              borderRadius: BorderRadius.circular(15)),
+                        ),
+                      ),
+                    ),
+                    ListTile(
+                        leading: Icon(
+                          EvaIcons.alertTriangleOutline,
+                          color: Colors.black,
+                        ),
+                        title: Text(
+                          'Report',
+                          style: GoogleFonts.lato(fontWeight: FontWeight.w600),
+                        ),
+                        onTap: () {}),
+                  ],
+                ),
+              ),
+            );
+          });
+    }
+  }
+
   void streamOptions(BuildContext context) {
     showModalBottomSheet(
         context: context,
@@ -524,11 +611,13 @@ class FriendsModalList extends StatefulWidget {
       {@required this.controller,
       @required this.mainController,
       @required this.uid,
+      this.onTap,
       @required this.isChallenge});
 
   final TextEditingController controller;
   final TextEditingController mainController;
   final String uid;
+  final Function onTap;
   final bool isChallenge;
   @override
   _FriendsModalListState createState() => _FriendsModalListState();
@@ -651,7 +740,11 @@ class _FriendsModalListState extends State<FriendsModalList> {
                                     widget.controller.clear();
                                     Navigator.pop(context);
                                   }
-                                : () {},
+                                : () {
+                                    widget.onTap(feedList[index].username,
+                                        feedList[index].profileImage);
+                                    Navigator.pop(context);
+                                  },
                           );
                         },
                       );

@@ -56,8 +56,8 @@ class _AllDataListState extends State<AllDataList> {
 
   loadData() async {
     String myUid = await User().getUid();
-    // Get pinned post if there is one
 
+    // Get pinned post if there is one
     await Firestore.instance
         .collection('users')
         .document(widget.uid)

@@ -45,6 +45,7 @@ class _AcceptChallengeState extends State<AcceptChallenge> {
   VideoPlayerController videoController;
   List<Widget> challengeList = <Widget>[];
   FocusNode mainNode;
+  List<Map<String, String>> challengedUsers = [];
   DocumentSnapshot snapshot;
   PostContentType mediaType;
 
@@ -68,7 +69,8 @@ class _AcceptChallengeState extends State<AcceptChallenge> {
               color: Colors.black,
             ),
             onPressed: () {
-              Modal().challengeFriendsModal(context, snapshot.data['uid']);
+              Modal().challengeFriendsModal(
+                  context, snapshot.data['uid'], addUsersToChallenge);
             },
           ),
         ),
@@ -349,6 +351,32 @@ class _AcceptChallengeState extends State<AcceptChallenge> {
     );
   }
 
+  addUsersToChallenge(String username, String profileImage) {
+    bool alreadyExist = false;
+    challengedUsers.forEach((user) {
+      if (user['username'] == username) {
+        alreadyExist = true;
+      }
+    });
+
+    if (!alreadyExist) {
+      challengedUsers.add({'username': username, 'profileImage': profileImage});
+      challengeList.add(Padding(
+        padding: EdgeInsets.only(right: 8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            CircleAvatar(
+              backgroundColor: Colors.grey,
+              backgroundImage: NetworkImage(profileImage),
+            )
+          ],
+        ),
+      ));
+    }
+  }
+
   void getPicture() async {
     Navigator.pop(context);
     File currentImage = await ImagePicker.pickImage(
@@ -491,6 +519,15 @@ class _AcceptChallengeState extends State<AcceptChallenge> {
     String mediaUrl;
     Map<String, dynamic> participantData;
 
+    //TODO: Add notifications
+    descriptionController.text.trim().split(' ').forEach((str) {
+      if (str.contains('@', 0)) {
+        print(str);
+      } else if (str.contains('#', 0)) {
+        print(str);
+      }
+    });
+
     showOverlayNotification((context) {
       return LoadingToast(message: 'Uploading...');
     });
@@ -533,7 +570,8 @@ class _AcceptChallengeState extends State<AcceptChallenge> {
       'likes': 0,
       'comments': 0,
       'liked': {},
-      'bookmarked': {}
+      'bookmarked': {},
+      'challenged': challengedUsers
     };
 
     if (mediaType == PostContentType.video) {
