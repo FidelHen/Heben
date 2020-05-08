@@ -8,6 +8,7 @@ import 'package:heben/components/empty_list_button.dart';
 import 'package:heben/models/content_items.dart';
 import 'package:heben/screens/root/create_content/create_post.dart';
 import 'package:heben/screens/root/create_content/start_challenge.dart';
+import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
@@ -102,10 +103,11 @@ class _AllDataListState extends State<AllDataList> {
   Widget buildList() {
     if (isLoading) {
       return Container(
-        height: 50,
-        child: SpinKitCircle(
-          color: Colors.grey,
-          size: 40,
+        height: 60,
+        child: SpinKitRing(
+          color: hebenActive,
+          lineWidth: 4,
+          size: 35,
         ),
       );
     } else if (feedList.isEmpty) {

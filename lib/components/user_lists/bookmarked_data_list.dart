@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/build/build_content.dart';
 import 'package:heben/build/build_firestore_post.dart';
 import 'package:heben/models/content_items.dart';
+import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/user.dart';
@@ -84,10 +85,11 @@ class _BookmarkedDataListState extends State<BookmarkedDataList> {
   Widget buildList() {
     if (isLoading) {
       return Container(
-        height: 50,
-        child: SpinKitCircle(
-          color: Colors.grey,
-          size: 40,
+        height: 60,
+        child: SpinKitRing(
+          color: hebenActive,
+          lineWidth: 4,
+          size: 35,
         ),
       );
     } else if (feedList.isEmpty) {

@@ -47,18 +47,10 @@ class _CreateContentState extends State<CreateContent> {
               title: 'Create a post',
               description: 'Share anything with the community',
               image: 'images/create_post.jpeg',
+              disabled: false,
               onPressed: () {
                 Navigation().segue(
                     page: CreatePost(), context: context, fullScreen: false);
-              },
-            ),
-            ContentTypeWidget(
-              title: 'Start live streaming',
-              description: 'Let people join your workout in real-time',
-              image: 'images/start_live_streaming.jpeg',
-              onPressed: () {
-                Navigation().segue(
-                    page: LiveStream(), context: context, fullScreen: false);
               },
             ),
             ContentTypeWidget(
@@ -66,12 +58,21 @@ class _CreateContentState extends State<CreateContent> {
               description:
                   'If it doesn\'t challenge you, it doesn\'t change you!',
               image: 'images/start_a_challenge.jpeg',
+              disabled: false,
               onPressed: () {
                 Navigation().segue(
                     page: StartChallenge(),
                     context: context,
                     fullScreen: false);
               },
+            ),
+            ContentTypeWidget(
+              title: 'Start live streaming',
+              description: 'Coming soon!',
+              // description: 'Let people join your workout in real-time',
+              image: 'images/start_live_streaming.jpeg',
+              onPressed: () {},
+              disabled: true,
             ),
           ],
         ),
@@ -85,11 +86,13 @@ class ContentTypeWidget extends StatelessWidget {
       {@required this.title,
       @required this.description,
       @required this.image,
-      @required this.onPressed});
+      @required this.onPressed,
+      @required this.disabled});
 
   final String title;
   final String description;
   final String image;
+  final bool disabled;
   final Function onPressed;
 
   final Color hebenContentOverlay = Colors.black.withOpacity(0.45);
@@ -98,51 +101,54 @@ class ContentTypeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPressed,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: GFImageOverlay(
-            color: Colors.grey[100],
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  AutoSizeText(
-                    title,
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontFamily: 'lato',
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+      child: Opacity(
+        opacity: 1.0,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: GFImageOverlay(
+              color: Colors.grey[100],
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    AutoSizeText(
+                      title,
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontFamily: 'lato',
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                      minFontSize: 20,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    textAlign: TextAlign.center,
-                    minFontSize: 20,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  AutoSizeText(
-                    description,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Open_Sans',
-                      color: Colors.white,
-                      fontWeight: FontWeight.normal,
+                    AutoSizeText(
+                      description,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: 'Open_Sans',
+                        color: Colors.white,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                  ],
+                ),
               ),
+              height: DeviceSize().getHeight(context) / 4.5,
+              width: DeviceSize().getWidth(context),
+              image: AssetImage(image),
+              boxFit: BoxFit.cover,
+              colorFilter: new ColorFilter.mode(
+                  Colors.black.withOpacity(0.50), BlendMode.darken),
             ),
-            height: DeviceSize().getHeight(context) / 4.5,
-            width: DeviceSize().getWidth(context),
-            image: AssetImage(image),
-            boxFit: BoxFit.cover,
-            colorFilter: new ColorFilter.mode(
-                Colors.black.withOpacity(0.50), BlendMode.darken),
           ),
         ),
       ),

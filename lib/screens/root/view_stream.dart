@@ -16,7 +16,7 @@ class ViewStream extends StatefulWidget {
 }
 
 class _ViewStreamState extends State<ViewStream> {
-  double _itemsOpacity = 1.0;
+  double _itemsOpacity;
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   List<ContentItems> feedList = [];
   bool isTyping = false;
@@ -139,19 +139,16 @@ class _ViewStreamState extends State<ViewStream> {
                                 Expanded(
                                   child: Padding(
                                     padding: EdgeInsets.only(top: 8.0),
-                                    child: AnimatedList(
+                                    child: ListView.builder(
                                       physics: BouncingScrollPhysics(),
                                       shrinkWrap: true,
                                       key: _listKey,
-                                      initialItemCount: feedList.length,
+                                      itemCount: feedList.length,
                                       reverse: true,
-                                      itemBuilder: (BuildContext context,
-                                          int index, Animation animation) {
-                                        return FadeTransition(
-                                          opacity: animation,
-                                          child: buildContent(
-                                              context, feedList[index], index),
-                                        );
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return buildContent(
+                                            context, feedList[index], index);
                                       },
                                     ),
                                   ),
@@ -321,12 +318,9 @@ class _ViewStreamState extends State<ViewStream> {
             creatorUid: Faker().lorem.word(),
             body: 'Let\'s get it!'),
       ];
-
-      feedList.insertAll(0, list);
-
-      for (int offset = 0; offset < list.length; offset++) {
-        _listKey.currentState.insertItem(0 + offset);
-      }
+      setState(() {
+        feedList.insertAll(0, list);
+      });
     });
   }
 }
