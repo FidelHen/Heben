@@ -3,6 +3,7 @@ import 'package:faker/faker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/build/build_content.dart';
 import 'package:heben/build/build_firestore_post.dart';
@@ -48,10 +49,10 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
 
   @override
   void initState() {
-    // loadTestData();
+    loadTestData();
     isLoading = true;
     noContent = true;
-    loadData();
+    // loadData();
     super.initState();
   }
 
@@ -123,9 +124,7 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
       } else {
         lastDocument = snapshot.documents.last;
       }
-      if (snapshot.documents.length != 0) {
-        feedList.insert(0, ContentHomeHeaderItem(streamerList: []));
-      }
+
       snapshot.documents.forEach((doc) async {
         await Firestore.instance
             .collection('posts')
@@ -235,40 +234,6 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
     await Future.delayed(const Duration(milliseconds: 250));
     setState(() {
       List<ContentItems> list = [
-        ContentHomeHeaderItem(streamerList: []),
-        // ContentChallengeItem(
-        //     username: Faker().internet.userName(),
-        //     profileImage: 'https://source.unsplash.com/1600x900/?mom',
-        //     timestamp: '2 days',
-        //     challengeTitle: '25 Push Up Challenge',
-        //     popularity: CurrentPostPopularity.pinned,
-        //     likes: 5,
-        //     liked: false,
-        //     bookmarked: true,
-        //     participants: 8,
-        //     postUid: Faker().randomGenerator.string(10),
-        //     image: 'https://source.unsplash.com/1600x900/?workout',
-        //     video: null,
-        //     creatorUid: '',
-        //     comments: 3,
-        //     duration: '1'),
-        // ContentChallengeItem(
-        //     username: Faker().internet.userName(),
-        //     profileImage: 'https://source.unsplash.com/1600x900/?dad',
-        //     timestamp: '2 days',
-        //     challengeTitle: '25 Push Up Challenge',
-        //     popularity: CurrentPostPopularity.pinned,
-        //     likes: 5,
-        //     liked: false,
-        //     bookmarked: true,
-        //     participants: 8,
-        //     postUid: Faker().randomGenerator.string(10),
-        //     image: null,
-        //     video:
-        //         'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-        //     creatorUid: '',
-        //     comments: 3,
-        //     duration: '1'),
         ContentVideoItem(
           username: Faker().internet.userName(),
           profileImage: 'https://source.unsplash.com/1600x900/?couple',
@@ -336,12 +301,10 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
           bookmarked: false,
         ),
       ];
-
-      feedList.insertAll(0, list);
-
-      for (int offset = 0; offset < list.length; offset++) {
-        _listKey.currentState.insertItem(0 + offset);
-      }
+      setState(() {
+        feedList.insertAll(0, list);
+        isLoading = false;
+      });
     });
   }
 }

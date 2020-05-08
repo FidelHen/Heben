@@ -14,7 +14,6 @@ class NotificationTagged extends StatefulWidget {
     @required this.username,
     @required this.profileImage,
     @required this.timestamp,
-    @required this.firstIndex,
     @required this.body,
     @required this.postUid,
     @required this.postType,
@@ -23,7 +22,6 @@ class NotificationTagged extends StatefulWidget {
   final String username;
   final String profileImage;
   final String timestamp;
-  final bool firstIndex;
   final String body;
   final String postUid;
   final String postType;
@@ -66,21 +64,13 @@ class _NotificationTaggedState extends State<NotificationTagged> {
             fullScreen: false);
       },
       child: Container(
-        decoration: widget.firstIndex
-            ? BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(40),
-                  topLeft: Radius.circular(40),
-                ),
-              )
-            : BoxDecoration(color: Colors.white),
+        decoration: BoxDecoration(color: Colors.white),
         child: Column(
           children: <Widget>[
             Container(
               constraints: const BoxConstraints(minHeight: 50),
-              padding: EdgeInsets.fromLTRB(15, 8, 15, 8),
-              margin: EdgeInsets.fromLTRB(0, 16, 0, 16),
+              padding: EdgeInsets.fromLTRB(15, 4, 15, 4),
+              margin: EdgeInsets.fromLTRB(0, 8, 0, 8),
               decoration: BoxDecoration(
                 color: Colors.transparent,
                 borderRadius: const BorderRadius.all(Radius.circular(5)),

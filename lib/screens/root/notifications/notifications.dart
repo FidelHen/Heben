@@ -95,7 +95,7 @@ class _NotificationsState extends State<Notifications>
                   return FadeTransition(
                     opacity: animation,
                     child: buildNotification(
-                        context, currentNotificationsList[index], index),
+                        context, currentNotificationsList[index]),
                   );
                 },
               ),

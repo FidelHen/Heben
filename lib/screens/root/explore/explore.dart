@@ -102,18 +102,14 @@ class _ExploreState extends State<Explore>
               onRefresh: () {
                 exploreRefreshController.refreshCompleted();
               },
-              child: AnimatedList(
+              child: ListView.builder(
                 physics: BouncingScrollPhysics(),
                 shrinkWrap: true,
                 key: _listKey,
-                initialItemCount: currentExploreList.length,
-                itemBuilder:
-                    (BuildContext context, int index, Animation animation) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child:
-                        buildContent(context, currentExploreList[index], index),
-                  );
+                itemCount: currentExploreList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return buildContent(
+                      context, currentExploreList[index], index);
                 },
               ),
             )),
@@ -126,47 +122,13 @@ class _ExploreState extends State<Explore>
 
     setState(() {
       List<ContentItems> list = [
-        ContentExploreHeaderItem(streamerList: []),
-        // ContentChallengeItem(
-        //     username: Faker().internet.userName(),
-        //     profileImage: 'https://source.unsplash.com/1600x900/?mom',
-        //     timestamp: '2 days',
-        //     challengeTitle: '25 Push Up Challenge',
-        //     popularity: CurrentPostPopularity.pinned,
-        //     likes: 5,
-        //     liked: false,
-        //     bookmarked: true,
-        //     participants: 8,
-        //     postUid: Faker().randomGenerator.string(10),
-        //     image: 'https://source.unsplash.com/1600x900/?workout',
-        //     video: null,
-        //     creatorUid: '',
-        //     comments: 3,
-        //     duration: '1'),
-        // ContentChallengeItem(
-        //     username: Faker().internet.userName(),
-        //     profileImage: 'https://source.unsplash.com/1600x900/?dad',
-        //     timestamp: '2 days',
-        //     challengeTitle: '25 Push Up Challenge',
-        //     popularity: CurrentPostPopularity.pinned,
-        //     likes: 5,
-        //     liked: false,
-        //     bookmarked: true,
-        //     participants: 8,
-        //     postUid: Faker().randomGenerator.string(10),
-        //     image: null,
-        //     video:
-        //         'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-        //     creatorUid: '',
-        //     comments: 3,
-        //     duration: '1'),
         ContentVideoItem(
           username: Faker().internet.userName(),
           profileImage: 'https://source.unsplash.com/1600x900/?man',
           timestamp: '8 hr',
           body: 'Social distancing & kettlebells, Let\'s GO!',
           video:
-              'https://firebasestorage.googleapis.com/v0/b/smartbot-5abdc.appspot.com/o/Pexels%20Videos%201502317.mp4?alt=media&token=a3ee8cb3-d789-4231-a8ff-6a23ca401178',
+              'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
           popularity: CurrentPostPopularity.trending,
           likes: 376,
           liked: true,
@@ -229,11 +191,9 @@ class _ExploreState extends State<Explore>
         ),
       ];
 
-      currentExploreList.insertAll(0, list);
-
-      for (int offset = 0; offset < list.length; offset++) {
-        _listKey.currentState.insertItem(0 + offset);
-      }
+      setState(() {
+        currentExploreList.insertAll(0, list);
+      });
     });
   }
 }

@@ -4,7 +4,6 @@ import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/components/search_lists/challenges_tab.dart';
 import 'package:heben/components/search_lists/people_tab.dart';
-import 'package:heben/components/search_lists/streams_tab.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/device_size.dart';
 
@@ -16,7 +15,6 @@ class Search extends StatefulWidget {
 class _SearchState extends State<Search> {
   bool tabOneActive = true;
   bool tabTwoActive = false;
-  bool tabThreeActive = false;
   bool isSearching;
 
   TextEditingController searchController;
@@ -94,7 +92,7 @@ class _SearchState extends State<Search> {
       ),
       body: isSearching
           ? DefaultTabController(
-              length: 3,
+              length: 2,
               child: Theme(
                 data: ThemeData(
                   splashColor: Colors.transparent,
@@ -129,9 +127,6 @@ class _SearchState extends State<Search> {
                               Tab(
                                 text: 'Challenges',
                               ),
-                              Tab(
-                                text: 'Streams',
-                              ),
                             ],
                           ),
                         ),
@@ -147,7 +142,6 @@ class _SearchState extends State<Search> {
                           ChallengesTab(
                             query: searchController.text.trim(),
                           ),
-                          StreamsTab(),
                         ],
                       ),
                     )
@@ -163,7 +157,7 @@ class _SearchState extends State<Search> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Search for users, challenges, and streams',
+                        'Search for users & challenges',
                         style:
                             GoogleFonts.openSans(fontWeight: FontWeight.w600),
                       ),
@@ -176,15 +170,12 @@ class _SearchState extends State<Search> {
   setTab(int index) {
     tabOneActive = false;
     tabTwoActive = false;
-    tabThreeActive = false;
 
     setState(() {
       if (index == 0) {
         tabOneActive = true;
       } else if (index == 1) {
         tabTwoActive = true;
-      } else if (index == 2) {
-        tabThreeActive = true;
       }
     });
   }
