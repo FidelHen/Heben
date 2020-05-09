@@ -85,18 +85,17 @@ class _NotificationsState extends State<Notifications>
               onRefresh: () {
                 notificationsRefreshController.refreshCompleted();
               },
-              child: AnimatedList(
+              child: ListView.builder(
                 physics: NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 key: _listKey,
-                initialItemCount: currentNotificationsList.length,
-                itemBuilder:
-                    (BuildContext context, int index, Animation animation) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child: buildNotification(
-                        context, currentNotificationsList[index]),
-                  );
+                itemCount: currentNotificationsList.length,
+                itemBuilder: (
+                  BuildContext context,
+                  int index,
+                ) {
+                  return buildNotification(
+                      context, currentNotificationsList[index]);
                 },
               ),
             )),
@@ -164,12 +163,9 @@ class _NotificationsState extends State<Notifications>
             postUid: '',
             postType: '')
       ];
-
-      currentNotificationsList.insertAll(0, list);
-
-      for (int offset = 0; offset < list.length; offset++) {
-        _listKey.currentState.insertItem(0 + offset);
-      }
+      setState(() {
+        currentNotificationsList.insertAll(0, list);
+      });
     });
   }
 }

@@ -116,8 +116,9 @@ class _ProfileState extends State<Profile>
             Center(
               child: Container(
                 height: 50,
-                child: SpinKitThreeBounce(
+                child: SpinKitRing(
                   color: Colors.black,
+                  lineWidth: 5,
                   size: 40,
                 ),
               ),

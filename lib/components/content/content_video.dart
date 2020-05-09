@@ -8,6 +8,7 @@ import 'package:heben/components/content/content_header.dart';
 import 'package:heben/screens/root/friend.dart';
 import 'package:heben/screens/root/media_view.dart';
 import 'package:heben/screens/root/post.dart';
+import 'package:heben/screens/root/tag.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/constants.dart';
 import 'package:heben/utils/device_size.dart';
@@ -358,7 +359,14 @@ class _ContentVideoState extends State<ContentVideo> {
                 fontWeight: FontWeight.w600, color: hebenActive));
       } else if (str.contains('#', 0)) {
         words[str] = HighlightedWord(
-            onTap: () {},
+            onTap: () {
+              Navigation().segue(
+                  page: Tag(
+                    tag: str,
+                  ),
+                  context: context,
+                  fullScreen: false);
+            },
             textStyle: GoogleFonts.openSans(
                 fontWeight: FontWeight.w700, color: hebenActive));
       } else {

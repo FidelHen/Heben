@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/components/modals.dart';
 import 'package:heben/components/toast.dart';
 import 'package:heben/screens/root/friend.dart';
+import 'package:heben/screens/root/tag.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/navigation.dart';
 import 'package:heben/utils/user.dart';
@@ -161,7 +162,14 @@ class _ContentPostCommentState extends State<ContentPostComment> {
                 fontWeight: FontWeight.w600, color: hebenActive));
       } else if (str.contains('#', 0)) {
         words[str] = HighlightedWord(
-            onTap: () {},
+            onTap: () {
+              Navigation().segue(
+                  page: Tag(
+                    tag: str,
+                  ),
+                  context: context,
+                  fullScreen: false);
+            },
             textStyle: GoogleFonts.openSans(
                 fontWeight: FontWeight.w700, color: hebenActive));
       } else {

@@ -4,6 +4,8 @@ import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Tag extends StatefulWidget {
+  Tag({@required this.tag});
+  final String tag;
   @override
   _TagState createState() => _TagState();
 }
@@ -15,7 +17,7 @@ class _TagState extends State<Tag> {
       backgroundColor: Colors.grey[100],
       appBar: GFAppBar(
         title: Text(
-          'Tag',
+          '${widget.tag}',
           style: GoogleFonts.lato(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
         ),

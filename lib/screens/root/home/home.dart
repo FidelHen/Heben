@@ -3,7 +3,6 @@ import 'package:faker/faker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/build/build_content.dart';
 import 'package:heben/build/build_firestore_post.dart';
@@ -193,8 +192,9 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
             Center(
               child: Container(
                 height: 50,
-                child: SpinKitThreeBounce(
+                child: SpinKitRing(
                   color: Colors.black,
+                  lineWidth: 5,
                   size: 40,
                 ),
               ),
