@@ -35,7 +35,7 @@ class ChallengePage extends StatefulWidget {
 
 class _ChallengePageState extends State<ChallengePage> {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
-  RefreshController challengeRefreshController = RefreshController();
+  RefreshController challengeRefreshController;
   List<ContentItems> feedList = [];
   Future getPostFuture;
   bool buttonIsHidden;
@@ -44,6 +44,7 @@ class _ChallengePageState extends State<ChallengePage> {
   @override
   void initState() {
     // loadTestData();
+    challengeRefreshController = RefreshController();
     getPostFuture = Firestore.instance
         .collection('posts')
         .document(widget.challengeUid)
@@ -54,7 +55,6 @@ class _ChallengePageState extends State<ChallengePage> {
     buttonIsHidden = false;
 
     loadUid();
-
     super.initState();
   }
 
@@ -82,6 +82,13 @@ class _ChallengePageState extends State<ChallengePage> {
               appBar: GFAppBar(
                 centerTitle: true,
                 elevation: 0,
+                title: Text(
+                  'Challenge',
+                  style: GoogleFonts.lato(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600),
+                ),
                 leading: IconButton(
                     icon: Icon(
                       EvaIcons.chevronLeft,
@@ -100,8 +107,9 @@ class _ChallengePageState extends State<ChallengePage> {
                   Center(
                     child: Container(
                       height: 50,
-                      child: SpinKitThreeBounce(
+                      child: SpinKitRing(
                         color: Colors.black,
+                        lineWidth: 5,
                         size: 40,
                       ),
                     ),
@@ -156,17 +164,16 @@ class _ChallengePageState extends State<ChallengePage> {
                   controller: challengeRefreshController,
                   child: Padding(
                     padding: EdgeInsets.only(top: 8.0),
-                    child: AnimatedList(
+                    child: ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       key: _listKey,
-                      initialItemCount: feedList.length,
-                      itemBuilder: (BuildContext context, int index,
-                          Animation animation) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: buildContent(context, feedList[index], index),
-                        );
+                      itemCount: feedList.length,
+                      itemBuilder: (
+                        BuildContext context,
+                        int index,
+                      ) {
+                        return buildContent(context, feedList[index], index);
                       },
                     ),
                   ),
@@ -236,7 +243,7 @@ class _ChallengePageState extends State<ChallengePage> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Sorry, post was maybe removed',
+                          'Sorry, challenge doesn\'t exist',
                           textAlign: TextAlign.center,
                           style: GoogleFonts.openSans(
                               fontWeight: FontWeight.w600, fontSize: 16),
@@ -289,12 +296,9 @@ class _ChallengePageState extends State<ChallengePage> {
             challengeUid: Faker().randomGenerator.string(10),
             challengeTitle: '25 Push Up Challenge'),
       ];
-
-      feedList.insertAll(0, list);
-
-      for (int offset = 0; offset < list.length; offset++) {
-        _listKey.currentState.insertItem(0 + offset);
-      }
+      setState(() {
+        feedList.insertAll(0, list);
+      });
     });
   }
 
