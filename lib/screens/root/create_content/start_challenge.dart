@@ -15,7 +15,7 @@ import 'package:heben/utils/annotator/social_keyboard.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
-import 'package:heben/utils/service.dart';
+import 'package:heben/utils/social.dart';
 import 'package:heben/utils/user.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:heben/utils/gallery/photo.dart';
@@ -585,15 +585,20 @@ class _StartChallengeState extends State<StartChallenge> {
     String mediaUrl;
     Map<String, dynamic> data;
     Map<String, dynamic> participantData;
+    List<String> atList = [];
+    List<String> tagList = [];
 
-    //TODO: Add notifications
     descriptionController.text.trim().split(' ').forEach((str) {
       if (str.contains('@', 0)) {
-        print(str);
+        atList.add(str.substring(1));
       } else if (str.contains('#', 0)) {
-        print(str);
+        tagList.add(str);
       }
     });
+
+    Social().tagUsers(atUsers: atList.toSet().toList());
+    Social().hashtags(
+        tagList: tagList.toSet().toList(), postUid: docRef.documentID);
 
     showOverlayNotification((context) {
       return LoadingToast(message: 'Uploading...');
@@ -608,14 +613,6 @@ class _StartChallengeState extends State<StartChallenge> {
         print(url);
         mediaUrl = url;
       });
-    });
-
-    descriptionController.text.split(' ').forEach((word) {
-      if (Service().socialValidator(word: word.trim())) {
-        // print(word);
-        // batch.setData(document, data);
-        //.toSet().toList()
-      }
     });
 
     if (snapshot == null) {

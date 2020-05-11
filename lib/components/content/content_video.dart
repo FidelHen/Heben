@@ -19,6 +19,7 @@ import 'package:highlight_text/highlight_text.dart';
 import 'package:like_button/like_button.dart';
 import 'package:vibrate/vibrate.dart';
 import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class ContentVideo extends StatefulWidget {
   ContentVideo({
@@ -107,185 +108,197 @@ class _ContentVideoState extends State<ContentVideo> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigation().segue(
-            page: Post(
-              username: widget.username,
-              profileImage: widget.profileImage,
-              timestamp: widget.timestamp,
-              body: widget.body,
-              popularity: widget.popularity,
-              postUid: widget.postUid,
-              challengeUid: widget.challengeUid,
-              challengeTitle: widget.challengeTitle,
-              image: null,
-              video: widget.video,
-              bookmarked: widget.bookmarked,
-              comments: widget.comments,
-              liked: currentlyLiked,
-              likes: widget.likes,
-            ),
-            context: context,
-            fullScreen: false);
+    return VisibilityDetector(
+      key: Key(widget.postUid),
+      onVisibilityChanged: (VisibilityInfo info) {
+        if (info.visibleFraction == 0) {
+          videoControllerGlobal.pause();
+        } else {
+          videoControllerGlobal.play();
+        }
       },
-      child: Column(
-        children: <Widget>[
-          Container(
-              color: Colors.white,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  ContentHeaderLight(
-                    width: DeviceSize().getWidth(context),
-                    username: widget.username,
-                    profileImage: widget.profileImage,
-                    timestamp: widget.timestamp,
-                    popularity: widget.popularity,
-                    postUid: widget.postUid,
-                  ),
-                  widget.challengeTitle != null
-                      ? Padding(
-                          padding:
-                              EdgeInsets.only(left: 15, right: 15, bottom: 0),
-                          child: Text(
-                            widget.challengeTitle,
-                            style: GoogleFonts.openSans(
-                                fontWeight: FontWeight.w700, fontSize: 16),
-                          ),
-                        )
-                      : Container(),
-                  widget.body != null && widget.body.trim() != ''
-                      ? Padding(
-                          padding: kWidgetPadding,
-                          child: TextHighlight(
-                            text: widget.body
-                                .trim(), // You need to pass the string you want the highlights
-                            words: words, // Your dictionary words
-                            textStyle: kBodyTextStyle,
-                          ),
-                        )
-                      : Container(),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          FadeRoute(
-                              page: MediaView(
-                            username: widget.username,
-                            profileImage: widget.profileImage,
-                            timestamp: widget.timestamp,
-                            body: widget.body,
-                            popularity: widget.popularity,
-                            postUid: widget.postUid,
-                            challengeUid: widget.challengeUid,
-                            challengeTitle: widget.challengeTitle,
-                            image: null,
-                            video: widget.video,
-                            bookmarked: widget.bookmarked,
-                            comments: widget.comments,
-                            liked: currentlyLiked,
-                            likes: widget.likes,
-                          )));
-                    },
-                    child: heroWidget(DeviceSize().getWidth(context)),
-                  ),
-                  Padding(
-                    padding: kWidgetPadding,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () {},
-                          child: Row(
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(right: 4),
-                                child: Icon(
-                                  EvaIcons.messageSquare,
-                                  size: 24,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              Text(
-                                '$currentComments',
-                                style: kStatsTextStyle.copyWith(
-                                    color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ),
-                        LikeButton(
-                          size: 25,
-                          onTap: onLikeButtonTapped,
-                          circleColor: CircleColor(
-                              start: Colors.black, end: Colors.redAccent),
-                          bubblesColor: BubblesColor(
-                            dotPrimaryColor: Colors.black,
-                            dotSecondaryColor: Colors.redAccent,
-                          ),
-                          isLiked: widget.liked,
-                          likeBuilder: (bool isLiked) {
-                            return Icon(
-                              EvaIcons.heart,
-                              color: isLiked ? Colors.redAccent : Colors.grey,
-                              size: 25,
-                            );
-                          },
-                          likeCount: currentLikes,
-                          countBuilder: (int count, bool isLiked, String text) {
-                            var color =
-                                isLiked ? Colors.redAccent : Colors.grey;
-                            Widget result;
-                            if (count == 0) {
-                              result = Text(
-                                "like",
-                                style: kStatsTextStyle.copyWith(color: color),
-                              );
-                            } else
-                              result = Text(
-                                text,
-                                style: kStatsTextStyle.copyWith(color: color),
-                              );
-                            return result;
-                          },
-                        ),
-                        LikeButton(
-                          size: 25,
-                          onTap: onBookmarkButtonTapped,
-                          circleColor: CircleColor(
-                              start: Colors.black, end: hebenBookmarkColor),
-                          bubblesColor: BubblesColor(
-                            dotPrimaryColor: Colors.black,
-                            dotSecondaryColor: hebenBookmarkColor,
-                          ),
-                          isLiked: widget.bookmarked,
-                          likeBuilder: (bool currentlyBookmarked) {
-                            return Icon(
-                              currentlyBookmarked
-                                  ? EvaIcons.bookmark
-                                  : EvaIcons.bookmarkOutline,
-                              color: currentlyBookmarked
-                                  ? hebenBookmarkColor
-                                  : Colors.grey,
-                              size: 25,
-                            );
-                          },
-                          likeCount: currentLikes,
-                          countBuilder: (int count, bool isLiked, String text) {
-                            return Container();
-                          },
-                        ),
-                      ],
+      child: GestureDetector(
+        onTap: () {
+          Navigation().segue(
+              page: Post(
+                username: widget.username,
+                profileImage: widget.profileImage,
+                timestamp: widget.timestamp,
+                body: widget.body,
+                popularity: widget.popularity,
+                postUid: widget.postUid,
+                challengeUid: widget.challengeUid,
+                challengeTitle: widget.challengeTitle,
+                image: null,
+                video: widget.video,
+                bookmarked: widget.bookmarked,
+                comments: widget.comments,
+                liked: currentlyLiked,
+                likes: widget.likes,
+              ),
+              context: context,
+              fullScreen: false);
+        },
+        child: Column(
+          children: <Widget>[
+            Container(
+                color: Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    ContentHeaderLight(
+                      width: DeviceSize().getWidth(context),
+                      username: widget.username,
+                      profileImage: widget.profileImage,
+                      timestamp: widget.timestamp,
+                      popularity: widget.popularity,
+                      postUid: widget.postUid,
                     ),
-                  ),
-                ],
-              )),
-          Divider(
-            color: Colors.grey[200],
-            height: 0.5,
-          ),
-        ],
+                    widget.challengeTitle != null
+                        ? Padding(
+                            padding:
+                                EdgeInsets.only(left: 15, right: 15, bottom: 0),
+                            child: Text(
+                              widget.challengeTitle,
+                              style: GoogleFonts.openSans(
+                                  fontWeight: FontWeight.w700, fontSize: 16),
+                            ),
+                          )
+                        : Container(),
+                    widget.body != null && widget.body.trim() != ''
+                        ? Padding(
+                            padding: kWidgetPadding,
+                            child: TextHighlight(
+                              text: widget.body
+                                  .trim(), // You need to pass the string you want the highlights
+                              words: words, // Your dictionary words
+                              textStyle: kBodyTextStyle,
+                            ),
+                          )
+                        : Container(),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            FadeRoute(
+                                page: MediaView(
+                              username: widget.username,
+                              profileImage: widget.profileImage,
+                              timestamp: widget.timestamp,
+                              body: widget.body,
+                              popularity: widget.popularity,
+                              postUid: widget.postUid,
+                              challengeUid: widget.challengeUid,
+                              challengeTitle: widget.challengeTitle,
+                              image: null,
+                              video: widget.video,
+                              bookmarked: widget.bookmarked,
+                              comments: widget.comments,
+                              liked: currentlyLiked,
+                              likes: widget.likes,
+                            )));
+                      },
+                      child: heroWidget(DeviceSize().getWidth(context)),
+                    ),
+                    Padding(
+                      padding: kWidgetPadding,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {},
+                            child: Row(
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(right: 4),
+                                  child: Icon(
+                                    EvaIcons.messageSquare,
+                                    size: 24,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                Text(
+                                  '$currentComments',
+                                  style: kStatsTextStyle.copyWith(
+                                      color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ),
+                          LikeButton(
+                            size: 25,
+                            onTap: onLikeButtonTapped,
+                            circleColor: CircleColor(
+                                start: Colors.black, end: Colors.redAccent),
+                            bubblesColor: BubblesColor(
+                              dotPrimaryColor: Colors.black,
+                              dotSecondaryColor: Colors.redAccent,
+                            ),
+                            isLiked: widget.liked,
+                            likeBuilder: (bool isLiked) {
+                              return Icon(
+                                EvaIcons.heart,
+                                color: isLiked ? Colors.redAccent : Colors.grey,
+                                size: 25,
+                              );
+                            },
+                            likeCount: currentLikes,
+                            countBuilder:
+                                (int count, bool isLiked, String text) {
+                              var color =
+                                  isLiked ? Colors.redAccent : Colors.grey;
+                              Widget result;
+                              if (count == 0) {
+                                result = Text(
+                                  "like",
+                                  style: kStatsTextStyle.copyWith(color: color),
+                                );
+                              } else
+                                result = Text(
+                                  text,
+                                  style: kStatsTextStyle.copyWith(color: color),
+                                );
+                              return result;
+                            },
+                          ),
+                          LikeButton(
+                            size: 25,
+                            onTap: onBookmarkButtonTapped,
+                            circleColor: CircleColor(
+                                start: Colors.black, end: hebenBookmarkColor),
+                            bubblesColor: BubblesColor(
+                              dotPrimaryColor: Colors.black,
+                              dotSecondaryColor: hebenBookmarkColor,
+                            ),
+                            isLiked: widget.bookmarked,
+                            likeBuilder: (bool currentlyBookmarked) {
+                              return Icon(
+                                currentlyBookmarked
+                                    ? EvaIcons.bookmark
+                                    : EvaIcons.bookmarkOutline,
+                                color: currentlyBookmarked
+                                    ? hebenBookmarkColor
+                                    : Colors.grey,
+                                size: 25,
+                              );
+                            },
+                            likeCount: currentLikes,
+                            countBuilder:
+                                (int count, bool isLiked, String text) {
+                              return Container();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                )),
+            Divider(
+              color: Colors.grey[200],
+              height: 0.5,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -334,7 +347,7 @@ class _ContentVideoState extends State<ContentVideo> {
     if (videoControllerGlobal.value.initialized) {
       videoControllerGlobal
         ..setVolume(0)
-        ..setLooping(true)
+        ..setLooping(false)
         ..play().then((_) {
           setState(() {});
         });

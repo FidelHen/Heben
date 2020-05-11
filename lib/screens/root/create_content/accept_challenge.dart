@@ -12,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/components/modals.dart';
 import 'package:heben/utils/annotator/social_keyboard.dart';
 import 'package:heben/utils/service.dart';
+import 'package:heben/utils/social.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:heben/components/toast.dart';
 import 'package:heben/utils/colors.dart';
@@ -518,15 +519,20 @@ class _AcceptChallengeState extends State<AcceptChallenge> {
     final batch = Firestore.instance.batch();
     String mediaUrl;
     Map<String, dynamic> participantData;
+    List<String> atList = [];
+    List<String> tagList = [];
 
-    //TODO: Add notifications
     descriptionController.text.trim().split(' ').forEach((str) {
       if (str.contains('@', 0)) {
-        print(str);
+        atList.add(str.substring(1));
       } else if (str.contains('#', 0)) {
-        print(str);
+        tagList.add(str);
       }
     });
+
+    Social().tagUsers(atUsers: atList.toSet().toList());
+    Social().hashtags(
+        tagList: tagList.toSet().toList(), postUid: docRef.documentID);
 
     showOverlayNotification((context) {
       return LoadingToast(message: 'Uploading...');

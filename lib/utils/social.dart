@@ -5,6 +5,53 @@ import 'package:heben/utils/user.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class Social {
+  tagUsers({@required List<String> atUsers}) async {
+    if (atUsers.length != 0) {
+      final batch = Firestore.instance.batch();
+      DocumentSnapshot snapshot = await User().getUserProfileInfo();
+      atUsers.forEach((element) {
+        batch.setData(
+            Firestore.instance.collection('notifications').document(), {
+          'senderUsername': snapshot.data['username'],
+          'senderUid': snapshot.data['uid'],
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'type': 'tagged',
+          'receiverUsername': element,
+        });
+      });
+
+      batch.commit();
+    }
+  }
+
+  hashtags({@required List<String> tagList, @required String postUid}) async {
+    if (tagList.length != 0) {
+      final batch = Firestore.instance.batch();
+      DocumentSnapshot snapshot = await User().getUserProfileInfo();
+      tagList.forEach((element) async {
+        batch.setData(Firestore.instance.collection('tags').document(element), {
+          'tag': element,
+          'lastPostOn': DateTime.now().millisecondsSinceEpoch,
+        });
+
+        batch.setData(
+            Firestore.instance
+                .collection('tags')
+                .document(element)
+                .collection('posts')
+                .document(postUid),
+            {
+              'uid': snapshot.data['uid'],
+              'username': snapshot.data['username'],
+              'postUid': postUid,
+              'timestamp': DateTime.now().millisecondsSinceEpoch
+            });
+      });
+
+      batch.commit();
+    }
+  }
+
   likePost({@required String postUid}) async {
     String uid = await User().getUid();
 

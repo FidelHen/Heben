@@ -16,6 +16,7 @@ import 'package:highlight_text/highlight_text.dart';
 import 'package:like_button/like_button.dart';
 import 'package:vibrate/vibrate.dart';
 import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class ContentPostHeader extends StatefulWidget {
   ContentPostHeader({
@@ -143,7 +144,18 @@ class _ContentPostHeaderState extends State<ContentPostHeader> {
               // textStyle: kBodyTextStyle,
             ),
           ),
-          mediaWidget(DeviceSize().getWidth(context)),
+          VisibilityDetector(
+              key: Key(widget.postUid),
+              onVisibilityChanged: (VisibilityInfo info) {
+                if (widget.video != null) {
+                  if (info.visibleFraction == 0) {
+                    _controller.pause();
+                  } else {
+                    _controller.play();
+                  }
+                }
+              },
+              child: mediaWidget(DeviceSize().getWidth(context))),
           Padding(
             padding: kWidgetPadding,
             child: Row(

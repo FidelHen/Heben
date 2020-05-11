@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/build/build_post.dart';
 import 'package:heben/components/modals.dart';
 import 'package:heben/components/refresh.dart';
+import 'package:heben/utils/social.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:heben/components/toast.dart';
 import 'package:heben/models/post_items.dart';
@@ -241,17 +242,7 @@ class _PostState extends State<Post> {
                                       0) {
                                     FocusScope.of(context)
                                         .requestFocus(FocusNode());
-                                    //TODO: Add notifications
-                                    commentController.text
-                                        .trim()
-                                        .split(' ')
-                                        .forEach((str) {
-                                      if (str.contains('@', 0)) {
-                                        print(str);
-                                      } else if (str.contains('#', 0)) {
-                                        print(str);
-                                      }
-                                    });
+
                                     DocumentReference docRef = Firestore
                                         .instance
                                         .collection('posts')
@@ -277,6 +268,27 @@ class _PostState extends State<Post> {
                                             userUid: userSnapshot.data['uid']),
                                       );
                                     });
+
+                                    List<String> atList = [];
+                                    List<String> tagList = [];
+
+                                    commentController.text
+                                        .trim()
+                                        .split(' ')
+                                        .forEach((str) {
+                                      if (str.contains('@', 0)) {
+                                        atList.add(str.substring(1));
+                                      } else if (str.contains('#', 0)) {
+                                        tagList.add(str);
+                                      }
+                                    });
+
+                                    Social().tagUsers(
+                                        atUsers: atList.toSet().toList());
+                                    Social().hashtags(
+                                        tagList: tagList.toSet().toList(),
+                                        postUid: docRef.documentID);
+
                                     final batch = Firestore.instance.batch();
 
                                     batch.updateData(

@@ -16,7 +16,7 @@ import 'package:heben/utils/annotator/social_keyboard.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/device_size.dart';
 import 'package:heben/utils/enums.dart';
-import 'package:heben/utils/service.dart';
+import 'package:heben/utils/social.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -500,15 +500,20 @@ class _CreatePostState extends State<CreatePost> {
     final batch = Firestore.instance.batch();
     String mediaUrl;
     Map<String, dynamic> data;
+    List<String> atList = [];
+    List<String> tagList = [];
 
-    //TODO: Add notifications
     contentController.text.trim().split(' ').forEach((str) {
       if (str.contains('@', 0)) {
-        print(str);
+        atList.add(str.substring(1));
       } else if (str.contains('#', 0)) {
-        print(str);
+        tagList.add(str);
       }
     });
+
+    Social().tagUsers(atUsers: atList.toSet().toList());
+    Social().hashtags(
+        tagList: tagList.toSet().toList(), postUid: docRef.documentID);
 
     if (currentSelected != null) {
       showOverlayNotification((context) {
@@ -524,14 +529,6 @@ class _CreatePostState extends State<CreatePost> {
         });
       });
     }
-
-    contentController.text.split(' ').forEach((word) {
-      if (Service().socialValidator(word: word.trim())) {
-        // print(word);
-        // batch.setData(document, data);
-        //.toSet().toList()
-      }
-    });
 
     if (snapshot == null) {
       snapshot = await User().getUserProfileInfo();
