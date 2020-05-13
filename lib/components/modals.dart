@@ -107,44 +107,22 @@ class Modal {
           return SafeArea(
             child: ClipRRect(
               child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: new BorderRadius.only(
+                      topLeft: const Radius.circular(18.0),
+                      topRight: const Radius.circular(18.0),
+                    )),
                 height: DeviceSize().getHeight(context) / 1.2,
                 child: Column(children: [
-                  Flexible(
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 200),
-                      width: DeviceSize().getWidth(context),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.grey[200],
-                      ),
-                      child: TextField(
-                        autofocus: true,
-                        controller: controller,
-                        keyboardAppearance: Brightness.light,
-                        style: GoogleFonts.lato(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                        onSubmitted: (text) {
-                          mainController.text += '#' + text + ' ';
-                          controller.clear();
-                          Navigator.pop(context);
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Search by hashtag',
-                          hintStyle: GoogleFonts.lato(
-                              fontSize: 16, fontWeight: FontWeight.w600),
-                          icon: Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
-                            child: Icon(
-                              EvaIcons.hash,
-                              color: hebenActive,
-                              size: 20,
-                            ),
-                          ),
-                          border: InputBorder.none,
-                        ),
-                      ),
+                  Container(
+                    color: Colors.white,
+                    height: DeviceSize().getHeight(context) / 1.2,
+                    child: HashTagsModalList(
+                      controller: controller,
+                      mainController: mainController,
                     ),
-                  ),
+                  )
                 ]),
                 padding: EdgeInsets.all(25.0),
               ),
@@ -700,7 +678,7 @@ class _FriendsModalListState extends State<FriendsModalList> {
                 getAlgoliaFuture = algolia.instance
                     .index('users')
                     .search(text)
-                    .setHitsPerPage(5)
+                    .setHitsPerPage(10)
                     .getObjects();
 
                 setState(() {});
@@ -784,6 +762,201 @@ class _FriendsModalListState extends State<FriendsModalList> {
                                         feedList[index].profileImage);
                                     Navigator.pop(context);
                                   },
+                          );
+                        },
+                      );
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Sorry, no results found',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.openSans(
+                              fontWeight: FontWeight.w600, fontSize: 16),
+                        ),
+                      );
+                    }
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Sorry, no results found',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.openSans(
+                            fontWeight: FontWeight.w600, fontSize: 16),
+                      ),
+                    );
+                  }
+                }
+              }),
+        ),
+      ],
+    );
+  }
+}
+
+class HashTagsModalList extends StatefulWidget {
+  HashTagsModalList({
+    @required this.controller,
+    @required this.mainController,
+  });
+
+  final TextEditingController controller;
+  final TextEditingController mainController;
+
+  @override
+  _HashTagsModalListState createState() => _HashTagsModalListState();
+}
+
+class _HashTagsModalListState extends State<HashTagsModalList> {
+  Algolia algolia;
+  List<Map<String, dynamic>> feedList = [];
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
+  Future getAlgoliaFuture;
+
+  @override
+  void initState() {
+    algolia = Algolia.init(
+      applicationId: AlgoliaKeys().getAppId(),
+      apiKey: AlgoliaKeys().getApiKey(),
+    );
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Flexible(
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 200),
+            width: DeviceSize().getWidth(context),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.grey[200],
+            ),
+            child: TextField(
+              autofocus: true,
+              keyboardAppearance: Brightness.light,
+              controller: widget.controller,
+              style:
+                  GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w600),
+              onChanged: (text) {
+                getAlgoliaFuture = algolia.instance
+                    .index('tags')
+                    .search(text)
+                    .setHitsPerPage(10)
+                    .getObjects();
+
+                setState(() {});
+              },
+              onSubmitted: (text) {
+                widget.mainController.text += '#' + text + ' ';
+
+                widget.controller.clear();
+                Navigator.pop(context);
+              },
+              decoration: InputDecoration(
+                hintText: 'Search hashtags',
+                hintStyle:
+                    GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w600),
+                icon: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
+                  child: Icon(
+                    EvaIcons.at,
+                    color: hebenActive,
+                    size: 20,
+                  ),
+                ),
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 8.0),
+          child: FutureBuilder(
+              future: getAlgoliaFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return Container();
+                } else {
+                  AlgoliaQuerySnapshot data = snapshot.data;
+
+                  if (data.hits.length != 0) {
+                    int count = 0;
+                    feedList.clear();
+
+                    data.hits.asMap().forEach((index, value) {
+                      count++;
+
+                      feedList.add({'tag': value.objectID});
+                    });
+
+                    if (count != 0) {
+                      return ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        key: _listKey,
+                        itemCount: feedList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              widget.mainController.text +=
+                                  feedList[index]['tag'] + ' ';
+
+                              widget.controller.clear();
+                              Navigator.pop(context);
+                            },
+                            child: Column(
+                              children: <Widget>[
+                                Container(
+                                  constraints:
+                                      const BoxConstraints(minHeight: 50),
+                                  padding: EdgeInsets.fromLTRB(15, 8, 15, 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(5)),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          child: Row(
+                                            children: <Widget>[
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Text(
+                                                    feedList[index]['tag'],
+                                                    style: GoogleFonts.lato(
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Divider(
+                                  color: Colors.grey[200],
+                                  height: 0.5,
+                                ),
+                              ],
+                            ),
                           );
                         },
                       );
