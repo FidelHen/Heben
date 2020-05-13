@@ -90,7 +90,7 @@ class _AllDataListState extends State<AllDataList> {
         if (feedList.length == 0) {
           feedList.add(buildFirestorePost(snapshot: doc, uid: myUid));
         } else {
-          feedList.insert(1, buildFirestorePost(snapshot: doc, uid: myUid));
+          feedList.add(buildFirestorePost(snapshot: doc, uid: myUid));
         }
       });
 
