@@ -11,6 +11,7 @@ import 'package:heben/screens/root/profile/settings/terms_and_conditions.dart';
 import 'package:heben/utils/auth.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/navigation.dart';
+import 'package:platform_alert_dialog/platform_alert_dialog.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -95,7 +96,36 @@ class _SettingsState extends State<Settings> {
                   Center(
                     child: FlatButton(
                       onPressed: () {
-                        Auth().logOut(context: context);
+                        showDialog<void>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return PlatformAlertDialog(
+                              title: Text('Logout'),
+                              content: SingleChildScrollView(
+                                child: ListBody(
+                                  children: <Widget>[
+                                    Text('Are you sure you want to logout?'),
+                                  ],
+                                ),
+                              ),
+                              actions: <Widget>[
+                                PlatformDialogAction(
+                                  child: Text('Cancel'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                PlatformDialogAction(
+                                  child: Text('Yes'),
+                                  actionType: ActionType.Destructive,
+                                  onPressed: () {
+                                    Auth().logOut(context: context);
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
                       },
                       shape: RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(11.0),
