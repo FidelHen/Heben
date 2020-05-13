@@ -196,7 +196,7 @@ class _ContentChallengeState extends State<ContentChallenge> {
                                   Padding(
                                     padding: EdgeInsets.only(right: 4),
                                     child: Icon(
-                                      EvaIcons.list,
+                                      EvaIcons.peopleOutline,
                                       size: 24,
                                       color: Colors.white,
                                     ),
@@ -307,7 +307,8 @@ class _ContentChallengeState extends State<ContentChallenge> {
   Future<bool> onLikeButtonTapped(bool isLiked) async {
     Vibrate.feedback(FeedbackType.medium);
     if (!isLiked) {
-      Social().likePost(postUid: widget.postUid);
+      Social()
+          .likePost(postUid: widget.postUid, receiverUsername: widget.username);
     } else {
       Social().unlikePost(postUid: widget.postUid);
     }

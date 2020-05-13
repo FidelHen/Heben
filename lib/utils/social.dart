@@ -56,8 +56,10 @@ class Social {
     }
   }
 
-  likePost({@required String postUid}) async {
+  likePost(
+      {@required String postUid, @required String receiverUsername}) async {
     String uid = await User().getUid();
+    DocumentSnapshot snapshot = await User().getUserProfileInfo();
 
     final batch = Firestore.instance.batch();
     final timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -79,6 +81,16 @@ class Social {
           .document(postUid),
       {'postUid': postUid, 'timestamp': timestamp},
     );
+
+    if (uid != receiverUsername) {
+      batch.setData(Firestore.instance.collection('notifications').document(), {
+        'senderUsername': snapshot.data['username'],
+        'senderUid': snapshot.data['uid'],
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'type': 'tagged',
+        'receiverUsername': receiverUsername,
+      });
+    }
 
     batch.updateData(
       Firestore.instance.collection('posts').document(postUid),

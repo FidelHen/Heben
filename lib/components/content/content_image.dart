@@ -373,7 +373,8 @@ class _ContentImageState extends State<ContentImage> {
   Future<bool> onLikeButtonTapped(bool isLiked) async {
     Vibrate.feedback(FeedbackType.medium);
     if (!isLiked) {
-      Social().likePost(postUid: widget.postUid);
+      Social()
+          .likePost(postUid: widget.postUid, receiverUsername: widget.username);
     } else {
       Social().unlikePost(postUid: widget.postUid);
     }

@@ -28,13 +28,14 @@ class _NotificationsState extends State<Notifications>
     with AutomaticKeepAliveClientMixin<Notifications> {
   List<NotificationItems> currentNotificationsList = [];
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
-
+  bool isLoading;
   bool keepAlive = true;
   bool get wantKeepAlive => keepAlive;
 
   @override
   void initState() {
-    loadTestData();
+    // loadTestData();
+    isLoading = false;
     super.initState();
   }
 

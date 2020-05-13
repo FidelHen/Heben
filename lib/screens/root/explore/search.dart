@@ -134,7 +134,6 @@ class _SearchState extends State<Search> {
                     ),
                     Expanded(
                       child: TabBarView(
-                        physics: NeverScrollableScrollPhysics(),
                         children: [
                           PeopleTab(
                             query: searchController.text.trim(),
