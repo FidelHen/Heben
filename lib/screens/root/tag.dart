@@ -35,7 +35,7 @@ class _TagState extends State<Tag> {
         .collection('tags')
         .document(widget.tag)
         .collection('posts')
-        .orderBy('timestamp', descending: true)
+        .orderBy('timestamp', descending: false)
         .getDocuments();
     loadData();
 

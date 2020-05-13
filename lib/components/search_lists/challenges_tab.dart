@@ -100,17 +100,22 @@ class _ChallengesTabState extends State<ChallengesTab> {
 
   Widget buildList() {
     if (isLoading) {
-      return Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Container(
-          height: 50,
-          width: DeviceSize().getWidth(context),
-          child: Center(
-            child: SpinKitCircle(
-              color: Colors.grey,
-              size: 40,
+      return Container(
+        width: DeviceSize().getWidth(context),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Center(
+              child: Container(
+                height: 50,
+                child: SpinKitRing(
+                  color: Colors.black,
+                  lineWidth: 5,
+                  size: 40,
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       );
     } else if (feedList.isEmpty) {
