@@ -181,6 +181,7 @@ class Social {
 
   followUser({@required String userUid}) async {
     String uid = await User().getUid();
+    String username = await User().getUsername();
 
     final batch = Firestore.instance.batch();
 
@@ -201,6 +202,14 @@ class Social {
         {
           'uid': uid,
         });
+
+    batch.setData(Firestore.instance.collection('notifications').document(), {
+      'receiverUid': userUid,
+      'senderUid': uid,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'type': 'followed',
+      'senderUsername': username,
+    });
 
     await Firestore.instance
         .collection('posts')

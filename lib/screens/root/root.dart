@@ -35,6 +35,7 @@ class _RootState extends State<Root> {
   @override
   void initState() {
     if (Platform.isIOS) {
+      Auth().saveDeviceToken();
       iosSubscription = _fcm.onIosSettingsRegistered.listen((data) {
         Auth().saveDeviceToken();
       });

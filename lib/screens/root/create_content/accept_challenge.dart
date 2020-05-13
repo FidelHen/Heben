@@ -305,6 +305,7 @@ class _AcceptChallengeState extends State<AcceptChallenge> {
                           onTap: () {
                             setState(() {
                               challengeList.removeAt(index);
+                              challengedUsers.removeAt(index - 1);
                             });
                           },
                           child: challengeList[index]);
@@ -530,7 +531,9 @@ class _AcceptChallengeState extends State<AcceptChallenge> {
       }
     });
 
-    Social().tagUsers(atUsers: atList.toSet().toList());
+    Social().tagUsers(
+      atUsers: atList.toSet().toList(),
+    );
     Social().hashtags(
         tagList: tagList.toSet().toList(), postUid: docRef.documentID);
 
@@ -547,14 +550,6 @@ class _AcceptChallengeState extends State<AcceptChallenge> {
         print(url);
         mediaUrl = url;
       });
-    });
-
-    descriptionController.text.split(' ').forEach((word) {
-      if (Service().socialValidator(word: word.trim())) {
-        // print(word);
-        // batch.setData(document, data);
-        //.toSet().toList()
-      }
     });
 
     if (snapshot == null) {
@@ -585,6 +580,19 @@ class _AcceptChallengeState extends State<AcceptChallenge> {
     } else if (mediaType == PostContentType.image) {
       participantData.addAll({'image': mediaUrl});
     }
+
+    challengedUsers.forEach((user) {
+      if (user['username'] != snapshot.data['username']) {
+        batch.setData(
+            Firestore.instance.collection('notifications').document(), {
+          'receiverUsername': user['username'],
+          'senderUid': snapshot.data['uid'],
+          'senderUsername': snapshot.data['username'],
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'type': 'challenged'
+        });
+      }
+    });
 
     batch.setData(docRef, participantData);
     batch.setData(

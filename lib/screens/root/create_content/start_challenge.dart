@@ -298,7 +298,7 @@ class _StartChallengeState extends State<StartChallenge> {
                           onTap: () {
                             setState(() {
                               challengeList.removeAt(index);
-                              challengedUsers.removeAt(index - 2);
+                              challengedUsers.removeAt(index - 1);
                             });
                           },
                           child: challengeList[index]);
@@ -678,6 +678,19 @@ class _StartChallengeState extends State<StartChallenge> {
       data.addAll({'image': mediaUrl});
       participantData.addAll({'image': mediaUrl});
     }
+
+    challengedUsers.forEach((user) {
+      if (user['username'] != snapshot.data['username']) {
+        batch.setData(
+            Firestore.instance.collection('notifications').document(), {
+          'receiverUsername': user['username'],
+          'senderUid': snapshot.data['uid'],
+          'senderUsername': snapshot.data['username'],
+          'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'type': 'challenged'
+        });
+      }
+    });
 
     batch.setData(docRef, data);
     batch.setData(docRef.collection('participants').document(docRef.documentID),

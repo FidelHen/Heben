@@ -311,6 +311,26 @@ class _PostState extends State<Post> {
                                       'userUid': userSnapshot.data['uid']
                                     });
 
+                                    if (userSnapshot.data['username'] !=
+                                        widget.username) {
+                                      batch.setData(
+                                          Firestore.instance
+                                              .collection('notifications')
+                                              .document(),
+                                          {
+                                            'receiverUsername': widget.username,
+                                            'senderUid':
+                                                userSnapshot.data['uid'],
+                                            'timestamp': DateTime.now()
+                                                .millisecondsSinceEpoch,
+                                            'type': 'commented',
+                                            'senderUsername':
+                                                userSnapshot.data['username'],
+                                            'body':
+                                                commentController.text.trim(),
+                                          });
+                                    }
+
                                     batch.commit();
 
                                     commentController.clear();
