@@ -1,4 +1,7 @@
+import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
@@ -7,6 +10,7 @@ import 'package:heben/screens/root/explore/explore.dart';
 import 'package:heben/screens/root/home/home.dart';
 import 'package:heben/screens/root/notifications/notifications.dart';
 import 'package:heben/screens/root/profile/profile.dart';
+import 'package:heben/utils/auth.dart';
 import 'package:heben/utils/colors.dart';
 import 'package:heben/utils/navigation.dart';
 
@@ -25,8 +29,19 @@ class _RootState extends State<Root> {
   Color notificationsColor = Colors.grey;
   Color profileColor = Colors.grey;
 
+  final FirebaseMessaging _fcm = FirebaseMessaging();
+  StreamSubscription iosSubscription;
+
   @override
   void initState() {
+    if (Platform.isIOS) {
+      iosSubscription = _fcm.onIosSettingsRegistered.listen((data) {
+        Auth().saveDeviceToken();
+      });
+      _fcm.requestNotificationPermissions(IosNotificationSettings());
+    } else {
+      Auth().saveDeviceToken();
+    }
     FlutterStatusbarcolor.setStatusBarWhiteForeground(false);
     _pageController = PageController(initialPage: 0);
     super.initState();
@@ -35,6 +50,7 @@ class _RootState extends State<Root> {
   @override
   void dispose() {
     _pageController.dispose();
+    iosSubscription.cancel();
     super.dispose();
   }
 

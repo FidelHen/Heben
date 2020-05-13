@@ -1,5 +1,7 @@
+import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:heben/screens/intro/landing.dart';
@@ -264,5 +266,16 @@ class Auth {
 
   forgotPassword({@required String email}) {
     FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  }
+
+  saveDeviceToken() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    String fcmToken = await FirebaseMessaging().getToken();
+
+    if (fcmToken != null) {
+      Firestore.instance.collection('users').document(user.uid).setData(
+          {'token': fcmToken, 'platform': Platform.operatingSystem},
+          merge: true);
+    }
   }
 }

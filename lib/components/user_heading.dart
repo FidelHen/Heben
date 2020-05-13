@@ -234,7 +234,7 @@ class _UserHeadingState extends State<UserHeading> {
                       child: Padding(
                         padding: EdgeInsets.only(right: 2),
                         child: Text(
-                          widget.name,
+                          widget.name ?? '',
                           style: GoogleFonts.lato(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,

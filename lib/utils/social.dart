@@ -6,6 +6,10 @@ import 'package:overlay_support/overlay_support.dart';
 
 class Social {
   tagUsers({@required List<String> atUsers}) async {
+    String uid = await User().getUsername();
+    if (atUsers.contains(uid)) {
+      atUsers.remove(uid);
+    }
     if (atUsers.length != 0) {
       final batch = Firestore.instance.batch();
       DocumentSnapshot snapshot = await User().getUserProfileInfo();
