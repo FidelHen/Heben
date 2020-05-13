@@ -360,7 +360,8 @@ class Modal {
         });
   }
 
-  void postOptions(BuildContext context, bool isOwner, String postUid) {
+  void postOptions(
+      BuildContext context, bool isOwner, String postUid, bool isPinned) {
     if (isOwner) {
       showModalBottomSheet(
           context: context,
@@ -386,22 +387,41 @@ class Modal {
                         ),
                       ),
                     ),
-                    ListTile(
-                        leading: Padding(
-                          padding: EdgeInsets.only(left: 5.0, top: 5),
-                          child: Image.asset(
-                            'images/heben_logo.png',
-                            height: 24,
-                          ),
-                        ),
-                        title: Text(
-                          'Pin to profile',
-                          style: GoogleFonts.lato(fontWeight: FontWeight.w600),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Social().pinPost(postUid: postUid);
-                        }),
+                    isPinned
+                        ? ListTile(
+                            leading: Padding(
+                              padding: EdgeInsets.only(left: 5.0, top: 5),
+                              child: Image.asset(
+                                'images/heben_logo.png',
+                                height: 24,
+                              ),
+                            ),
+                            title: Text(
+                              'Unpin from profile',
+                              style:
+                                  GoogleFonts.lato(fontWeight: FontWeight.w600),
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Social().unpinPost();
+                            })
+                        : ListTile(
+                            leading: Padding(
+                              padding: EdgeInsets.only(left: 5.0, top: 5),
+                              child: Image.asset(
+                                'images/heben_logo.png',
+                                height: 24,
+                              ),
+                            ),
+                            title: Text(
+                              'Pin to profile',
+                              style:
+                                  GoogleFonts.lato(fontWeight: FontWeight.w600),
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Social().pinPost(postUid: postUid);
+                            }),
                     ListTile(
                         leading:
                             Icon(EvaIcons.trash2Outline, color: Colors.red),
@@ -443,22 +463,41 @@ class Modal {
                         ),
                       ),
                     ),
-                    ListTile(
-                        leading: Padding(
-                          padding: EdgeInsets.only(left: 5.0, top: 5),
-                          child: Image.asset(
-                            'images/heben_logo.png',
-                            height: 24,
-                          ),
-                        ),
-                        title: Text(
-                          'Pin to profile',
-                          style: GoogleFonts.lato(fontWeight: FontWeight.w600),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Social().pinPost(postUid: postUid);
-                        }),
+                    isPinned
+                        ? ListTile(
+                            leading: Padding(
+                              padding: EdgeInsets.only(left: 5.0, top: 5),
+                              child: Image.asset(
+                                'images/heben_logo.png',
+                                height: 24,
+                              ),
+                            ),
+                            title: Text(
+                              'Unpin from profile',
+                              style:
+                                  GoogleFonts.lato(fontWeight: FontWeight.w600),
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Social().unpinPost();
+                            })
+                        : ListTile(
+                            leading: Padding(
+                              padding: EdgeInsets.only(left: 5.0, top: 5),
+                              child: Image.asset(
+                                'images/heben_logo.png',
+                                height: 24,
+                              ),
+                            ),
+                            title: Text(
+                              'Pin to profile',
+                              style:
+                                  GoogleFonts.lato(fontWeight: FontWeight.w600),
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                              Social().pinPost(postUid: postUid);
+                            }),
                     ListTile(
                         leading: Icon(
                           EvaIcons.alertTriangleOutline,

@@ -60,9 +60,11 @@ class _PostState extends State<Post> {
   TextEditingController commentController;
   FocusNode mainNode;
   DocumentSnapshot lastDocument;
+  bool isPinned;
 
   @override
   void initState() {
+    isPinned = widget.popularity == CurrentPostPopularity.pinned;
     commentController = TextEditingController();
     mainNode = FocusNode();
     currentPostList = [
@@ -139,7 +141,8 @@ class _PostState extends State<Post> {
                                 Modal().postOptions(
                                     context,
                                     userUsername == widget.username,
-                                    widget.postUid);
+                                    widget.postUid,
+                                    isPinned);
                               });
                             }),
                       ),

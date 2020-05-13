@@ -148,6 +148,18 @@ class Social {
     });
   }
 
+  unpinPost() async {
+    String uid = await User().getUid();
+
+    Firestore.instance
+        .collection('users')
+        .document(uid)
+        .setData({'pinnedPost': ''}, merge: true).then(
+            (_) => showOverlayNotification((context) {
+                  return SuccessToast(message: 'Post is now unpinned');
+                }));
+  }
+
   bookmarkPost({@required String postUid}) async {
     String uid = await User().getUid();
     final batch = Firestore.instance.batch();

@@ -33,6 +33,7 @@ class ContentHeaderLight extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isPinned = popularity == CurrentPostPopularity.pinned;
     return Container(
       constraints: const BoxConstraints(minHeight: 50),
       padding: EdgeInsets.fromLTRB(15, 6, 15, 6),
@@ -106,8 +107,8 @@ class ContentHeaderLight extends StatelessWidget {
                       icon: Icon(EvaIcons.moreHorizotnal),
                       onPressed: () {
                         User().getUsername().then((userUsername) {
-                          Modal().postOptions(
-                              context, userUsername == username, postUid);
+                          Modal().postOptions(context, userUsername == username,
+                              postUid, isPinned);
                         });
                       })
               : IconButton(
@@ -115,7 +116,7 @@ class ContentHeaderLight extends StatelessWidget {
                   onPressed: () {
                     User().getUsername().then((userUsername) {
                       Modal().postOptions(
-                          context, userUsername == username, postUid);
+                          context, userUsername == username, postUid, isPinned);
                     });
                   })
         ],
@@ -145,6 +146,7 @@ class ContentHeaderDark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isPinned = popularity == CurrentPostPopularity.pinned;
     return Container(
       constraints: const BoxConstraints(minHeight: 50),
       padding: EdgeInsets.fromLTRB(15, 4, 15, 4),
@@ -217,8 +219,8 @@ class ContentHeaderDark extends StatelessWidget {
                       ),
                       onPressed: () {
                         User().getUsername().then((userUsername) {
-                          Modal().postOptions(
-                              context, userUsername == username, postUid);
+                          Modal().postOptions(context, userUsername == username,
+                              postUid, isPinned);
                         });
                       })
               : IconButton(
@@ -229,7 +231,7 @@ class ContentHeaderDark extends StatelessWidget {
                   onPressed: () {
                     User().getUsername().then((userUsername) {
                       Modal().postOptions(
-                          context, userUsername == username, postUid);
+                          context, userUsername == username, postUid, isPinned);
                     });
                   })
         ],

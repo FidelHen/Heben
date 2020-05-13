@@ -60,9 +60,11 @@ class _MediaViewState extends State<MediaView> {
   bool _isPlaying = false;
   VideoPlayerController _controller;
   Map<String, HighlightedWord> words = {};
+  bool isPinned;
 
   @override
   void initState() {
+    isPinned = widget.popularity == CurrentPostPopularity.pinned;
     _itemsOpacity = 1.0;
     if (widget.body != null && widget.body.trim() != '') {
       highlightBodyText();
@@ -139,8 +141,11 @@ class _MediaViewState extends State<MediaView> {
                     ),
                     onPressed: () {
                       User().getUsername().then((userUsername) {
-                        Modal().postOptions(context,
-                            userUsername == widget.username, widget.postUid);
+                        Modal().postOptions(
+                            context,
+                            userUsername == widget.username,
+                            widget.postUid,
+                            isPinned);
                       });
                     }),
               ),
