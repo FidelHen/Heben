@@ -511,7 +511,11 @@ class _CreatePostState extends State<CreatePost> {
       }
     });
 
-    Social().tagUsers(atUsers: atList.toSet().toList());
+    Social().tagUsers(
+        atUsers: atList.toSet().toList(),
+        postUid: docRef.documentID,
+        body: contentController.text.trim(),
+        type: mediaType.toString());
     Social().hashtags(
         tagList: tagList.toSet().toList(), postUid: docRef.documentID);
 

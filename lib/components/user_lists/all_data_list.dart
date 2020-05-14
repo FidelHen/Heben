@@ -152,7 +152,7 @@ class _AllDataListState extends State<AllDataList> {
           if (pinnedPostUid != '' && index == 0) {
             return Column(
               children: <Widget>[
-                buildContent(context, feedList[index], index),
+                buildContent(context, feedList[index]),
                 Container(
                   height: 10,
                   color: Colors.transparent,
@@ -160,7 +160,7 @@ class _AllDataListState extends State<AllDataList> {
               ],
             );
           } else {
-            return buildContent(context, feedList[index], index);
+            return buildContent(context, feedList[index]);
           }
         },
       );

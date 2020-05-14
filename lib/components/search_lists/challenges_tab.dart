@@ -142,7 +142,7 @@ class _ChallengesTabState extends State<ChallengesTab> {
           key: _listKey,
           itemCount: feedList.length,
           itemBuilder: (BuildContext context, int index) {
-            return buildContent(context, feedList[index], index);
+            return buildContent(context, feedList[index]);
           },
         ),
       );

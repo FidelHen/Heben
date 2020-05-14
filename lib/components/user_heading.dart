@@ -24,6 +24,7 @@ class UserHeading extends StatefulWidget {
       @required this.role,
       @required this.isLive,
       @required this.isFollowing,
+      @required this.username,
       this.backgroundImageFile,
       this.profileImageFile,
       this.isRegistering});
@@ -32,6 +33,7 @@ class UserHeading extends StatefulWidget {
   final String bio;
   final String profileImage;
   final String backgroundImage;
+  final String username;
   final File backgroundImageFile;
   final File profileImageFile;
   final int followers;
@@ -279,7 +281,7 @@ class _UserHeadingState extends State<UserHeading> {
   }
 
   follow() {
-    Social().followUser(userUid: widget.userUid);
+    Social().followUser(userUid: widget.userUid, username: widget.username);
     setState(() {
       followers += 1;
     });

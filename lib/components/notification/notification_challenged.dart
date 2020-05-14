@@ -1,10 +1,8 @@
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/screens/root/friend.dart';
 import 'package:heben/screens/root/post.dart';
-import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
 
 class NotificationChallenged extends StatelessWidget {
@@ -13,14 +11,14 @@ class NotificationChallenged extends StatelessWidget {
     @required this.profileImage,
     @required this.timestamp,
     @required this.postUid,
-    @required this.challengeName,
+    @required this.challengeTitle,
     @required this.postType,
   });
 
   final String username;
   final String profileImage;
   final String timestamp;
-  final String challengeName;
+  final String challengeTitle;
   final String postUid;
   final String postType;
 
@@ -30,21 +28,21 @@ class NotificationChallenged extends StatelessWidget {
       onTap: () {
         Navigation().segue(
             page: Post(
-              username: Faker().internet.userName(),
-              profileImage: 'https://i.pravatar.cc/300',
-              timestamp: '1 hr',
-              body: Faker().lorem.sentence() + ' @Hello @world',
-              image: 'https://source.unsplash.com/1600x900/?challenge',
-              popularity: CurrentPostPopularity.trending,
-              likes: 1,
-              liked: false,
-              comments: 10,
-              postUid: Faker().randomGenerator.string(10),
-              bookmarked: true,
-              challengeUid: Faker().randomGenerator.string(10),
-              challengeTitle: '25 Push Up Challenge',
-              video: null,
-            ),
+                username: null,
+                profileImage: null,
+                timestamp: null,
+                body: null,
+                video: null,
+                popularity: null,
+                likes: null,
+                liked: null,
+                bookmarked: null,
+                comments: null,
+                postUid: postUid,
+                challengeUid: null,
+                challengeTitle: null,
+                isNotification: true,
+                image: null),
             context: context,
             fullScreen: false);
       },
@@ -86,7 +84,7 @@ class NotificationChallenged extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            challengeName,
+                            challengeTitle,
                             style: GoogleFonts.lato(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
@@ -102,7 +100,7 @@ class NotificationChallenged extends StatelessWidget {
                                         fontWeight: FontWeight.w800,
                                         color: Colors.black)),
                                 TextSpan(
-                                    text: ' challenges you ',
+                                    text: ' challenged you ',
                                     style: GoogleFonts.openSans(
                                         fontWeight: FontWeight.w600,
                                         color: Colors.grey[700])),

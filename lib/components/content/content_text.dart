@@ -73,6 +73,7 @@ class _ContentTextState extends State<ContentText> {
               body: widget.body,
               popularity: widget.popularity,
               postUid: widget.postUid,
+              isNotification: false,
               challengeUid: null,
               challengeTitle: null,
               image: null,

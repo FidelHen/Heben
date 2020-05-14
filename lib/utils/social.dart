@@ -5,7 +5,11 @@ import 'package:heben/utils/user.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 class Social {
-  tagUsers({@required List<String> atUsers}) async {
+  tagUsers(
+      {@required List<String> atUsers,
+      @required String postUid,
+      @required String type,
+      @required String body}) async {
     String uid = await User().getUsername();
     if (atUsers.contains(uid)) {
       atUsers.remove(uid);
@@ -19,7 +23,11 @@ class Social {
           'senderUsername': snapshot.data['username'],
           'senderUid': snapshot.data['uid'],
           'timestamp': DateTime.now().millisecondsSinceEpoch,
+          'profileImage': snapshot.data['profileImage'],
           'type': 'tagged',
+          'postType': type,
+          'body': body,
+          'postUid': postUid,
           'receiverUsername': element,
         });
       });
@@ -87,6 +95,7 @@ class Social {
         'senderUsername': snapshot.data['username'],
         'senderUid': snapshot.data['uid'],
         'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'profileImage': snapshot.data['profileImage'],
         'type': 'tagged',
         'receiverUsername': receiverUsername,
       });
@@ -203,9 +212,9 @@ class Social {
     batch.commit();
   }
 
-  followUser({@required String userUid}) async {
-    String uid = await User().getUid();
-    String username = await User().getUsername();
+  followUser({@required String userUid, @required String username}) async {
+    DocumentSnapshot snapshot = await User().getUserProfileInfo();
+    String uid = snapshot.data['uid'];
 
     final batch = Firestore.instance.batch();
 
@@ -230,9 +239,11 @@ class Social {
     batch.setData(Firestore.instance.collection('notifications').document(), {
       'receiverUid': userUid,
       'senderUid': uid,
+      'receiverUsername': username,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
+      'profileImage': snapshot.data['profileImage'],
       'type': 'followed',
-      'senderUsername': username,
+      'senderUsername': snapshot.data['username'],
     });
 
     await Firestore.instance

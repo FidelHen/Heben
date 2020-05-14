@@ -181,6 +181,7 @@ class _ProfileState extends State<Profile>
                       isFollowing: null,
                       profileImage: profileImage,
                       backgroundImage: backgroundImage,
+                      username: snapshot.data['username'],
                       following: following,
                       followers: followers,
                       isLive: isLive ?? false,

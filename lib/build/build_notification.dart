@@ -42,7 +42,7 @@ Widget buildNotification(
       timestamp: item.timestamp,
       postUid: item.postUid,
       postType: item.postType,
-      challengeName: item.challengeName,
+      challengeTitle: item.challengeTitle,
     );
   } else if (item is NotificationTaggedItem) {
     return NotificationTagged(

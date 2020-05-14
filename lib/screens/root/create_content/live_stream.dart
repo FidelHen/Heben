@@ -296,7 +296,7 @@ class _LiveStreamState extends State<LiveStream> {
                                     itemBuilder:
                                         (BuildContext context, int index) {
                                       return buildContent(
-                                          context, feedList[index], index);
+                                          context, feedList[index]);
                                     },
                                   ),
                                 ),

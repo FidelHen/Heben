@@ -108,8 +108,7 @@ class _ExploreState extends State<Explore>
                 key: _listKey,
                 itemCount: currentExploreList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return buildContent(
-                      context, currentExploreList[index], index);
+                  return buildContent(context, currentExploreList[index]);
                 },
               ),
             )),

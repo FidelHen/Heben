@@ -90,6 +90,7 @@ class _ContentImageState extends State<ContentImage> {
               profileImage: widget.profileImage,
               timestamp: widget.timestamp,
               body: widget.body,
+              isNotification: false,
               popularity: widget.popularity,
               postUid: widget.postUid,
               challengeUid: widget.challengeUid,

@@ -1,10 +1,8 @@
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:getflutter/getflutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/screens/root/friend.dart';
 import 'package:heben/screens/root/post.dart';
-import 'package:heben/utils/enums.dart';
 import 'package:heben/utils/navigation.dart';
 
 class NotificationLiked extends StatelessWidget {
@@ -27,21 +25,21 @@ class NotificationLiked extends StatelessWidget {
       onTap: () {
         Navigation().segue(
             page: Post(
-              username: Faker().internet.userName(),
-              profileImage: 'https://i.pravatar.cc/300',
-              timestamp: '1 hr',
-              body: Faker().lorem.sentence() + ' @Hello @world',
-              image: 'https://source.unsplash.com/1600x900/?random',
-              popularity: CurrentPostPopularity.trending,
-              likes: 1,
-              liked: false,
-              comments: 10,
-              postUid: Faker().randomGenerator.string(10),
-              bookmarked: true,
-              challengeUid: Faker().randomGenerator.string(10),
-              challengeTitle: null,
-              video: null,
-            ),
+                username: null,
+                profileImage: null,
+                timestamp: null,
+                body: null,
+                video: null,
+                popularity: null,
+                likes: null,
+                liked: null,
+                bookmarked: null,
+                comments: null,
+                postUid: postUid,
+                challengeUid: null,
+                challengeTitle: null,
+                isNotification: true,
+                image: null),
             context: context,
             fullScreen: false);
       },

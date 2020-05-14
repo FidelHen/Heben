@@ -56,7 +56,7 @@ class _StreamsTabState extends State<StreamsTab> {
           itemBuilder: (BuildContext context, int index, Animation animation) {
             return FadeTransition(
               opacity: animation,
-              child: buildContent(context, feedList[index], index),
+              child: buildContent(context, feedList[index]),
             );
           },
         ),

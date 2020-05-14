@@ -157,7 +157,7 @@ class _TagState extends State<Tag> {
               BuildContext context,
               int index,
             ) {
-              return buildContent(context, feedList[index], index);
+              return buildContent(context, feedList[index]);
             },
           ),
         );

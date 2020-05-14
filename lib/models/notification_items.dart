@@ -63,7 +63,7 @@ class NotificationChallengedItem implements NotificationItems {
       @required this.profileImage,
       @required this.timestamp,
       @required this.postUid,
-      @required this.challengeName,
+      @required this.challengeTitle,
       @required this.postType});
 
   final String username;
@@ -71,7 +71,7 @@ class NotificationChallengedItem implements NotificationItems {
   final String timestamp;
   final String postUid;
   final String postType;
-  final String challengeName;
+  final String challengeTitle;
 }
 
 class NotificationTaggedItem implements NotificationItems {

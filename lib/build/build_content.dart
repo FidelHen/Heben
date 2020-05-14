@@ -9,7 +9,7 @@ import 'package:heben/components/content/content_text.dart';
 import 'package:heben/components/content/content_video.dart';
 import 'package:heben/models/content_items.dart';
 
-Widget buildContent(context, ContentItems item, [int index]) {
+Widget buildContent(context, ContentItems item) {
   if (item is ContentTextItem) {
     return ContentText(
       username: item.username,

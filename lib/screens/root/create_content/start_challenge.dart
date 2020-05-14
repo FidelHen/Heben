@@ -596,7 +596,11 @@ class _StartChallengeState extends State<StartChallenge> {
       }
     });
 
-    Social().tagUsers(atUsers: atList.toSet().toList());
+    Social().tagUsers(
+        atUsers: atList.toSet().toList(),
+        postUid: docRef.documentID,
+        body: descriptionController.text.trim(),
+        type: mediaType.toString());
     Social().hashtags(
         tagList: tagList.toSet().toList(), postUid: docRef.documentID);
 
@@ -685,6 +689,9 @@ class _StartChallengeState extends State<StartChallenge> {
           'receiverUsername': user['username'],
           'senderUid': snapshot.data['uid'],
           'senderUsername': snapshot.data['username'],
+          'profileImage': snapshot.data['profileImage'],
+          'challengeTitle': titleController.text.trim(),
+          'postType': mediaType.toString(),
           'timestamp': DateTime.now().millisecondsSinceEpoch,
           'type': 'challenged'
         });

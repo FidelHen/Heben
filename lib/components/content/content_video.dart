@@ -125,6 +125,7 @@ class _ContentVideoState extends State<ContentVideo> {
                 profileImage: widget.profileImage,
                 timestamp: widget.timestamp,
                 body: widget.body,
+                isNotification: false,
                 popularity: widget.popularity,
                 postUid: widget.postUid,
                 challengeUid: widget.challengeUid,

@@ -187,6 +187,7 @@ class _FriendState extends State<Friend> {
                 followers: data['followers'] ?? 0,
                 following: data['following'] ?? 0,
                 role: UserRole.friend,
+                username: data['username'],
                 isLive: data['isLive'] ?? false,
                 userUid: data['uid'],
               ),

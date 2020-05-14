@@ -148,7 +148,7 @@ class _ViewStreamState extends State<ViewStream> {
                                       itemBuilder:
                                           (BuildContext context, int index) {
                                         return buildContent(
-                                            context, feedList[index], index);
+                                            context, feedList[index]);
                                       },
                                     ),
                                   ),

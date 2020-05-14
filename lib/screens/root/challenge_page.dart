@@ -242,7 +242,7 @@ class _ChallengePageState extends State<ChallengePage> {
               BuildContext context,
               int index,
             ) {
-              return buildContent(context, feedList[index], index);
+              return buildContent(context, feedList[index]);
             },
           ),
         );

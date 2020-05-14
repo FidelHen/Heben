@@ -146,6 +146,7 @@ class _ChangeImagesState extends State<ChangeImages> {
                   name: snapshot.data['name'],
                   bio: snapshot.data['bio'],
                   isFollowing: null,
+                  username: null,
                   profileImage: snapshot.data['profileImage'],
                   backgroundImage: snapshot.data['backgroundImage'],
                   followers: snapshot.data['followers'],
