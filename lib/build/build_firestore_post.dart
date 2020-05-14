@@ -8,8 +8,19 @@ import 'package:heben/utils/enums.dart';
 ContentItems buildFirestorePost(
     {@required DocumentSnapshot snapshot,
     @required String uid,
-    bool isPinned}) {
+    bool isPinned,
+    bool isChallengePage,
+    String challengePostType}) {
   final data = snapshot.data;
+
+  if (isChallengePage != null && isChallengePage) {
+    data['challengeTitle'] = null;
+    data['challengeUid'] = null;
+  }
+
+  if (challengePostType != null) {
+    data['type'] = challengePostType;
+  }
 
   CurrentPostPopularity popularity;
   if (isPinned == null) {

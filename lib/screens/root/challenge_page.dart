@@ -38,23 +38,25 @@ class _ChallengePageState extends State<ChallengePage> {
   RefreshController challengeRefreshController;
   List<ContentItems> feedList = [];
   Future getPostFuture;
-  bool buttonIsHidden;
   String uid;
+  int timestamp;
+  String duration;
+  bool isLoading;
 
   @override
   void initState() {
     // loadTestData();
+    loadData();
+    isLoading = true;
     challengeRefreshController = RefreshController();
     getPostFuture = Firestore.instance
         .collection('posts')
         .document(widget.challengeUid)
         .collection('participants')
         .orderBy('timestamp', descending: true)
+        .limit(10)
         .getDocuments();
 
-    buttonIsHidden = false;
-
-    loadUid();
     super.initState();
   }
 
@@ -73,118 +75,57 @@ class _ChallengePageState extends State<ChallengePage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getPostFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return Scaffold(
-              backgroundColor: Colors.grey[100],
-              appBar: GFAppBar(
-                centerTitle: true,
-                elevation: 0,
-                title: Text(
-                  'Challenge',
-                  style: GoogleFonts.lato(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600),
-                ),
-                leading: IconButton(
-                    icon: Icon(
-                      EvaIcons.chevronLeft,
-                      size: 40,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }),
-                brightness: Brightness.light,
-                backgroundColor: Colors.grey[100],
-              ),
-              body: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Center(
-                    child: Container(
-                      height: 50,
-                      child: SpinKitRing(
-                        color: Colors.black,
-                        lineWidth: 5,
-                        size: 40,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            );
-          } else {
-            final data = snapshot.data as QuerySnapshot;
-            if (data.documents.length != 0) {
-              data.documents.forEach((snapshot) {
-                ContentItems item =
-                    buildFirestorePost(snapshot: snapshot, uid: uid);
-                feedList.add(item);
-              });
-              return Scaffold(
-                backgroundColor: Colors.grey[100],
-                appBar: GFAppBar(
-                  centerTitle: true,
-                  elevation: 0,
-                  title: Text(
-                    '${getTimeLeft()}',
-                    style: GoogleFonts.lato(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18),
-                  ),
-                  leading: IconButton(
-                      icon: Icon(
-                        EvaIcons.chevronLeft,
-                        size: 40,
-                        color: Colors.black,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                  brightness: Brightness.light,
-                  backgroundColor: Colors.grey[100],
-                ),
-                body: SmartRefresher(
-                  physics: BouncingScrollPhysics(),
-                  enablePullDown: true,
-                  enablePullUp: true,
-                  header: refreshHeader(),
-                  footer: refreshFooter(),
-                  onRefresh: () {
-                    challengeRefreshController.refreshCompleted();
-                  },
-                  onLoading: () {
-                    challengeRefreshController.loadComplete();
-                  },
-                  controller: challengeRefreshController,
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 8.0),
-                    child: ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      key: _listKey,
-                      itemCount: feedList.length,
-                      itemBuilder: (
-                        BuildContext context,
-                        int index,
-                      ) {
-                        return buildContent(context, feedList[index], index);
-                      },
-                    ),
-                  ),
-                ),
-                floatingActionButtonLocation:
-                    FloatingActionButtonLocation.centerFloat,
-                floatingActionButton: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: FloatingActionButton.extended(
-                    backgroundColor: hebenSuccess,
-                    onPressed: () {
+    return Scaffold(
+      backgroundColor: Colors.grey[100],
+      appBar: GFAppBar(
+        centerTitle: true,
+        elevation: 0,
+        title: Text(
+          isLoading
+              ? widget.challengeTitle
+              : feedList.length == 0 ? '' : '${getTimeLeft()}',
+          style: GoogleFonts.lato(
+              color: Colors.black, fontWeight: FontWeight.w600, fontSize: 18),
+        ),
+        leading: IconButton(
+            icon: Icon(
+              EvaIcons.chevronLeft,
+              size: 40,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            }),
+        brightness: Brightness.light,
+        backgroundColor: Colors.grey[100],
+      ),
+      body: SmartRefresher(
+        physics: BouncingScrollPhysics(),
+        enablePullDown: !isLoading,
+        enablePullUp: !isLoading,
+        header: refreshHeader(),
+        footer: refreshFooter(),
+        onRefresh: () {
+          challengeRefreshController.refreshCompleted();
+        },
+        onLoading: () {
+          challengeRefreshController.loadComplete();
+        },
+        controller: challengeRefreshController,
+        child: buildList(),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: FloatingActionButton.extended(
+          backgroundColor: isLoading
+              ? Colors.grey
+              : feedList.length == 0 ? Colors.grey : hebenSuccess,
+          onPressed: isLoading
+              ? null
+              : feedList.length == 0
+                  ? null
+                  : () {
                       Navigation().segue(
                           page: AcceptChallenge(
                             challengeTitle: widget.challengeTitle,
@@ -193,73 +134,144 @@ class _ChallengePageState extends State<ChallengePage> {
                           context: context,
                           fullScreen: true);
                     },
-                    label: Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.only(right: 4.0),
-                          child: Text(
-                            'Challenge',
-                            style: GoogleFonts.lato(
-                                fontSize: 16, fontWeight: FontWeight.w800),
-                          ),
-                        ),
-                        Icon(
-                          EvaIcons.flash,
-                          size: 20,
-                        )
-                      ],
-                    ),
-                  ),
+          label: Row(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(right: 4.0),
+                child: Text(
+                  'Challenge',
+                  style: GoogleFonts.lato(
+                      fontSize: 16, fontWeight: FontWeight.w800),
                 ),
-              );
-            } else {
-              return Scaffold(
-                backgroundColor: Colors.grey[100],
-                appBar: GFAppBar(
-                  centerTitle: true,
-                  elevation: 0,
-                  leading: IconButton(
-                      icon: Icon(
-                        EvaIcons.chevronLeft,
-                        size: 40,
-                        color: Colors.black,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                  brightness: Brightness.light,
-                  backgroundColor: Colors.grey[100],
-                ),
-                body: Container(
-                  width: DeviceSize().getWidth(context),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        EvaIcons.alertCircleOutline,
-                        size: 50,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Sorry, challenge doesn\'t exist',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.openSans(
-                              fontWeight: FontWeight.w600, fontSize: 16),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              );
-            }
-          }
-        });
+              ),
+              Icon(
+                EvaIcons.flash,
+                size: 20,
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
-  loadUid() async {
+  loadData() async {
     uid = await User().getUid();
+
+    if (widget.duration == null || widget.timestamp == null) {
+      await Firestore.instance
+          .collection('posts')
+          .document(widget.challengeUid)
+          .get()
+          .then((doc) {
+        timestamp = doc.data['timestamp'];
+        duration = doc.data['duration'];
+      });
+    } else {
+      timestamp = widget.timestamp;
+      duration = widget.duration;
+    }
+
+    getPostFuture.then((snapshot) {
+      final data = snapshot as QuerySnapshot;
+
+      if (data.documents.length != 0) {
+        data.documents.forEach((snapshot) async {
+          await Firestore.instance
+              .collection('posts')
+              .document(snapshot.data['postUid'])
+              .get()
+              .then((doc) {
+            if (doc.documentID == widget.challengeUid) {
+              ContentItems item = buildFirestorePost(
+                  snapshot: doc,
+                  uid: uid,
+                  isChallengePage: true,
+                  challengePostType: snapshot.data['type']);
+              setState(() {
+                feedList.add(item);
+              });
+            } else {
+              ContentItems item = buildFirestorePost(
+                  snapshot: doc, uid: uid, isChallengePage: true);
+              setState(() {
+                feedList.add(item);
+              });
+            }
+          }).then((_) {
+            setState(() {
+              isLoading = false;
+            });
+          });
+        });
+      } else {
+        print(feedList);
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
+  }
+
+  Widget buildList() {
+    if (isLoading) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Center(
+            child: Container(
+              height: 50,
+              child: SpinKitRing(
+                color: Colors.black,
+                lineWidth: 5,
+                size: 40,
+              ),
+            ),
+          )
+        ],
+      );
+    } else {
+      if (feedList.length != 0) {
+        return Padding(
+          padding: EdgeInsets.only(top: 8.0),
+          child: ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            key: _listKey,
+            itemCount: feedList.length,
+            itemBuilder: (
+              BuildContext context,
+              int index,
+            ) {
+              return buildContent(context, feedList[index], index);
+            },
+          ),
+        );
+      } else {
+        return Container(
+          width: DeviceSize().getWidth(context),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                EvaIcons.alertCircleOutline,
+                size: 50,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'Sorry, challenge doesn\'t exist',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.openSans(
+                      fontWeight: FontWeight.w600, fontSize: 16),
+                ),
+              )
+            ],
+          ),
+        );
+      }
+    }
   }
 
   loadTestData() async {
@@ -303,17 +315,17 @@ class _ChallengePageState extends State<ChallengePage> {
   }
 
   String getTimeLeft() {
-    DurationChallenge duration = EnumToString.fromString(
-        DurationChallenge.values, widget.duration.toString().split('.')[1]);
+    DurationChallenge enumDuration = EnumToString.fromString(
+        DurationChallenge.values, duration.toString().split('.')[1]);
     DateTime difference;
-    if (duration == DurationChallenge.oneDay) {
-      difference = DateTime.fromMillisecondsSinceEpoch(widget.timestamp)
-          .add(Duration(days: 1));
-    } else if (duration == DurationChallenge.oneWeek) {
-      difference = DateTime.fromMillisecondsSinceEpoch(widget.timestamp)
-          .add(Duration(days: 7));
-    } else if (duration == DurationChallenge.oneMonth) {
-      difference = DateTime.fromMillisecondsSinceEpoch(widget.timestamp)
+    if (enumDuration == DurationChallenge.oneDay) {
+      difference =
+          DateTime.fromMillisecondsSinceEpoch(timestamp).add(Duration(days: 1));
+    } else if (enumDuration == DurationChallenge.oneWeek) {
+      difference =
+          DateTime.fromMillisecondsSinceEpoch(timestamp).add(Duration(days: 7));
+    } else if (enumDuration == DurationChallenge.oneMonth) {
+      difference = DateTime.fromMillisecondsSinceEpoch(timestamp)
           .add(Duration(days: 31));
     }
 

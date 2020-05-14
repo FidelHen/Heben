@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:heben/components/content/content_header.dart';
+import 'package:heben/screens/root/challenge_page.dart';
 import 'package:heben/screens/root/friend.dart';
 import 'package:heben/screens/root/media_view.dart';
 import 'package:heben/screens/root/post.dart';
@@ -119,13 +120,26 @@ class _ContentImageState extends State<ContentImage> {
                     postUid: widget.postUid,
                   ),
                   widget.challengeTitle != null
-                      ? Padding(
-                          padding:
-                              EdgeInsets.only(left: 15, right: 15, bottom: 0),
-                          child: Text(
-                            widget.challengeTitle,
-                            style: GoogleFonts.openSans(
-                                fontWeight: FontWeight.w700, fontSize: 16),
+                      ? GestureDetector(
+                          onTap: () {
+                            Navigation().segue(
+                                page: ChallengePage(
+                                  challengeUid: widget.challengeUid,
+                                  duration: null,
+                                  timestamp: null,
+                                  challengeTitle: widget.challengeTitle,
+                                ),
+                                context: context,
+                                fullScreen: false);
+                          },
+                          child: Padding(
+                            padding:
+                                EdgeInsets.only(left: 15, right: 15, bottom: 0),
+                            child: Text(
+                              widget.challengeTitle,
+                              style: GoogleFonts.openSans(
+                                  fontWeight: FontWeight.w700, fontSize: 16),
+                            ),
                           ),
                         )
                       : Container(),
@@ -323,51 +337,6 @@ class _ContentImageState extends State<ContentImage> {
       }
     });
     setState(() {});
-  }
-
-  Widget textWidget(width) {
-    if (widget.challengeTitle != null && widget.challengeUid != null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(right: 18),
-            child: GestureDetector(
-              onTap: () {},
-              child: Text(
-                '${widget.challengeTitle}',
-                style: GoogleFonts.openSans(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black),
-              ),
-            ),
-          ),
-          Container(
-            width: width,
-            color: Colors.white,
-            child: TextHighlight(
-              textAlign: TextAlign.start,
-              text: widget.body
-                  .trim(), // You need to pass the string you want the highlights
-              words: words, // Your dictionary words
-              textStyle: GoogleFonts.openSans(
-                color: Colors.black,
-              ),
-            ),
-          ),
-        ],
-      );
-    } else {
-      return TextHighlight(
-        text: widget.body
-            .trim(), // You need to pass the string you want the highlights
-        words: words, // Your dictionary words
-        textStyle: GoogleFonts.openSans(
-          color: Colors.black,
-        ),
-      );
-    }
   }
 
   Future<bool> onLikeButtonTapped(bool isLiked) async {

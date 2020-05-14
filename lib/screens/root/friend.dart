@@ -109,37 +109,37 @@ class _FriendState extends State<Friend> {
   Widget buildList() {
     if (isLoading) {
       return Scaffold(
-        backgroundColor: Colors.grey[100],
-        appBar: GFAppBar(
-          centerTitle: true,
-          elevation: 0,
-          leading: IconButton(
-              icon: Icon(
-                EvaIcons.chevronLeft,
-                size: 40,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              }),
-          brightness: Brightness.light,
           backgroundColor: Colors.grey[100],
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Center(
-              child: Container(
-                height: 50,
-                child: SpinKitThreeBounce(
-                  color: Colors.black,
+          appBar: GFAppBar(
+            centerTitle: true,
+            elevation: 0,
+            leading: IconButton(
+                icon: Icon(
+                  EvaIcons.chevronLeft,
                   size: 40,
+                  color: Colors.black,
                 ),
-              ),
-            )
-          ],
-        ),
-      );
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            brightness: Brightness.light,
+            backgroundColor: Colors.grey[100],
+          ),
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                child: Container(
+                  height: 50,
+                  child: SpinKitRing(
+                    color: Colors.black,
+                    lineWidth: 5,
+                    size: 40,
+                  ),
+                ),
+              )
+            ],
+          ));
     } else {
       if (data != null) {
         return Scaffold(
