@@ -162,7 +162,6 @@ class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin<Home> {
         }
 
         snapshot.documents.forEach((doc) async {
-          print(doc);
           await Firestore.instance
               .collection('posts')
               .document(doc.documentID)

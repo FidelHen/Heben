@@ -390,34 +390,6 @@ class _PhotoMainPageState extends State<PhotoMainPage>
     widget.onClose.call(selectedList);
   }
 
-  // void _onTapPreview() async {
-  //   var result = PhotoPreviewResult();
-  //   isPushed = true;
-  //   var v = await Navigator.of(context).push(
-  //     MaterialPageRoute(
-  //       builder: (ctx) => PhotoPickerProvider(
-  //         provider: PhotoPickerProvider.of(context).provider,
-  //         options: options,
-  //         child: PhotoPreviewPage(
-  //           selectedProvider: this,
-  //           list: List.of(selectedList),
-  //           changeProviderOnCheckChange: false,
-  //           result: result,
-  //           isPreview: true,
-  //           assetProvider: assetProvider,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  //   if (handlePreviewResult(v)) {
-  //     // print(v);
-  //     Navigator.pop(context, v);
-  //     return;
-  //   }
-  //   isPushed = false;
-  //   compareAndRemoveEntities(result.previewSelectedList);
-  // }
-
   bool handlePreviewResult(List<AssetEntity> v) {
     if (v == null) {
       return false;

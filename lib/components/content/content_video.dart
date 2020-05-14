@@ -400,9 +400,7 @@ class _ContentVideoState extends State<ContentVideo> {
           Padding(
             padding: EdgeInsets.only(right: 18),
             child: GestureDetector(
-              onTap: () {
-                print('hello');
-              },
+              onTap: () {},
               child: Text(
                 '${widget.challengeTitle}',
                 // style: kBodyTextStyle.copyWith(

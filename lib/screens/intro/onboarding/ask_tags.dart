@@ -189,8 +189,6 @@ class _AskTagsState extends State<AskTags> {
   }
 
   uploadData() async {
-    print(tagTitles);
-
     String profileImageURL;
     String backgroundImageURL;
 

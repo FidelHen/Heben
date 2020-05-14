@@ -610,7 +610,6 @@ class _StartChallengeState extends State<StartChallenge> {
 
     await mediaRef.putFile(currentSelected).onComplete.then((result) async {
       await result.ref.getDownloadURL().then((url) {
-        print(url);
         mediaUrl = url;
       });
     });

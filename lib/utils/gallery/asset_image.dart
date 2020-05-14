@@ -23,9 +23,6 @@ class AssetImageWidget extends StatelessWidget {
       return _buildContainer();
     }
 
-    print(
-        "assetEntity.width = ${assetEntity.width} , assetEntity.height = ${assetEntity.height}");
-
     return FutureBuilder<Uint8List>(
       builder: (BuildContext context, snapshot) {
         if (snapshot.hasData) {

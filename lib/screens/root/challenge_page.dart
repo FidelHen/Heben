@@ -205,7 +205,6 @@ class _ChallengePageState extends State<ChallengePage> {
           });
         });
       } else {
-        print(feedList);
         setState(() {
           isLoading = false;
         });

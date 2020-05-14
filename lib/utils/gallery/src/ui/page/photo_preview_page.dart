@@ -381,7 +381,6 @@ class _BigPhotoImageState extends State<BigPhotoImage>
       builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
         var file = snapshot.data;
         if (snapshot.connectionState == ConnectionState.done && file != null) {
-          print(file.length);
           return Image.memory(
             file,
             fit: BoxFit.contain,

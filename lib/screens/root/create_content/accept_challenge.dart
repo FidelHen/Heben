@@ -546,7 +546,6 @@ class _AcceptChallengeState extends State<AcceptChallenge> {
 
     await mediaRef.putFile(currentSelected).onComplete.then((result) async {
       await result.ref.getDownloadURL().then((url) {
-        print(url);
         mediaUrl = url;
       });
     });
